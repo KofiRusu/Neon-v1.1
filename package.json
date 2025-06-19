@@ -1,9 +1,10 @@
 {
-  "name": "neon0.2",
-  "version": "0.1.0",
+  "name": "neonhub-ai-ecosystem",
+  "version": "0.2.0",
   "private": true,
-  "description": "NeonHub v0.2 - Production-ready monorepo with TypeScript, testing, and CI/CD",
+  "description": "NeonHub AI Marketing Ecosystem - Self-operating, AI-driven marketing and sales platform",
   "workspaces": [
+    "apps/*",
     "packages/*"
   ],
   "scripts": {
@@ -18,14 +19,27 @@
     "test:e2e": "playwright test",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist coverage .nyc_output",
-    "dev": "npm run build && npm run test",
+    "dev": "concurrently \"npm run dev:dashboard\" \"npm run dev:api\"",
+    "dev:dashboard": "cd apps/dashboard && npm run dev",
+    "dev:api": "cd apps/api && npm run dev",
+    "db:generate": "cd packages/data-model && npx prisma generate",
+    "db:push": "cd packages/data-model && npx prisma db push",
+    "db:migrate": "cd packages/data-model && npx prisma migrate dev",
+    "db:studio": "cd packages/data-model && npx prisma studio",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
     "ci": "npm run lint && npm run type-check && npm run test && npm run test:e2e"
   },
   "keywords": [
-    "monorepo",
-    "typescript",
+    "ai",
+    "marketing",
+    "automation",
     "neonhub",
-    "production-ready"
+    "ecosystem",
+    "langchain",
+    "openai",
+    "nextjs",
+    "trpc"
   ],
   "author": "NeonHub Team",
   "license": "MIT",
@@ -35,6 +49,7 @@
     "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.5",
     "jest": "^30.0.2",

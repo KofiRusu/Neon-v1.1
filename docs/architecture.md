@@ -1,114 +1,273 @@
-# Neon0.2 Architecture
+# NeonHub AI Marketing Ecosystem - Architecture Overview
 
-## Overview
+## 🧠 Core Mission
+Build a self-operating, AI-driven marketing and sales platform for NeonHub that:
+- Creates, tests, and posts content across platforms
+- Optimizes ads and outreach autonomously
+- Predicts trends and reacts in real time
+- Converts both B2C and B2B leads at scale
+- Requires zero manual marketing input
 
-Neon0.2 is a production-ready monorepo built with modern TypeScript tooling, comprehensive testing, and automated CI/CD. It follows strict code quality standards and modular architecture principles.
+## 🏗️ SYSTEM ARCHITECTURE
 
-## Key Features
+### 1. AI Command Dashboard (Next.js + Tailwind + tRPC)
+**Location**: `apps/dashboard/`
 
-- **Monorepo** with `packages/` workspaces for modular development
-- **TypeScript strict mode** across all modules with advanced compiler options
-- **ESLint + Prettier** for consistent code style and quality enforcement
-- **Jest** for comprehensive unit testing with coverage thresholds
-- **Playwright** for reliable end-to-end testing across browsers
-- **GitHub Actions CI** with lint → type-check → unit tests → E2E tests pipeline
+Real-time control center aggregating:
+- Engagement metrics (CTR, ROI, sentiment)
+- Platform performance (Shopify, TikTok, Meta, etc.)
+- Region/product KPI benchmarks
+- Can trigger AI agent actions manually or via rule-based automations
 
-## Directory Structure
+**Key Features**:
+- Real-time analytics dashboard
+- Agent control panel
+- Campaign management interface
+- Performance monitoring
+- Alert system for anomalies
 
-```
-Neon0.2/
-├── packages/                 # Workspace packages
-│   ├── core/                # Core business logic
-│   ├── utils/               # Shared utilities
-│   ├── types/               # TypeScript type definitions
-│   └── api/                 # API layer
-├── tests/
-│   ├── e2e/                 # End-to-end tests
-│   └── fixtures/            # Test fixtures and utilities
-├── docs/                    # Documentation
-├── .github/workflows/       # CI/CD pipelines
-├── coverage/                # Test coverage reports
-├── dist/                    # Compiled output
-└── node_modules/            # Dependencies
-```
+### 2. Autonomous AI Agents (LangChain / OpenAI API)
+**Location**: `packages/core-agents/`
 
-## Technology Stack
+| Agent | Role | Responsibilities |
+|-------|------|------------------|
+| ContentAgent | Generates posts, captions, emails, and product copy | Content creation, A/B testing, platform optimization |
+| AdAgent | Runs A/B tests, reallocates budgets, optimizes creative | Ad performance, budget management, creative optimization |
+| OutreachAgent | Sends personalized B2B emails, manages follow-up chains | Lead nurturing, email sequences, follow-up automation |
+| TrendAgent | Detects viral content, trending sounds, and global style shifts | Trend detection, viral content identification, market analysis |
+| InsightAgent | Monitors analytics to propose strategy shifts | Data analysis, strategy recommendations, performance insights |
+| DesignAgent | Creates and tests new sign designs based on user inputs and trends | Design generation, visual testing, product innovation |
 
-- **Runtime**: Node.js 18+
-- **Language**: TypeScript 5+ with strict mode
-- **Package Manager**: npm with workspaces
-- **Testing**: Jest + Playwright
-- **Code Quality**: ESLint + Prettier
-- **CI/CD**: GitHub Actions
-- **Build System**: TypeScript Compiler (tsc)
+**Agent Architecture**:
+```typescript
+interface BaseAgent {
+  id: string;
+  name: string;
+  capabilities: string[];
+  execute(payload: AgentPayload): Promise<AgentResult>;
+  getStatus(): AgentStatus;
+}
 
-## Development Workflow
-
-1. **Development**: `npm run dev` - Build and test
-2. **Code Quality**: `npm run lint` + `npm run format`
-3. **Type Safety**: `npm run type-check`
-4. **Testing**: `npm run test` (unit) + `npm run test:e2e`
-5. **CI Pipeline**: Automated on push/PR
-
-## Quality Standards
-
-- ✅ **80%+ test coverage** requirement
-- ✅ **Zero TypeScript errors** with strict mode
-- ✅ **ESLint rules** enforced with error-level violations
-- ✅ **Prettier formatting** applied consistently
-- ✅ **No `any` types** allowed in production code
-- ✅ **Comprehensive E2E testing** across browsers
-
-## Package Architecture
-
-Each package in `packages/` follows this structure:
-
-```
-packages/example/
-├── src/
-│   ├── index.ts           # Main entry point
-│   ├── types.ts           # Type definitions
-│   └── __tests__/         # Unit tests
-├── package.json           # Package configuration
-└── tsconfig.json          # Package-specific TS config
+interface AgentPayload {
+  task: string;
+  context: Record<string, any>;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  deadline?: Date;
+}
 ```
 
-## CI/CD Pipeline
+### 3. Campaign Engine
+**Location**: `packages/reasoning-engine/`
 
-1. **Lint Check**: ESLint validation
-2. **Type Check**: TypeScript compilation
-3. **Unit Tests**: Jest with coverage
-4. **Build**: TypeScript compilation
-5. **E2E Tests**: Playwright across browsers
-6. **Deploy**: Production deployment (if applicable)
+- Campaign scheduler and planner
+- Auto-responders, retargeting rules, cold email flows
+- Real-time performance tracking and auto-optimization
 
-## Getting Started
+**Core Components**:
+- Campaign Orchestrator
+- A/B Testing Engine
+- Performance Optimizer
+- Automation Rules Engine
 
-```bash
-# Install dependencies
-npm install
+### 4. Data & Analytics Core
+**Location**: `packages/data-model/`
 
-# Run development workflow
-npm run dev
+Centralized database (PostgreSQL via Prisma) with logs for:
+- Campaign stats
+- Behavioral data
+- AI decisions
+- Machine learning feedback loop to retrain models
 
-# Run specific checks
-npm run lint
-npm run type-check
-npm run test
-npm run test:e2e
+**Database Schema Highlights**:
+```prisma
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String
+  type        CampaignType
+  status      CampaignStatus
+  metrics     Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
-# Build for production
-npm run build
+model AgentExecution {
+  id          String   @id @default(cuid())
+  agentId     String
+  task        String
+  result      Json
+  performance Float
+  createdAt   DateTime @default(now())
+}
 ```
 
-## Contributing
+### 5. Global Outreach Engine
+**Location**: `packages/core-agents/outreach/`
 
-1. Follow the established code style (ESLint + Prettier)
-2. Maintain test coverage above 80%
-3. Add E2E tests for user-facing features
-4. Update documentation for architectural changes
-5. Ensure all CI checks pass before merging
+- Lead scraper & enrichment tool (LinkedIn, directories)
+- Auto-email sequencer
+- Language/localization module (multilingual personalization)
+
+### 6. User Experience Personalization
+**Location**: `packages/reasoning-engine/personalization/`
+
+Tracks:
+- Browsing/cart actions
+- Purchase behavior
+- Interaction with ads or DMs
+
+Adjusts:
+- Prices, discounts, content shown
+- Retargeting ads or SMS flows
+
+### 7. Product Innovation Lab
+**Location**: `apps/dashboard/innovation/`
+
+- "Request-a-sign" user funnel
+- AI-generated visual prototypes
+- A/B tested previews and sales predictions
+- Instant publish to store
+
+### 8. Trend & Market Heatmap (Global Intelligence Engine)
+**Location**: `packages/reasoning-engine/trends/`
+
+- Scrapes demand signals across platforms
+- Shows region-by-region heatmap + viral potential
+- Offers data-backed suggestions to the Command Dashboard
+
+### 9. Retail Activation Toolkit
+**Location**: `apps/dashboard/retail/`
+
+- AR-enabled previews
+- QR/NFC sign kits for stores/events
+- Kiosks with direct ordering & design tools
+
+## 🔄 Data Flow Architecture
+
+```
+User Interaction → Dashboard → API Gateway → Agent Orchestrator → AI Agents
+                                                      ↓
+Database ← Analytics Engine ← Campaign Engine ← Agent Results
+```
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Next.js 14** (App Router)
+- **Tailwind CSS** (Styling)
+- **tRPC** (Type-safe API)
+- **React Query** (State management)
+- **Framer Motion** (Animations)
+
+### Backend
+- **Node.js** (Runtime)
+- **tRPC** (API layer)
+- **Prisma** (ORM)
+- **PostgreSQL** (Database)
+- **Redis** (Caching)
+
+### AI/ML
+- **LangChain** (Agent framework)
+- **OpenAI API** (LLM)
+- **TensorFlow.js** (Client-side ML)
+- **Puppeteer** (Web scraping)
+
+### Infrastructure
+- **Docker** (Containerization)
+- **GitHub Actions** (CI/CD)
+- **Vercel** (Deployment)
+- **PlanetScale** (Database hosting)
+
+## 🔐 Security Architecture
+
+### Authentication & Authorization
+- JWT-based authentication
+- Role-based access control (RBAC)
+- API key management for external services
+- Rate limiting and DDoS protection
+
+### Data Protection
+- End-to-end encryption for sensitive data
+- GDPR compliance
+- Data anonymization for analytics
+- Secure API communication
+
+## 📊 Monitoring & Observability
+
+### Metrics Collection
+- Application performance monitoring (APM)
+- Business metrics tracking
+- AI agent performance monitoring
+- User behavior analytics
+
+### Alerting
+- Real-time anomaly detection
+- Performance degradation alerts
+- Business KPI alerts
+- Security incident notifications
+
+## 🚀 Deployment Strategy
+
+### Environment Structure
+- **Development**: Local development with hot reload
+- **Staging**: Pre-production testing environment
+- **Production**: Live system with blue-green deployment
+
+### Scalability
+- Horizontal scaling for API services
+- Database read replicas
+- CDN for static assets
+- Load balancing across regions
+
+## 🔄 Development Workflow
+
+### Git Flow
+1. Feature branches from `develop`
+2. Pull requests with automated testing
+3. Merge to `develop` after review
+4. Release branches for production
+
+### CI/CD Pipeline
+1. Code linting and formatting
+2. Type checking
+3. Unit and integration tests
+4. E2E testing
+5. Security scanning
+6. Deployment to staging/production
+
+## 📈 Performance Optimization
+
+### Frontend
+- Code splitting and lazy loading
+- Image optimization
+- Caching strategies
+- Bundle size optimization
+
+### Backend
+- Database query optimization
+- Caching layers (Redis)
+- API response compression
+- Background job processing
+
+### AI/ML
+- Model optimization and quantization
+- Batch processing for heavy computations
+- Caching of AI responses
+- Progressive model updates
+
+## 🔮 Future Enhancements
+
+### Phase 2 Features
+- Advanced ML model training pipeline
+- Real-time video content generation
+- Voice-based interaction systems
+- Advanced predictive analytics
+
+### Phase 3 Features
+- Multi-tenant architecture
+- Advanced AI agent collaboration
+- Blockchain integration for transparency
+- Advanced AR/VR experiences
 
 ---
 
-*This architecture documentation is maintained alongside the codebase and should be updated with any structural changes.* 
+*This architecture document serves as the foundation for the NeonHub AI Marketing Ecosystem development. All components are designed to work together seamlessly while maintaining scalability, security, and performance.* 
