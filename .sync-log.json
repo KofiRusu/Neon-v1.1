@@ -1,17 +1,5 @@
 [
   {
-    "timestamp": "2025-06-20T16:44:56.867Z",
-    "level": "info",
-    "message": "Starting workspace sync...",
-    "device": "Kofis-MacBook-Air-local-darwin-arm64"
-  },
-  {
-    "timestamp": "2025-06-20T16:44:57.413Z",
-    "level": "info",
-    "message": "Pulled latest changes from origin/main",
-    "device": "Kofis-MacBook-Air-local-darwin-arm64"
-  },
-  {
     "timestamp": "2025-06-20T16:44:57.538Z",
     "level": "info",
     "message": "Starting workspace sync...",
@@ -595,6 +583,18 @@
   },
   {
     "timestamp": "2025-06-20T16:45:33.320Z",
+    "level": "info",
+    "message": "Pulled latest changes from origin/main",
+    "device": "Kofis-MacBook-Air-local-darwin-arm64"
+  },
+  {
+    "timestamp": "2025-06-20T16:45:33.459Z",
+    "level": "info",
+    "message": "Starting workspace sync...",
+    "device": "Kofis-MacBook-Air-local-darwin-arm64"
+  },
+  {
+    "timestamp": "2025-06-20T16:45:34.060Z",
     "level": "info",
     "message": "Pulled latest changes from origin/main",
     "device": "Kofis-MacBook-Air-local-darwin-arm64"
