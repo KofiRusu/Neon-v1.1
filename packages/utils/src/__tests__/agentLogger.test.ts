@@ -22,6 +22,16 @@ jest.mock('@neon/data-model', () => ({
 }))
 
 const mockDb = db as jest.Mocked<typeof db>
+const mockCreate = mockDb.aIEventLog.create as jest.MockedFunction<typeof mockDb.aIEventLog.create>
+
+// Mock return type for Prisma client
+const mockAIEventLogResult = {
+  id: 'test_log_001',
+  agent: 'TestAgent',
+  action: 'test_action',
+  metadata: {},
+  createdAt: new Date()
+} as never
 
 describe('Agent Logger', () => {
   beforeEach(() => {
@@ -37,7 +47,7 @@ describe('Agent Logger', () => {
 
   describe('logEvent', () => {
     it('should log events to database successfully', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
       
       await logEvent({
         agent: 'ContentAgent',
@@ -62,7 +72,7 @@ describe('Agent Logger', () => {
     })
 
     it('should handle database errors gracefully', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockRejectedValue(new Error('DB Error'))
+      mockCreate.mockRejectedValue(new Error('DB Error'))
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
       const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
 
@@ -81,7 +91,7 @@ describe('Agent Logger', () => {
 
   describe('logPerformance', () => {
     it('should log performance metrics', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
 
       await logPerformance({
         agent: 'TrendAgent',
@@ -105,7 +115,7 @@ describe('Agent Logger', () => {
     })
 
     it('should use current timestamp if not provided', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
 
       await logPerformance({
         agent: 'InsightAgent',
@@ -125,7 +135,7 @@ describe('Agent Logger', () => {
 
   describe('logSuccess', () => {
     it('should log successful operations', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
 
       await logSuccess('OutreachAgent', 'send_email', { recipient: 'test@example.com' }, 500)
 
@@ -145,7 +155,7 @@ describe('Agent Logger', () => {
 
   describe('logError', () => {
     it('should log errors with Error objects', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
       const testError = new Error('Test error message')
 
       await logError('DesignAgent', 'create_design', testError, { designType: 'banner' })
@@ -164,7 +174,7 @@ describe('Agent Logger', () => {
     })
 
     it('should log errors with string messages', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
 
       await logError('ContentAgent', 'validate_content', 'Invalid content format')
 
@@ -209,7 +219,7 @@ describe('Agent Logger', () => {
 
   describe('withLogging', () => {
     it('should execute function and log success', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
       const testFunction = jest.fn().mockResolvedValue('test result')
 
       const result = await withLogging(
@@ -235,7 +245,7 @@ describe('Agent Logger', () => {
     })
 
     it('should handle function errors and log them', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
       const testError = new Error('Function failed')
       const testFunction = jest.fn().mockRejectedValue(testError)
 
@@ -259,7 +269,7 @@ describe('Agent Logger', () => {
     })
 
     it('should work without metadata', async () => {
-      const mockCreate = mockDb.aIEventLog.create.mockResolvedValue({} as any)
+      mockCreate.mockResolvedValue(mockAIEventLogResult)
       const testFunction = jest.fn().mockResolvedValue('success')
 
       await withLogging('TrendAgent', 'simple_action', testFunction)

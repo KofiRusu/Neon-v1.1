@@ -1,13 +1,14 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
+import { AgentContext, OutreachResult } from '../types';
 
 export class OutreachAgent extends AbstractAgent {
   constructor(id: string, name: string) {
     super(id, name, 'outreach', [
       'send_emails',
-      'nurture_leads',
+      'social_outreach',
+      'lead_generation',
       'follow_up',
-      'personalize_content',
-      'track_engagement'
+      'campaign_management'
     ]);
   }
 
@@ -18,37 +19,82 @@ export class OutreachAgent extends AbstractAgent {
       switch (task) {
         case 'send_emails':
           return await this.sendEmails(context);
-        case 'nurture_leads':
-          return await this.nurtureLeads(context);
+        case 'social_outreach':
+          return await this.socialOutreach(context);
+        case 'lead_generation':
+          return await this.generateLeads(context);
         case 'follow_up':
           return await this.followUp(context);
-        case 'personalize_content':
-          return await this.personalizeContent(context);
-        case 'track_engagement':
-          return await this.trackEngagement(context);
+        case 'campaign_management':
+          return await this.manageCampaign(context);
         default:
           throw new Error(`Unknown task: ${task}`);
       }
     });
   }
 
-  private async sendEmails(_context: any): Promise<any> {
-    return { sent: 10, opened: 8, clicked: 3 };
+  private async sendEmails(_context: AgentContext): Promise<OutreachResult> {
+    // TODO: Implement email sending
+    return {
+      campaigns: [
+        {
+          id: 'email_001',
+          type: 'email',
+          status: 'sent'
+        }
+      ]
+    };
   }
 
-  private async nurtureLeads(_context: any): Promise<any> {
-    return { nurtured: 25, qualified: 5 };
+  private async socialOutreach(_context: AgentContext): Promise<OutreachResult> {
+    // TODO: Implement social media outreach
+    return {
+      campaigns: [
+        {
+          id: 'social_001',
+          type: 'social_media',
+          status: 'active'
+        }
+      ]
+    };
   }
 
-  private async followUp(_context: any): Promise<any> {
-    return { followUps: 15, responses: 8 };
+  private async generateLeads(_context: AgentContext): Promise<OutreachResult> {
+    // TODO: Implement lead generation
+    return {
+      campaigns: [
+        {
+          id: 'lead_001',
+          type: 'lead_generation',
+          status: 'running'
+        }
+      ]
+    };
   }
 
-  private async personalizeContent(_context: any): Promise<any> {
-    return { personalized: 50, improved: 12 };
+  private async followUp(_context: AgentContext): Promise<OutreachResult> {
+    // TODO: Implement follow-up campaigns
+    return {
+      campaigns: [
+        {
+          id: 'followup_001',
+          type: 'follow_up',
+          status: 'scheduled'
+        }
+      ]
+    };
   }
 
-  private async trackEngagement(_context: any): Promise<any> {
-    return { engagement: 0.75, trend: 'increasing' };
+  private async manageCampaign(_context: AgentContext): Promise<OutreachResult> {
+    // TODO: Implement campaign management
+    return {
+      campaigns: [
+        {
+          id: 'campaign_001',
+          type: 'multi_channel',
+          status: 'active'
+        }
+      ]
+    };
   }
 } 

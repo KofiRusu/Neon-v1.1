@@ -1,20 +1,33 @@
 {
-<<<<<<< HEAD
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./src/*"],
-      "@neon/data-model": ["../../packages/data-model/src"],
-      "@neon/types": ["../../packages/types/src"],
-      "@neon/utils": ["../../packages/utils/src"]
+      "~/*": [
+        "./src/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ],
+      "@neon/data-model": [
+        "../../packages/data-model/src"
+      ],
+      "@neon/types": [
+        "../../packages/types/src"
+      ],
+      "@neon/utils": [
+        "../../packages/utils/src"
+      ]
     },
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "allowJs": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
   },
   "include": [
     "next-env.d.ts",
@@ -26,28 +39,4 @@
     "node_modules",
     ".next"
   ]
-=======
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["ES2020"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@neonhub/*": ["../../packages/*/src"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
-} 
+}

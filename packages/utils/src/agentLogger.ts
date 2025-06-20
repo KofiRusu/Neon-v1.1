@@ -86,7 +86,7 @@ export async function logSuccess(
     action,
     metadata: metadata || {},
     success: true,
-    duration,
+    ...(duration !== undefined && { duration }),
   })
 }
 

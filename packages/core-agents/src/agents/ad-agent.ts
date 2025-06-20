@@ -1,4 +1,12 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
+import { 
+  AgentContext, 
+  AdOptimizationResult, 
+  BudgetAllocationResult, 
+  ABTestResult, 
+  PerformanceMetrics, 
+  BiddingAdjustment 
+} from '../types';
 
 export class AdAgent extends AbstractAgent {
   constructor(id: string, name: string) {
@@ -32,7 +40,7 @@ export class AdAgent extends AbstractAgent {
     });
   }
 
-  private async optimizeAds(_context: any): Promise<any> {
+  private async optimizeAds(_context: AgentContext): Promise<AdOptimizationResult> {
     // TODO: Implement ad optimization
     return {
       optimizations: [
@@ -44,7 +52,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async manageBudget(_context: any): Promise<any> {
+  private async manageBudget(_context: AgentContext): Promise<BudgetAllocationResult> {
     // TODO: Implement budget management
     return {
       budgetAllocation: {
@@ -55,10 +63,10 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async abTestAds(_context: any): Promise<any> {
+  private async abTestAds(_context: AgentContext): Promise<ABTestResult> {
     // TODO: Implement A/B testing for ads
     return {
-      testId: 'ad_test_' + Date.now(),
+      testId: `ad_test_${Date.now()}`,
       variants: [
         { id: 'A', creative: 'Creative A', bid: 1.5 },
         { id: 'B', creative: 'Creative B', bid: 2.0 }
@@ -66,7 +74,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async analyzePerformance(_context: any): Promise<any> {
+  private async analyzePerformance(_context: AgentContext): Promise<PerformanceMetrics> {
     // TODO: Implement performance analysis
     return {
       metrics: {
@@ -77,7 +85,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async adjustBidding(_context: any): Promise<any> {
+  private async adjustBidding(_context: AgentContext): Promise<BiddingAdjustment> {
     // TODO: Implement bid adjustment
     return {
       newBids: {

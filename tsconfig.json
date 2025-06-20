@@ -26,7 +26,12 @@
     "paths": {
       "@/types": ["./packages/types/src"],
       "@/utils": ["./packages/utils/src"],
-      "@/core": ["./packages/core/src"]
+      "@/core": ["./packages/core/src"],
+      "@neon/data-model": ["./packages/data-model/src"],
+      "@neon/types": ["./packages/types/src"],
+      "@neon/utils": ["./packages/utils/src"],
+      "@neon/core-agents": ["./packages/core-agents/src"],
+      "@neon/reasoning-engine": ["./packages/reasoning-engine/src"]
     }
   },
   "include": [

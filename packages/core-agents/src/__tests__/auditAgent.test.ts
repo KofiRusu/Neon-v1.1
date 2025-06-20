@@ -2,14 +2,14 @@
  * Tests for AuditAgent - Quality Control Agent
  */
 
-import { AuditAgent, type ContentScore } from '../auditAgent'
+import { AuditAgent } from '../auditAgent'
 import { logEvent, logPerformance } from '@neon/utils'
 
 // Mock the database logging utilities
 jest.mock('@neon/utils', () => ({
   logEvent: jest.fn(),
   logPerformance: jest.fn(),
-  withLogging: jest.fn((agent, action, fn, metadata) => {
+  withLogging: jest.fn((_agent, _action, fn, _metadata) => {
     // Execute the function directly for testing
     return fn()
   }),
@@ -254,9 +254,9 @@ describe('AuditAgent', () => {
       expect(mockLogPerformance).toHaveBeenCalled()
       
       // Check that the logged metadata includes audit-specific information
-      const logCall = mockLogPerformance.mock.calls[0][0]
-      expect(logCall.agent).toBe('OutreachAgent')
-      expect(logCall.score).toBeDefined()
+      const logCall = mockLogPerformance.mock.calls[0]?.[0]
+      expect(logCall?.agent).toBe('OutreachAgent')
+      expect(logCall?.score).toBeDefined()
     })
   })
 
@@ -278,7 +278,7 @@ describe('AuditAgent', () => {
       
       const shortResult = await AuditAgent.evaluateContentOutput(shortContent)
       const mediumResult = await AuditAgent.evaluateContentOutput(mediumContent)
-      const longResult = await AuditAgent.evaluateContentOutput(longContent)
+      await AuditAgent.evaluateContentOutput(longContent)
       
       // Medium content should generally score better than very short or very long
       expect(mediumResult.clarity).toBeGreaterThanOrEqual(shortResult.clarity)

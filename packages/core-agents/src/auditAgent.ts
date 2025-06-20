@@ -156,7 +156,7 @@ export class AuditAgent {
 
       // For now, return null to trigger fallback
       // TODO: Implement actual OpenAI API call
-      console.log('OpenAI evaluation prompt prepared:', mockPrompt.substring(0, 100) + '...')
+      console.log('OpenAI evaluation prompt prepared:', `${mockPrompt.substring(0, 100)  }...`)
       return null
 
       /* 

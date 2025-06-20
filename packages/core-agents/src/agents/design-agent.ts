@@ -1,13 +1,14 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
+import { AgentContext, DesignResult } from '../types';
 
 export class DesignAgent extends AbstractAgent {
   constructor(id: string, name: string) {
     super(id, name, 'design', [
-      'generate_designs',
-      'create_prototypes',
+      'create_graphics',
       'optimize_layouts',
-      'test_designs',
-      'generate_variations'
+      'generate_templates',
+      'brand_consistency',
+      'responsive_design'
     ]);
   }
 
@@ -16,83 +17,94 @@ export class DesignAgent extends AbstractAgent {
       const { task, context } = payload;
       
       switch (task) {
-        case 'generate_designs':
-          return await this.generateDesigns(context);
-        case 'create_prototypes':
-          return await this.createPrototypes(context);
+        case 'create_graphics':
+          return await this.createGraphics(context);
         case 'optimize_layouts':
           return await this.optimizeLayouts(context);
-        case 'test_designs':
-          return await this.testDesigns(context);
-        case 'generate_variations':
-          return await this.generateVariations(context);
+        case 'generate_templates':
+          return await this.generateTemplates(context);
+        case 'brand_consistency':
+          return await this.ensureBrandConsistency(context);
+        case 'responsive_design':
+          return await this.createResponsiveDesign(context);
         default:
           throw new Error(`Unknown task: ${task}`);
       }
     });
   }
 
-  private async generateDesigns(_context: any): Promise<any> {
+  private async createGraphics(_context: AgentContext): Promise<DesignResult> {
+    // TODO: Implement graphics creation
     return {
-      designs: [
-        {
-          id: 'design_1',
-          type: 'neon_sign',
-          preview: 'data:image/png;base64,...',
-          specifications: {
-            size: '24x12 inches',
-            colors: ['blue', 'pink'],
-            style: 'modern'
-          }
+      design: {
+        id: 'design_001',
+        url: 'https://example.com/design.png',
+        specifications: {
+          width: 1200,
+          height: 630,
+          format: 'PNG'
         }
-      ]
+      }
     };
   }
 
-  private async createPrototypes(_context: any): Promise<any> {
+  private async optimizeLayouts(_context: AgentContext): Promise<DesignResult> {
+    // TODO: Implement layout optimization
     return {
-      prototypes: [
-        {
-          id: 'proto_1',
-          type: '3d_preview',
-          url: 'https://example.com/prototype',
-          interactive: true
+      design: {
+        id: 'layout_001',
+        url: 'https://example.com/optimized-layout.svg',
+        specifications: {
+          width: 1920,
+          height: 1080,
+          format: 'SVG'
         }
-      ]
+      }
     };
   }
 
-  private async optimizeLayouts(_context: any): Promise<any> {
+  private async generateTemplates(_context: AgentContext): Promise<DesignResult> {
+    // TODO: Implement template generation
     return {
-      optimizations: [
-        {
-          element: 'logo',
-          suggestion: 'Move to top-left',
-          impact: 'high'
+      design: {
+        id: 'template_001',
+        url: 'https://example.com/template.psd',
+        specifications: {
+          width: 1200,
+          height: 800,
+          format: 'PSD'
         }
-      ]
+      }
     };
   }
 
-  private async testDesigns(_context: any): Promise<any> {
+  private async ensureBrandConsistency(_context: AgentContext): Promise<DesignResult> {
+    // TODO: Implement brand consistency check
     return {
-      testResults: [
-        {
-          designId: 'design_1',
-          engagement: 0.85,
-          conversion: 0.12,
-          preference: 0.78
+      design: {
+        id: 'brand_001',
+        url: 'https://example.com/brand-consistent.png',
+        specifications: {
+          width: 800,
+          height: 600,
+          format: 'PNG'
         }
-      ]
+      }
     };
   }
 
-  private async generateVariations(_context: any): Promise<any> {
+  private async createResponsiveDesign(_context: AgentContext): Promise<DesignResult> {
+    // TODO: Implement responsive design creation
     return {
-      variations: [
-        { id: 'var_1', color: 'red', style: 'retro' },
-        { id: 'var_2', color: 'green', style: 'minimal' }
-      ]
+      design: {
+        id: 'responsive_001',
+        url: 'https://example.com/responsive-design.html',
+        specifications: {
+          width: 1920,
+          height: 1080,
+          format: 'HTML'
+        }
+      }
     };
   }
 } 

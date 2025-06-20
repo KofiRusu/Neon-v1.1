@@ -1,13 +1,14 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
+import { AgentContext, ContentResult } from '../types';
 
 export class ContentAgent extends AbstractAgent {
   constructor(id: string, name: string) {
     super(id, name, 'content', [
-      'generate_posts',
-      'create_captions',
-      'write_emails',
-      'optimize_content',
-      'a_b_test_content'
+      'generate_content',
+      'optimize_seo',
+      'create_headlines',
+      'content_strategy',
+      'social_media_posts'
     ]);
   }
 
@@ -16,79 +17,80 @@ export class ContentAgent extends AbstractAgent {
       const { task, context } = payload;
       
       switch (task) {
-        case 'generate_posts':
-          return await this.generatePosts(context);
-        case 'create_captions':
-          return await this.createCaptions(context);
-        case 'write_emails':
-          return await this.writeEmails(context);
-        case 'optimize_content':
-          return await this.optimizeContent(context);
-        case 'a_b_test_content':
-          return await this.abTestContent(context);
+        case 'generate_content':
+          return await this.generateContent(context);
+        case 'optimize_seo':
+          return await this.optimizeSEO(context);
+        case 'create_headlines':
+          return await this.createHeadlines(context);
+        case 'content_strategy':
+          return await this.createContentStrategy(context);
+        case 'social_media_posts':
+          return await this.createSocialMediaPosts(context);
         default:
           throw new Error(`Unknown task: ${task}`);
       }
     });
   }
 
-  private async generatePosts(_context: any): Promise<any> {
-    // TODO: Implement AI-powered post generation
-    // This will use OpenAI API to generate engaging social media posts
+  private async generateContent(_context: AgentContext): Promise<ContentResult> {
+    // TODO: Implement content generation
     return {
-      posts: [
-        {
-          platform: 'instagram',
-          content: 'Generated post content will go here',
-          hashtags: ['#neonhub', '#marketing'],
-          imageSuggestions: ['bright', 'modern', 'neon']
-        }
-      ]
+      content: 'Generated content based on context and requirements.',
+      metadata: {
+        wordCount: 150,
+        tone: 'professional',
+        keywords: ['marketing', 'automation', 'AI']
+      }
     };
   }
 
-  private async createCaptions(_context: any): Promise<any> {
-    // TODO: Implement caption generation
+  private async optimizeSEO(_context: AgentContext): Promise<ContentResult> {
+    // TODO: Implement SEO optimization
     return {
-      captions: [
-        {
-          platform: 'instagram',
-          caption: 'Generated caption will go here',
-          hashtags: ['#neonhub', '#caption']
-        }
-      ]
+      content: 'SEO-optimized content with targeted keywords and meta descriptions.',
+      metadata: {
+        wordCount: 200,
+        tone: 'informative',
+        keywords: ['SEO', 'optimization', 'search engine']
+      }
     };
   }
 
-  private async writeEmails(_context: any): Promise<any> {
-    // TODO: Implement email writing
+  private async createHeadlines(_context: AgentContext): Promise<ContentResult> {
+    // TODO: Implement headline creation
     return {
-      emails: [
-        {
-          subject: 'Generated email subject',
-          body: 'Generated email body will go here',
-          type: 'newsletter'
-        }
-      ]
+      content: 'Compelling Headlines That Drive Engagement and Conversions',
+      metadata: {
+        wordCount: 8,
+        tone: 'engaging',
+        keywords: ['headlines', 'engagement', 'conversions']
+      }
     };
   }
 
-  private async optimizeContent(_context: any): Promise<any> {
-    // TODO: Implement content optimization
+  private async createContentStrategy(_context: AgentContext): Promise<ContentResult> {
+    // TODO: Implement content strategy
     return {
-      optimizedContent: 'Optimized content will go here',
-      suggestions: ['Use more engaging language', 'Add relevant hashtags']
+      content: 'Comprehensive content strategy aligned with business goals and audience needs.',
+      metadata: {
+        wordCount: 300,
+        tone: 'strategic',
+        keywords: ['strategy', 'content planning', 'audience']
+      }
     };
   }
 
-  private async abTestContent(_context: any): Promise<any> {
-    // TODO: Implement A/B testing for content
+  private async createSocialMediaPosts(_context: AgentContext): Promise<ContentResult> {
+    // TODO: Implement social media post creation
     return {
-      variants: [
-        { id: 'A', content: 'Variant A content' },
-        { id: 'B', content: 'Variant B content' }
-      ],
-      testId: 'test_' + Date.now()
+      content: `Engage your audience with compelling social media content! 🚀 
+#SocialMedia #Marketing #Engagement`,
+      metadata: {
+        wordCount: 12,
+        tone: 'casual',
+        keywords: ['social media', 'engagement', 'marketing']
+      }
     };
   }
 } 

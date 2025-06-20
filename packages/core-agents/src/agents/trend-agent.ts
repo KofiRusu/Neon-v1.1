@@ -1,13 +1,14 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
+import { AgentContext, TrendResult } from '../types';
 
 export class TrendAgent extends AbstractAgent {
   constructor(id: string, name: string) {
     super(id, name, 'trend', [
-      'detect_trends',
-      'analyze_viral_content',
-      'predict_trends',
+      'analyze_trends',
+      'predict_viral_content',
+      'track_hashtags',
       'monitor_competitors',
-      'identify_opportunities'
+      'seasonal_analysis'
     ]);
   }
 
@@ -16,59 +17,93 @@ export class TrendAgent extends AbstractAgent {
       const { task, context } = payload;
       
       switch (task) {
-        case 'detect_trends':
-          return await this.detectTrends(context);
-        case 'analyze_viral_content':
-          return await this.analyzeViralContent(context);
-        case 'predict_trends':
-          return await this.predictTrends(context);
+        case 'analyze_trends':
+          return await this.analyzeTrends(context);
+        case 'predict_viral_content':
+          return await this.predictViralContent(context);
+        case 'track_hashtags':
+          return await this.trackHashtags(context);
         case 'monitor_competitors':
           return await this.monitorCompetitors(context);
-        case 'identify_opportunities':
-          return await this.identifyOpportunities(context);
+        case 'seasonal_analysis':
+          return await this.analyzeSeasonalTrends(context);
         default:
           throw new Error(`Unknown task: ${task}`);
       }
     });
   }
 
-  private async detectTrends(_context: any): Promise<any> {
+  private async analyzeTrends(_context: AgentContext): Promise<TrendResult> {
+    // TODO: Implement trend analysis
     return {
       trends: [
-        { keyword: 'neon signs', growth: 45, volume: 1000 },
-        { keyword: 'custom lighting', growth: 32, volume: 800 }
+        {
+          keyword: 'AI marketing',
+          volume: 125000,
+          growth: 0.23
+        },
+        {
+          keyword: 'social commerce',
+          volume: 89000,
+          growth: 0.18
+        }
       ]
     };
   }
 
-  private async analyzeViralContent(_context: any): Promise<any> {
+  private async predictViralContent(_context: AgentContext): Promise<TrendResult> {
+    // TODO: Implement viral content prediction
     return {
-      viralContent: [
-        { platform: 'tiktok', views: 1000000, engagement: 0.15 }
+      trends: [
+        {
+          keyword: 'video content',
+          volume: 200000,
+          growth: 0.35
+        }
       ]
     };
   }
 
-  private async predictTrends(_context: any): Promise<any> {
+  private async trackHashtags(_context: AgentContext): Promise<TrendResult> {
+    // TODO: Implement hashtag tracking
     return {
-      predictions: [
-        { trend: 'AR shopping', confidence: 0.85, timeframe: '3 months' }
+      trends: [
+        {
+          keyword: '#MarketingTips',
+          volume: 45000,
+          growth: 0.12
+        },
+        {
+          keyword: '#DigitalMarketing',
+          volume: 78000,
+          growth: 0.08
+        }
       ]
     };
   }
 
-  private async monitorCompetitors(_context: any): Promise<any> {
+  private async monitorCompetitors(_context: AgentContext): Promise<TrendResult> {
+    // TODO: Implement competitor monitoring
     return {
-      competitors: [
-        { name: 'Competitor A', activity: 'high', newProducts: 3 }
+      trends: [
+        {
+          keyword: 'competitor analysis',
+          volume: 32000,
+          growth: 0.15
+        }
       ]
     };
   }
 
-  private async identifyOpportunities(_context: any): Promise<any> {
+  private async analyzeSeasonalTrends(_context: AgentContext): Promise<TrendResult> {
+    // TODO: Implement seasonal trend analysis
     return {
-      opportunities: [
-        { market: 'restaurant signs', potential: 'high', competition: 'low' }
+      trends: [
+        {
+          keyword: 'holiday marketing',
+          volume: 156000,
+          growth: 0.45
+        }
       ]
     };
   }
