@@ -102,7 +102,7 @@ export abstract class AbstractAgent implements BaseAgent {
 
   protected async executeWithErrorHandling(
     payload: AgentPayload,
-    executionFn: () => Promise<any>
+    executionFn: () => Promise<unknown>
   ): Promise<AgentResult> {
     const startTime = Date.now();
     
@@ -151,18 +151,18 @@ export abstract class AbstractAgent implements BaseAgent {
 
 // Agent factory for creating agent instances
 export class AgentFactory {
-  private static agents = new Map<string, new (...args: any[]) => BaseAgent>();
+  private static agents = new Map<string, new (id: string, name: string, ...args: unknown[]) => BaseAgent>();
 
-  static registerAgent(type: string, agentClass: new (...args: any[]) => BaseAgent): void {
+  static registerAgent(type: string, agentClass: new (id: string, name: string, ...args: unknown[]) => BaseAgent): void {
     this.agents.set(type, agentClass);
   }
 
-  static createAgent(type: string, id: string, name: string, ...args: any[]): BaseAgent {
+  static createAgent(type: string, id: string, name: string, ...args: unknown[]): BaseAgent {
     const AgentClass = this.agents.get(type);
     if (!AgentClass) {
       throw new Error(`Unknown agent type: ${type}`);
     }
-    return new AgentClass(id, name, type, ...args);
+    return new AgentClass(id, name, ...args);
   }
 
   static getAvailableTypes(): string[] {

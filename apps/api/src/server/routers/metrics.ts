@@ -107,9 +107,9 @@ export const metricsRouter = createTRPCRouter({
         }
       }
 
-      const totalImpressions = metrics.reduce((sum: number, m: any) => sum + m.impressions, 0)
-      const totalConversions = metrics.reduce((sum: number, m: any) => sum + m.conversions, 0)
-      const averageCtr = metrics.reduce((sum: number, m: any) => sum + m.ctr, 0) / metrics.length
+      const totalImpressions = metrics.reduce((sum: number, m) => sum + m.impressions, 0)
+      const totalConversions = metrics.reduce((sum: number, m) => sum + m.conversions, 0)
+      const averageCtr = metrics.reduce((sum: number, m) => sum + m.ctr, 0) / metrics.length
       const conversionRate = totalImpressions > 0 ? totalConversions / totalImpressions : 0
 
       return {
@@ -140,7 +140,7 @@ export const metricsRouter = createTRPCRouter({
           where: { userId: input.userId },
           select: { id: true },
         })
-        campaignIds = campaigns.map((c: any) => c.id)
+        campaignIds = campaigns.map((c) => c.id)
       }
 
       if (!campaignIds || campaignIds.length === 0) {

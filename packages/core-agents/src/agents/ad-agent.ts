@@ -1,6 +1,6 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
 import { 
-  AgentContext, 
+  AgentContextOrUndefined, 
   AdOptimizationResult, 
   BudgetAllocationResult, 
   ABTestResult, 
@@ -40,7 +40,7 @@ export class AdAgent extends AbstractAgent {
     });
   }
 
-  private async optimizeAds(_context: AgentContext): Promise<AdOptimizationResult> {
+  private async optimizeAds(_context: AgentContextOrUndefined): Promise<AdOptimizationResult> {
     // TODO: Implement ad optimization
     return {
       optimizations: [
@@ -52,7 +52,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async manageBudget(_context: AgentContext): Promise<BudgetAllocationResult> {
+  private async manageBudget(_context: AgentContextOrUndefined): Promise<BudgetAllocationResult> {
     // TODO: Implement budget management
     return {
       budgetAllocation: {
@@ -63,7 +63,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async abTestAds(_context: AgentContext): Promise<ABTestResult> {
+  private async abTestAds(_context: AgentContextOrUndefined): Promise<ABTestResult> {
     // TODO: Implement A/B testing for ads
     return {
       testId: `ad_test_${Date.now()}`,
@@ -74,7 +74,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async analyzePerformance(_context: AgentContext): Promise<PerformanceMetrics> {
+  private async analyzePerformance(_context: AgentContextOrUndefined): Promise<PerformanceMetrics> {
     // TODO: Implement performance analysis
     return {
       metrics: {
@@ -85,7 +85,7 @@ export class AdAgent extends AbstractAgent {
     };
   }
 
-  private async adjustBidding(_context: AgentContext): Promise<BiddingAdjustment> {
+  private async adjustBidding(_context: AgentContextOrUndefined): Promise<BiddingAdjustment> {
     // TODO: Implement bid adjustment
     return {
       newBids: {

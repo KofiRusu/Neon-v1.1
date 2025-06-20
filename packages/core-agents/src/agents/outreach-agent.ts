@@ -1,5 +1,5 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { AgentContext, OutreachResult } from '../types';
+import { AgentContextOrUndefined, OutreachResult } from '../types';
 
 export class OutreachAgent extends AbstractAgent {
   constructor(id: string, name: string) {
@@ -33,7 +33,7 @@ export class OutreachAgent extends AbstractAgent {
     });
   }
 
-  private async sendEmails(_context: AgentContext): Promise<OutreachResult> {
+  private async sendEmails(_context: AgentContextOrUndefined): Promise<OutreachResult> {
     // TODO: Implement email sending
     return {
       campaigns: [
@@ -46,7 +46,7 @@ export class OutreachAgent extends AbstractAgent {
     };
   }
 
-  private async socialOutreach(_context: AgentContext): Promise<OutreachResult> {
+  private async socialOutreach(_context: AgentContextOrUndefined): Promise<OutreachResult> {
     // TODO: Implement social media outreach
     return {
       campaigns: [
@@ -59,7 +59,7 @@ export class OutreachAgent extends AbstractAgent {
     };
   }
 
-  private async generateLeads(_context: AgentContext): Promise<OutreachResult> {
+  private async generateLeads(_context: AgentContextOrUndefined): Promise<OutreachResult> {
     // TODO: Implement lead generation
     return {
       campaigns: [
@@ -72,7 +72,7 @@ export class OutreachAgent extends AbstractAgent {
     };
   }
 
-  private async followUp(_context: AgentContext): Promise<OutreachResult> {
+  private async followUp(_context: AgentContextOrUndefined): Promise<OutreachResult> {
     // TODO: Implement follow-up campaigns
     return {
       campaigns: [
@@ -85,7 +85,7 @@ export class OutreachAgent extends AbstractAgent {
     };
   }
 
-  private async manageCampaign(_context: AgentContext): Promise<OutreachResult> {
+  private async manageCampaign(_context: AgentContextOrUndefined): Promise<OutreachResult> {
     // TODO: Implement campaign management
     return {
       campaigns: [

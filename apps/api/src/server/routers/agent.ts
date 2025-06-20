@@ -95,7 +95,7 @@ export const agentRouter = createTRPCRouter({
 
       return {
         totalEvents,
-        agentBreakdown: agentBreakdown.map((item: any) => ({
+        agentBreakdown: agentBreakdown.map((item) => ({
           agent: item.agent,
           count: item._count.id,
         })),
@@ -185,7 +185,7 @@ export const agentRouter = createTRPCRouter({
         totalActions,
         successfulActions,
         successRate,
-        actionBreakdown: actionBreakdown.map((item: any) => ({
+        actionBreakdown: actionBreakdown.map((item) => ({
           action: item.action,
           count: item._count.id,
         })),

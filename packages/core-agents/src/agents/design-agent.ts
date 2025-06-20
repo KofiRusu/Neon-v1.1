@@ -1,5 +1,5 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { AgentContext, DesignResult } from '../types';
+import { AgentContextOrUndefined, DesignResult } from '../types';
 
 export class DesignAgent extends AbstractAgent {
   constructor(id: string, name: string) {
@@ -33,7 +33,7 @@ export class DesignAgent extends AbstractAgent {
     });
   }
 
-  private async createGraphics(_context: AgentContext): Promise<DesignResult> {
+  private async createGraphics(_context: AgentContextOrUndefined): Promise<DesignResult> {
     // TODO: Implement graphics creation
     return {
       design: {
@@ -48,7 +48,7 @@ export class DesignAgent extends AbstractAgent {
     };
   }
 
-  private async optimizeLayouts(_context: AgentContext): Promise<DesignResult> {
+  private async optimizeLayouts(_context: AgentContextOrUndefined): Promise<DesignResult> {
     // TODO: Implement layout optimization
     return {
       design: {
@@ -63,7 +63,7 @@ export class DesignAgent extends AbstractAgent {
     };
   }
 
-  private async generateTemplates(_context: AgentContext): Promise<DesignResult> {
+  private async generateTemplates(_context: AgentContextOrUndefined): Promise<DesignResult> {
     // TODO: Implement template generation
     return {
       design: {
@@ -78,7 +78,7 @@ export class DesignAgent extends AbstractAgent {
     };
   }
 
-  private async ensureBrandConsistency(_context: AgentContext): Promise<DesignResult> {
+  private async ensureBrandConsistency(_context: AgentContextOrUndefined): Promise<DesignResult> {
     // TODO: Implement brand consistency check
     return {
       design: {
@@ -93,7 +93,7 @@ export class DesignAgent extends AbstractAgent {
     };
   }
 
-  private async createResponsiveDesign(_context: AgentContext): Promise<DesignResult> {
+  private async createResponsiveDesign(_context: AgentContextOrUndefined): Promise<DesignResult> {
     // TODO: Implement responsive design creation
     return {
       design: {

@@ -1,5 +1,5 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { AgentContext, ContentResult } from '../types';
+import { AgentContextOrUndefined, ContentResult } from '../types';
 
 export class ContentAgent extends AbstractAgent {
   constructor(id: string, name: string) {
@@ -33,7 +33,7 @@ export class ContentAgent extends AbstractAgent {
     });
   }
 
-  private async generateContent(_context: AgentContext): Promise<ContentResult> {
+  private async generateContent(_context: AgentContextOrUndefined): Promise<ContentResult> {
     // TODO: Implement content generation
     return {
       content: 'Generated content based on context and requirements.',
@@ -45,7 +45,7 @@ export class ContentAgent extends AbstractAgent {
     };
   }
 
-  private async optimizeSEO(_context: AgentContext): Promise<ContentResult> {
+  private async optimizeSEO(_context: AgentContextOrUndefined): Promise<ContentResult> {
     // TODO: Implement SEO optimization
     return {
       content: 'SEO-optimized content with targeted keywords and meta descriptions.',
@@ -57,7 +57,7 @@ export class ContentAgent extends AbstractAgent {
     };
   }
 
-  private async createHeadlines(_context: AgentContext): Promise<ContentResult> {
+  private async createHeadlines(_context: AgentContextOrUndefined): Promise<ContentResult> {
     // TODO: Implement headline creation
     return {
       content: 'Compelling Headlines That Drive Engagement and Conversions',
@@ -69,7 +69,7 @@ export class ContentAgent extends AbstractAgent {
     };
   }
 
-  private async createContentStrategy(_context: AgentContext): Promise<ContentResult> {
+  private async createContentStrategy(_context: AgentContextOrUndefined): Promise<ContentResult> {
     // TODO: Implement content strategy
     return {
       content: 'Comprehensive content strategy aligned with business goals and audience needs.',
@@ -81,7 +81,7 @@ export class ContentAgent extends AbstractAgent {
     };
   }
 
-  private async createSocialMediaPosts(_context: AgentContext): Promise<ContentResult> {
+  private async createSocialMediaPosts(_context: AgentContextOrUndefined): Promise<ContentResult> {
     // TODO: Implement social media post creation
     return {
       content: `Engage your audience with compelling social media content! 🚀 

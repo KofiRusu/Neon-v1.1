@@ -3,7 +3,15 @@
 import { trpc } from '../../lib/trpc'
 import { SparklesIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/outline'
 
-export default function AgentsPage() {
+interface RecentActivity {
+  id: string;
+  agent: string;
+  action: string;
+  createdAt: string;
+  metadata: Record<string, unknown>;
+}
+
+export default function AgentsPage(): JSX.Element {
   const { data: recentActions, isLoading } = trpc.agent.getRecentActions.useQuery({ limit: 10 })
 
   return (
@@ -27,7 +35,7 @@ export default function AgentsPage() {
             <div className="text-dark-400">Loading agent activity...</div>
           ) : (
             <div className="space-y-3">
-              {recentActions?.map((activity: any) => (
+              {recentActions?.map((activity: RecentActivity) => (
                 <div key={activity.id} className="activity-item">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">

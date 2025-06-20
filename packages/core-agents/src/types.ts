@@ -3,6 +3,9 @@ export interface AgentContext {
   [key: string]: unknown;
 }
 
+// Allow undefined context as well
+export type AgentContextOrUndefined = AgentContext | undefined;
+
 export interface AdOptimizationResult {
   optimizations: Array<{
     adId: string;

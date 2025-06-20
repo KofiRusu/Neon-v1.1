@@ -1,5 +1,5 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { AgentContext, InsightResult } from '../types';
+import { AgentContextOrUndefined, InsightResult } from '../types';
 
 export class InsightAgent extends AbstractAgent {
   constructor(id: string, name: string) {
@@ -33,7 +33,7 @@ export class InsightAgent extends AbstractAgent {
     });
   }
 
-  private async analyzeData(_context: AgentContext): Promise<InsightResult> {
+  private async analyzeData(_context: AgentContextOrUndefined): Promise<InsightResult> {
     // TODO: Implement data analysis
     return {
       insights: [
@@ -50,7 +50,7 @@ export class InsightAgent extends AbstractAgent {
     };
   }
 
-  private async predictTrends(_context: AgentContext): Promise<InsightResult> {
+  private async predictTrends(_context: AgentContextOrUndefined): Promise<InsightResult> {
     // TODO: Implement trend prediction
     return {
       insights: [
@@ -67,7 +67,7 @@ export class InsightAgent extends AbstractAgent {
     };
   }
 
-  private async getCustomerInsights(_context: AgentContext): Promise<InsightResult> {
+  private async getCustomerInsights(_context: AgentContextOrUndefined): Promise<InsightResult> {
     // TODO: Implement customer insights
     return {
       insights: [
@@ -84,7 +84,7 @@ export class InsightAgent extends AbstractAgent {
     };
   }
 
-  private async analyzePerformance(_context: AgentContext): Promise<InsightResult> {
+  private async analyzePerformance(_context: AgentContextOrUndefined): Promise<InsightResult> {
     // TODO: Implement performance analysis
     return {
       insights: [
@@ -102,7 +102,7 @@ export class InsightAgent extends AbstractAgent {
     };
   }
 
-  private async conductMarketResearch(_context: AgentContext): Promise<InsightResult> {
+  private async conductMarketResearch(_context: AgentContextOrUndefined): Promise<InsightResult> {
     // TODO: Implement market research
     return {
       insights: [

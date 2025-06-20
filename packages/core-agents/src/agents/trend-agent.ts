@@ -1,5 +1,5 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { AgentContext, TrendResult } from '../types';
+import { AgentContextOrUndefined, TrendResult } from '../types';
 
 export class TrendAgent extends AbstractAgent {
   constructor(id: string, name: string) {
@@ -33,7 +33,7 @@ export class TrendAgent extends AbstractAgent {
     });
   }
 
-  private async analyzeTrends(_context: AgentContext): Promise<TrendResult> {
+  private async analyzeTrends(_context: AgentContextOrUndefined): Promise<TrendResult> {
     // TODO: Implement trend analysis
     return {
       trends: [
@@ -51,7 +51,7 @@ export class TrendAgent extends AbstractAgent {
     };
   }
 
-  private async predictViralContent(_context: AgentContext): Promise<TrendResult> {
+  private async predictViralContent(_context: AgentContextOrUndefined): Promise<TrendResult> {
     // TODO: Implement viral content prediction
     return {
       trends: [
@@ -64,7 +64,7 @@ export class TrendAgent extends AbstractAgent {
     };
   }
 
-  private async trackHashtags(_context: AgentContext): Promise<TrendResult> {
+  private async trackHashtags(_context: AgentContextOrUndefined): Promise<TrendResult> {
     // TODO: Implement hashtag tracking
     return {
       trends: [
@@ -82,7 +82,7 @@ export class TrendAgent extends AbstractAgent {
     };
   }
 
-  private async monitorCompetitors(_context: AgentContext): Promise<TrendResult> {
+  private async monitorCompetitors(_context: AgentContextOrUndefined): Promise<TrendResult> {
     // TODO: Implement competitor monitoring
     return {
       trends: [
@@ -95,7 +95,7 @@ export class TrendAgent extends AbstractAgent {
     };
   }
 
-  private async analyzeSeasonalTrends(_context: AgentContext): Promise<TrendResult> {
+  private async analyzeSeasonalTrends(_context: AgentContextOrUndefined): Promise<TrendResult> {
     // TODO: Implement seasonal trend analysis
     return {
       trends: [
