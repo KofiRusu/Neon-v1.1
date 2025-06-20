@@ -134,4 +134,16 @@ export const pick = <T extends Record<string, unknown>, K extends keyof T>(
     }
   }
   return result;
-}; 
+};
+
+// Export agent logging utilities
+export {
+  logEvent,
+  logPerformance,
+  logSuccess,
+  logError,
+  createTimer,
+  withLogging,
+  type LogEventData,
+  type PerformanceMetrics,
+} from './agentLogger'; 

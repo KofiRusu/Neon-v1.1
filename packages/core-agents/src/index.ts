@@ -45,4 +45,7 @@ export const InsightAgent = {
 export const DesignAgent = {
   name: 'DesignAgent',
   // TODO: Implement design generation logic
-} 
+}
+
+// Export AuditAgent
+export { AuditAgent, type ContentScore, type HallucinationResult, type AgentPerformanceData } from './auditAgent' 
