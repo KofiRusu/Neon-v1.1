@@ -3,10 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-<<<<<<< HEAD
   output   = "../node_modules/.prisma/client"
-=======
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 }
 
 datasource db {
@@ -14,17 +11,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-<<<<<<< HEAD
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  campaigns Campaign[]
-=======
 // User Management
 model User {
   id            String    @id @default(cuid())
@@ -42,27 +28,10 @@ model User {
   analytics     Analytics[]
   sessions      Session[]
   accounts      Account[]
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 
   @@map("users")
 }
 
-<<<<<<< HEAD
-model Campaign {
-  id        String         @id @default(cuid())
-  name      String
-  type      CampaignType
-  status    CampaignStatus @default(DRAFT)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-
-  // Foreign keys
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Relations
-  metrics CampaignMetric[]
-=======
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -119,20 +88,18 @@ model Campaign {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   userId      String
-  userId2     String?
 
   // Relations
   user        User           @relation(fields: [userId], references: [id])
-  user2       User?          @relation("CampaignUser2", fields: [userId2], references: [id])
   agentExecutions AgentExecution[]
   analytics   Analytics[]
   abTests     ABTest[]
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
+  campaignMetrics CampaignMetric[]
 
   @@map("campaigns")
 }
 
-<<<<<<< HEAD
+// Legacy metrics table for backward compatibility
 model CampaignMetric {
   id          String   @id @default(cuid())
   impressions Int      @default(0)
@@ -147,6 +114,7 @@ model CampaignMetric {
   @@map("campaign_metrics")
 }
 
+// AI Event Logs (legacy)
 model AIEventLog {
   id        String   @id @default(cuid())
   agent     String   // Agent name (ContentAgent, AdAgent, etc.)
@@ -155,7 +123,8 @@ model AIEventLog {
   createdAt DateTime @default(now())
 
   @@map("ai_event_logs")
-=======
+}
+
 // AI Agents
 model Agent {
   id          String   @id @default(cuid())
@@ -301,15 +270,15 @@ model DesignTemplate {
   updatedAt   DateTime @updatedAt
 
   @@map("design_templates")
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 }
 
 // Enums
 enum UserRole {
-<<<<<<< HEAD
   USER
   ADMIN
+  MANAGER
   SUPER_ADMIN
+  VIEWER
 }
 
 enum CampaignType {
@@ -318,14 +287,6 @@ enum CampaignType {
   B2B_OUTREACH
   TREND_ANALYSIS
   DESIGN_GENERATION
-=======
-  ADMIN
-  MANAGER
-  USER
-  VIEWER
-}
-
-enum CampaignType {
   SOCIAL_MEDIA
   EMAIL
   ADS
@@ -333,7 +294,6 @@ enum CampaignType {
   INFLUENCER
   EVENT
   PRODUCT_LAUNCH
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 }
 
 enum CampaignStatus {
@@ -341,9 +301,7 @@ enum CampaignStatus {
   ACTIVE
   PAUSED
   COMPLETED
-<<<<<<< HEAD
   FAILED
-=======
   CANCELLED
 }
 
@@ -427,5 +385,4 @@ enum LeadStatus {
   QUALIFIED
   CONVERTED
   LOST
->>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 } 

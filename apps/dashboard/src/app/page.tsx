@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { trpc } from '../lib/trpc';
 import { 
   ChartBarIcon, 
   CogIcon, 
@@ -22,6 +24,10 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch real data from our API
+  const { data: campaignStats } = trpc.campaign.getStats.useQuery();
+  const { data: recentAgentActivity } = trpc.agent.getRecentActions.useQuery({ limit: 5 });
+
   const agents = [
     { id: 'content', name: 'Content Agent', status: 'active', icon: DocumentTextIcon, color: 'text-blue-400', description: 'AI-powered content generation' },
     { id: 'ad', name: 'Ad Agent', status: 'active', icon: MegaphoneIcon, color: 'text-green-400', description: 'Automated ad optimization' },
@@ -32,17 +38,25 @@ export default function Dashboard() {
   ];
 
   const metrics = [
-    { name: 'Total Campaigns', value: '12', change: '+2', changeType: 'positive', icon: MegaphoneIcon, color: 'text-blue-400' },
-    { name: 'Active Agents', value: '4', change: '+1', changeType: 'positive', icon: SparklesIcon, color: 'text-green-400' },
-    { name: 'ROI', value: '3.2x', change: '+0.3x', changeType: 'positive', icon: ChartBarIcon, color: 'text-cyan-400' },
-    { name: 'Leads Generated', value: '1,247', change: '+156', changeType: 'positive', icon: UserGroupIcon, color: 'text-purple-400' },
+    { name: 'Total Campaigns', value: campaignStats?.total?.toString() || '0', change: '+2', changeType: 'positive', icon: MegaphoneIcon, color: 'text-blue-400' },
+    { name: 'Active Campaigns', value: campaignStats?.active?.toString() || '0', change: '+1', changeType: 'positive', icon: SparklesIcon, color: 'text-green-400' },
+    { name: 'Completed', value: campaignStats?.completed?.toString() || '0', change: '+0.3x', changeType: 'positive', icon: ChartBarIcon, color: 'text-cyan-400' },
+    { name: 'Draft Campaigns', value: campaignStats?.draft?.toString() || '0', change: '+156', changeType: 'positive', icon: UserGroupIcon, color: 'text-purple-400' },
   ];
 
-  const recentActivity = [
-    { id: 1, agent: 'Content Agent', action: 'Generated 5 Instagram posts', time: '2 minutes ago', status: 'completed', type: 'content' },
-    { id: 2, agent: 'Ad Agent', action: 'Optimized Facebook ad budget', time: '5 minutes ago', status: 'completed', type: 'ads' },
-    { id: 3, agent: 'Trend Agent', action: 'Detected viral hashtag trend', time: '8 minutes ago', status: 'completed', type: 'trends' },
-    { id: 4, agent: 'Outreach Agent', action: 'Sent 25 personalized emails', time: '12 minutes ago', status: 'completed', type: 'outreach' },
+  // Use real activity data from API or fallback to mock data
+  const recentActivity = recentAgentActivity?.map((activity) => ({
+    id: activity.id,
+    agent: activity.agent,
+    action: activity.action,
+    time: new Date(activity.createdAt).toLocaleTimeString(),
+    status: 'completed',
+    type: 'agent'
+  })) || [
+    { id: 1, agent: 'Content Agent', action: 'System initialized', time: 'Just now', status: 'completed', type: 'content' },
+    { id: 2, agent: 'Ad Agent', action: 'Monitoring setup', time: 'Just now', status: 'completed', type: 'ads' },
+    { id: 3, agent: 'Trend Agent', action: 'Data collection started', time: 'Just now', status: 'completed', type: 'trends' },
+    { id: 4, agent: 'Insight Agent', action: 'Analytics ready', time: 'Just now', status: 'completed', type: 'analytics' },
   ];
 
   const filteredAgents = agents.filter(agent => 
@@ -109,27 +123,18 @@ export default function Dashboard() {
               <ChartBarIcon className="h-5 w-5 mr-3" />
               Overview
             </button>
-            <button
-              onClick={() => setActiveTab('agents')}
-              className={`nav-item w-full ${activeTab === 'agents' ? 'active' : ''}`}
-            >
+            <Link href="/agents" className="nav-item w-full">
               <SparklesIcon className="h-5 w-5 mr-3" />
               AI Agents
-            </button>
-            <button
-              onClick={() => setActiveTab('campaigns')}
-              className={`nav-item w-full ${activeTab === 'campaigns' ? 'active' : ''}`}
-            >
+            </Link>
+            <Link href="/campaigns" className="nav-item w-full">
               <MegaphoneIcon className="h-5 w-5 mr-3" />
               Campaigns
-            </button>
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`nav-item w-full ${activeTab === 'analytics' ? 'active' : ''}`}
-            >
+            </Link>
+            <Link href="/analytics" className="nav-item w-full">
               <ArrowTrendingUpIcon className="h-5 w-5 mr-3" />
               Analytics
-            </button>
+            </Link>
           </nav>
         </aside>
 
