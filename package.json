@@ -4,10 +4,11 @@
   "private": true,
   "description": "NeonHub v0.2 - Production-ready monorepo with TypeScript, testing, and CI/CD",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "npm run build --workspaces --if-present",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
@@ -17,15 +18,19 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist coverage .nyc_output",
+    "clean": "rm -rf dist coverage .nyc_output && npm run clean --workspaces --if-present",
     "dev": "npm run build && npm run test",
-    "ci": "npm run lint && npm run type-check && npm run test && npm run test:e2e"
+    "ci": "npm run lint && npm run type-check && npm run test && npm run test:e2e",
+    "db:generate": "npm run db:generate --workspace=@neon/data-model",
+    "db:push": "npm run db:push --workspace=@neon/data-model", 
+    "db:migrate": "npm run db:migrate --workspace=@neon/data-model"
   },
   "keywords": [
     "monorepo",
     "typescript",
     "neonhub",
-    "production-ready"
+    "production-ready",
+    "ai-marketing"
   ],
   "author": "NeonHub Team",
   "license": "MIT",

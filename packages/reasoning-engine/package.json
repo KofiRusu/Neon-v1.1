@@ -1,0 +1,24 @@
+{
+  "name": "@neon/reasoning-engine",
+  "version": "1.0.0",
+  "description": "Auto-optimization logic and reasoning engine for NeonHub",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@neon/data-model": "*",
+    "@neon/types": "*",
+    "@neon/utils": "*"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.2"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+} 

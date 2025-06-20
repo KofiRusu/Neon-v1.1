@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  campaigns Campaign[]
+
+  @@map("users")
+}
+
+model Campaign {
+  id        String         @id @default(cuid())
+  name      String
+  type      CampaignType
+  status    CampaignStatus @default(DRAFT)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  // Foreign keys
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  metrics CampaignMetric[]
+
+  @@map("campaigns")
+}
+
+model CampaignMetric {
+  id          String   @id @default(cuid())
+  impressions Int      @default(0)
+  ctr         Float    @default(0.0) // Click-through rate
+  conversions Int      @default(0)
+  timestamp   DateTime @default(now())
+
+  // Foreign keys
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("campaign_metrics")
+}
+
+model AIEventLog {
+  id        String   @id @default(cuid())
+  agent     String   // Agent name (ContentAgent, AdAgent, etc.)
+  action    String   // Action performed
+  metadata  Json?    // Additional data about the event
+  createdAt DateTime @default(now())
+
+  @@map("ai_event_logs")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum CampaignType {
+  CONTENT_GENERATION
+  AD_OPTIMIZATION
+  B2B_OUTREACH
+  TREND_ANALYSIS
+  DESIGN_GENERATION
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  FAILED
+} 
