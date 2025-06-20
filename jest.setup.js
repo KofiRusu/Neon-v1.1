@@ -15,13 +15,15 @@ global.console = {
 // Global test utilities
 global.testUtils = {
   // Add common test utilities here
-  delay: (ms) => new Promise(resolve => setTimeout(resolve, ms)),
-  
+  delay: ms => new Promise(resolve => setTimeout(resolve, ms)),
+
   // Mock async function
-  mockAsync: (returnValue, delay = 0) => 
-    jest.fn().mockImplementation(() => 
-      new Promise(resolve => setTimeout(() => resolve(returnValue), delay))
-    ),
+  mockAsync: (returnValue, delay = 0) =>
+    jest
+      .fn()
+      .mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve(returnValue), delay))
+      ),
 };
 
 // Setup for specific test environments
@@ -33,4 +35,4 @@ beforeEach(() => {
 afterEach(() => {
   // Cleanup after each test
   jest.restoreAllMocks();
-}); 
+});

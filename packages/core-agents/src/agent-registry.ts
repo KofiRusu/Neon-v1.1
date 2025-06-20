@@ -21,8 +21,12 @@ export function registerAllAgents(): void {
   AgentFactory.registerAgent('trend', TrendAgent);
   AgentFactory.registerAgent('insight', InsightAgent);
   AgentFactory.registerAgent('design', DesignAgent);
-  
-  logger.info('Agent registry initialized', { agentTypes: AgentFactory.getAvailableTypes() }, 'AgentRegistry');
+
+  logger.info(
+    'Agent registry initialized',
+    { agentTypes: AgentFactory.getAvailableTypes() },
+    'AgentRegistry'
+  );
 }
 
 /**
@@ -37,4 +41,4 @@ export function getRegisteredAgentTypes(): string[] {
  */
 export function isAgentTypeRegistered(type: string): boolean {
   return AgentFactory.getAvailableTypes().includes(type);
-} 
+}

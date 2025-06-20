@@ -1,6 +1,6 @@
 /**
  * Core AI Agents for NeonHub Marketing System
- * 
+ *
  * This package contains the implementation of all AI agents:
  * - ContentAgent: Generates posts, captions, emails, and product copy
  * - AdAgent: Runs A/B tests, reallocates budgets, optimizes creative
@@ -26,15 +26,15 @@ export * from './agents/design-agent';
 export { AgentManager, AgentFactory } from './base-agent';
 
 // Types and Interfaces
-export type {
-  AgentPayload,
-  AgentResult,
-  AgentStatus,
-  BaseAgent,
-} from './base-agent';
+export type { AgentPayload, AgentResult, AgentStatus, BaseAgent } from './base-agent';
 
 // Agent Registry
 export { registerAllAgents } from './agent-registry';
 
 // Quality Control Agent
-export { AuditAgent, type ContentScore, type HallucinationResult, type AgentPerformanceData } from './auditAgent'
+export {
+  AuditAgent,
+  type ContentScore,
+  type HallucinationResult,
+  type AgentPerformanceData,
+} from './auditAgent';

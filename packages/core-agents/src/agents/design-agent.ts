@@ -8,14 +8,14 @@ export class DesignAgent extends AbstractAgent {
       'optimize_layouts',
       'generate_templates',
       'brand_consistency',
-      'responsive_design'
+      'responsive_design',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'create_graphics':
           return await this.createGraphics(context);
@@ -42,9 +42,9 @@ export class DesignAgent extends AbstractAgent {
         specifications: {
           width: 1200,
           height: 630,
-          format: 'PNG'
-        }
-      }
+          format: 'PNG',
+        },
+      },
     };
   }
 
@@ -57,9 +57,9 @@ export class DesignAgent extends AbstractAgent {
         specifications: {
           width: 1920,
           height: 1080,
-          format: 'SVG'
-        }
-      }
+          format: 'SVG',
+        },
+      },
     };
   }
 
@@ -72,9 +72,9 @@ export class DesignAgent extends AbstractAgent {
         specifications: {
           width: 1200,
           height: 800,
-          format: 'PSD'
-        }
-      }
+          format: 'PSD',
+        },
+      },
     };
   }
 
@@ -87,9 +87,9 @@ export class DesignAgent extends AbstractAgent {
         specifications: {
           width: 800,
           height: 600,
-          format: 'PNG'
-        }
-      }
+          format: 'PNG',
+        },
+      },
     };
   }
 
@@ -102,9 +102,9 @@ export class DesignAgent extends AbstractAgent {
         specifications: {
           width: 1920,
           height: 1080,
-          format: 'HTML'
-        }
-      }
+          format: 'HTML',
+        },
+      },
     };
   }
-} 
+}

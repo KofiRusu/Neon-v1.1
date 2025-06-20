@@ -1,11 +1,11 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { 
-  AgentContextOrUndefined, 
-  AdOptimizationResult, 
-  BudgetAllocationResult, 
-  ABTestResult, 
-  PerformanceMetrics, 
-  BiddingAdjustment 
+import {
+  AgentContextOrUndefined,
+  AdOptimizationResult,
+  BudgetAllocationResult,
+  ABTestResult,
+  PerformanceMetrics,
+  BiddingAdjustment,
 } from '../types';
 
 export class AdAgent extends AbstractAgent {
@@ -15,14 +15,14 @@ export class AdAgent extends AbstractAgent {
       'manage_budget',
       'a_b_test_ads',
       'analyze_performance',
-      'adjust_bidding'
+      'adjust_bidding',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'optimize_ads':
           return await this.optimizeAds(context);
@@ -46,9 +46,9 @@ export class AdAgent extends AbstractAgent {
       optimizations: [
         {
           adId: 'ad_123',
-          suggestions: ['Increase bid', 'Update creative', 'Target new audience']
-        }
-      ]
+          suggestions: ['Increase bid', 'Update creative', 'Target new audience'],
+        },
+      ],
     };
   }
 
@@ -58,8 +58,8 @@ export class AdAgent extends AbstractAgent {
       budgetAllocation: {
         facebook: 40,
         google: 35,
-        tiktok: 25
-      }
+        tiktok: 25,
+      },
     };
   }
 
@@ -69,8 +69,8 @@ export class AdAgent extends AbstractAgent {
       testId: `ad_test_${Date.now()}`,
       variants: [
         { id: 'A', creative: 'Creative A', bid: 1.5 },
-        { id: 'B', creative: 'Creative B', bid: 2.0 }
-      ]
+        { id: 'B', creative: 'Creative B', bid: 2.0 },
+      ],
     };
   }
 
@@ -80,8 +80,8 @@ export class AdAgent extends AbstractAgent {
       metrics: {
         ctr: 2.5,
         cpc: 1.2,
-        roas: 3.8
-      }
+        roas: 3.8,
+      },
     };
   }
 
@@ -90,8 +90,8 @@ export class AdAgent extends AbstractAgent {
     return {
       newBids: {
         ad_123: 2.5,
-        ad_456: 1.8
-      }
+        ad_456: 1.8,
+      },
     };
   }
-} 
+}

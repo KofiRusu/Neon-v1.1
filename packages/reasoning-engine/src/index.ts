@@ -1,6 +1,6 @@
 /**
  * NeonHub Reasoning Engine
- * 
+ *
  * Core orchestration and decision-making engine that:
  * - Coordinates AI agent activities
  * - Makes strategic marketing decisions
@@ -48,7 +48,7 @@ export class OptimizationEngine {
    */
   static async analyzeCampaign(campaignId: string): Promise<string[]> {
     // Placeholder implementation
-    return [`Campaign ${campaignId} analysis pending`]
+    return [`Campaign ${campaignId} analysis pending`];
   }
 }
 
@@ -60,7 +60,7 @@ export class TrendDetector {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static async detectTrends(_params: TrendDetectionParams): Promise<unknown[]> {
     // Placeholder implementation
-    return []
+    return [];
   }
 }
 
@@ -72,7 +72,7 @@ export class ABTestEngine {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static async createTest(_config: ABTestConfig): Promise<string> {
     // Placeholder implementation
-    return 'test-id-placeholder'
+    return 'test-id-placeholder';
   }
 }
 
@@ -82,14 +82,14 @@ export const MetricsAnalyzer = {
    * Calculates conversion rate from metrics
    */
   calculateConversionRate: (impressions: number, conversions: number): number => {
-    return impressions > 0 ? conversions / impressions : 0
+    return impressions > 0 ? conversions / impressions : 0;
   },
 
   /**
    * Determines if metrics show significant improvement
    */
   isSignificantImprovement: (before: number, after: number, threshold = 0.05): boolean => {
-    return (after - before) / before > threshold
+    return (after - before) / before > threshold;
   },
 
   /**
@@ -99,9 +99,9 @@ export const MetricsAnalyzer = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   calculateSignificance: (_controlMetrics: number[], _testMetrics: number[]): number => {
     // Placeholder - should implement proper statistical test
-    return 0.95
-  }
-}
+    return 0.95;
+  },
+};
 
 // Core Types and Schemas
 export const CampaignObjectiveSchema = z.object({
@@ -155,13 +155,13 @@ export class ReasoningEngine {
   }> {
     // Analyze current performance vs targets
     const performanceGaps = this.analyzePerformanceGaps(context);
-    
+
     // Prioritize objectives based on urgency and impact
     const prioritizedObjectives = this.prioritizeObjectives(objectives, context);
-    
+
     // Generate action plan
     const actions = await this.generateActionPlan(prioritizedObjectives, context);
-    
+
     // Calculate confidence based on historical performance
     const confidence = this.calculateDecisionConfidence(actions, context);
 
@@ -188,13 +188,13 @@ export class ReasoningEngine {
   }> {
     // Phase planning
     const phases = this.planCampaignPhases(objectives, constraints);
-    
+
     // Resource allocation optimization
     const resourceAllocation = this.optimizeResourceAllocation(objectives, constraints);
-    
+
     // Timeline generation
     const timeline = this.generateCampaignTimeline(phases, constraints);
-    
+
     // Risk assessment
     const riskAssessment = this.assessCampaignRisks(objectives, constraints);
 
@@ -220,10 +220,10 @@ export class ReasoningEngine {
   }> {
     // Task dependency analysis
     const dependencyGraph = this.buildTaskDependencyGraph(tasks);
-    
+
     // Agent capability matching
     const assignments = this.assignTasksToAgents(availableAgents, tasks);
-    
+
     // Execution optimization
     const executionPlan = this.optimizeExecutionPlan(assignments, dependencyGraph);
 
@@ -248,13 +248,13 @@ export class ReasoningEngine {
   }> {
     // Identify optimization opportunities
     const opportunities = this.identifyOptimizationOpportunities(currentMetrics, targetMetrics);
-    
+
     // Generate optimization strategies
     const optimizations = await this.generateOptimizationStrategies(opportunities);
-    
+
     // Predict impact
     const expectedImpact = this.predictOptimizationImpact(optimizations, currentMetrics);
-    
+
     // Create implementation plan
     const implementationPlan = this.createImplementationPlan(optimizations);
 
@@ -268,29 +268,29 @@ export class ReasoningEngine {
   // Private helper methods
   private analyzePerformanceGaps(context: DecisionContext): Record<string, number> {
     const gaps: Record<string, number> = {};
-    
+
     for (const [metric, current] of Object.entries(context.currentMetrics)) {
       const target = context.targetMetrics[metric];
       if (target) {
         gaps[metric] = (target - current) / target; // Gap percentage
       }
     }
-    
+
     return gaps;
   }
 
   private prioritizeObjectives(
-    objectives: CampaignObjective[], 
+    objectives: CampaignObjective[],
     context: DecisionContext
   ): CampaignObjective[] {
     return objectives.sort((a, b) => {
       // Priority weight
       const priorityWeight = { critical: 4, high: 3, medium: 2, low: 1 };
       const priorityScore = priorityWeight[b.priority] - priorityWeight[a.priority];
-      
+
       // Time urgency weight
       const timeWeight = context.timeConstraints.timeRemaining < 7 ? 2 : 1;
-      
+
       return priorityScore * timeWeight;
     });
   }
@@ -300,24 +300,24 @@ export class ReasoningEngine {
     context: DecisionContext
   ): Promise<AgentTask[]> {
     const actions: AgentTask[] = [];
-    
+
     for (const objective of objectives) {
       switch (objective.type) {
         case 'brand_awareness':
-          actions.push(...await this.generateBrandAwarenessActions(objective, context));
+          actions.push(...(await this.generateBrandAwarenessActions(objective, context)));
           break;
         case 'lead_generation':
-          actions.push(...await this.generateLeadGenerationActions(objective, context));
+          actions.push(...(await this.generateLeadGenerationActions(objective, context)));
           break;
         case 'sales_conversion':
-          actions.push(...await this.generateSalesConversionActions(objective, context));
+          actions.push(...(await this.generateSalesConversionActions(objective, context)));
           break;
         case 'engagement':
-          actions.push(...await this.generateEngagementActions(objective, context));
+          actions.push(...(await this.generateEngagementActions(objective, context)));
           break;
       }
     }
-    
+
     return actions;
   }
 
@@ -339,7 +339,7 @@ export class ReasoningEngine {
         priority: objective.priority,
         deadline: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 hours
         context: { objective },
-      }
+      },
     ];
   }
 
@@ -361,7 +361,7 @@ export class ReasoningEngine {
         priority: objective.priority,
         deadline: new Date(Date.now() + 36 * 60 * 60 * 1000), // 36 hours
         context: { objective },
-      }
+      },
     ];
   }
 
@@ -383,7 +383,7 @@ export class ReasoningEngine {
         priority: objective.priority,
         deadline: new Date(Date.now() + 12 * 60 * 60 * 1000),
         context: { objective },
-      }
+      },
     ];
   }
 
@@ -405,33 +405,31 @@ export class ReasoningEngine {
         priority: objective.priority,
         deadline: new Date(Date.now() + 36 * 60 * 60 * 1000),
         context: { objective },
-      }
+      },
     ];
   }
 
   private calculateDecisionConfidence(actions: AgentTask[], context: DecisionContext): number {
     // Base confidence on historical performance and resource availability
     let confidence = 0.7; // Base confidence
-    
+
     // Adjust based on resource availability
-    const resourceRatio = Object.values(context.availableResources).reduce((a, b) => a + b, 0) / actions.length;
+    const resourceRatio =
+      Object.values(context.availableResources).reduce((a, b) => a + b, 0) / actions.length;
     confidence += Math.min(resourceRatio * 0.1, 0.2);
-    
+
     // Adjust based on time constraints
     if (context.timeConstraints.timeRemaining > 7) {
       confidence += 0.1;
     }
-    
+
     return Math.min(confidence, 1.0);
   }
 
-  private formulateDecision(
-    objectives: CampaignObjective[],
-    gaps: Record<string, number>
-  ): string {
+  private formulateDecision(objectives: CampaignObjective[], gaps: Record<string, number>): string {
     const primaryObjective = objectives[0];
-    const largestGap = Object.entries(gaps).sort(([,a], [,b]) => b - a)[0];
-    
+    const largestGap = Object.entries(gaps).sort(([, a], [, b]) => b - a)[0];
+
     return `Focus on ${primaryObjective.type} with immediate attention to ${largestGap[0]} improvement`;
   }
 
@@ -440,11 +438,20 @@ export class ReasoningEngine {
     objectives: CampaignObjective[]
   ): string[] {
     const reasoning = [];
-    
-    reasoning.push(`Current performance gaps: ${Object.entries(gaps).map(([k, v]) => `${k}: ${(v * 100).toFixed(1)}%`).join(', ')}`);
-    reasoning.push(`Priority objectives: ${objectives.slice(0, 3).map(o => o.type).join(', ')}`);
+
+    reasoning.push(
+      `Current performance gaps: ${Object.entries(gaps)
+        .map(([k, v]) => `${k}: ${(v * 100).toFixed(1)}%`)
+        .join(', ')}`
+    );
+    reasoning.push(
+      `Priority objectives: ${objectives
+        .slice(0, 3)
+        .map(o => o.type)
+        .join(', ')}`
+    );
     reasoning.push('Action plan optimized for maximum impact within available resources');
-    
+
     return reasoning;
   }
 
@@ -463,7 +470,7 @@ export class ReasoningEngine {
       {
         name: 'Execution',
         duration: Math.ceil(constraints.timeline * 0.6),
-        objectives: objectives,
+        objectives,
         budget: constraints.budget * 0.7,
       },
       {
@@ -471,7 +478,7 @@ export class ReasoningEngine {
         duration: Math.ceil(constraints.timeline * 0.2),
         objectives: objectives.filter(o => o.type === 'sales_conversion'),
         budget: constraints.budget * 0.15,
-      }
+      },
     ];
   }
 
@@ -501,7 +508,7 @@ export class ReasoningEngine {
   ): CampaignTimeline {
     const startDate = new Date();
     const milestones = [];
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
 
     for (const phase of phases) {
       milestones.push({
@@ -538,11 +545,11 @@ export class ReasoningEngine {
 
   private buildTaskDependencyGraph(tasks: AgentTask[]): Map<string, string[]> {
     const graph = new Map<string, string[]>();
-    
+
     for (const task of tasks) {
-      graph.set(task.agentId + ':' + task.task, task.dependencies || []);
+      graph.set(`${task.agentId}:${task.task}`, task.dependencies || []);
     }
-    
+
     return graph;
   }
 
@@ -551,19 +558,19 @@ export class ReasoningEngine {
     tasks: AgentTask[]
   ): Map<string, AgentTask[]> {
     const assignments = new Map<string, AgentTask[]>();
-    
+
     // Initialize assignments
     for (const agent of availableAgents) {
       assignments.set(agent, []);
     }
-    
+
     // Assign tasks based on agent capabilities
     for (const task of tasks) {
       if (availableAgents.includes(task.agentId)) {
         assignments.get(task.agentId)?.push(task);
       }
     }
-    
+
     return assignments;
   }
 
@@ -578,18 +585,18 @@ export class ReasoningEngine {
     // Simplified execution optimization
     const order = Array.from(assignments.keys());
     const parallelGroups: AgentTask[][] = [];
-    
+
     // Group tasks that can run in parallel
     for (const [agent, tasks] of assignments) {
       if (tasks.length > 0) {
         parallelGroups.push(tasks);
       }
     }
-    
+
     // Calculate estimated completion
     const estimatedCompletion = new Date();
     estimatedCompletion.setDate(estimatedCompletion.getDate() + 7); // Default 7 days
-    
+
     return {
       order,
       parallelGroups,
@@ -602,7 +609,7 @@ export class ReasoningEngine {
     target: Record<string, number>
   ): OptimizationOpportunity[] {
     const opportunities: OptimizationOpportunity[] = [];
-    
+
     for (const [metric, currentValue] of Object.entries(current)) {
       const targetValue = target[metric];
       if (targetValue && currentValue < targetValue) {
@@ -615,7 +622,7 @@ export class ReasoningEngine {
         });
       }
     }
-    
+
     return opportunities.sort((a, b) => b.gap - a.gap);
   }
 
@@ -633,12 +640,12 @@ export class ReasoningEngine {
 
   private getOptimizationStrategy(metric: string): string {
     const strategies: Record<string, string> = {
-      'conversion_rate': 'A/B testing and funnel optimization',
-      'click_through_rate': 'Ad creative and targeting improvements',
-      'engagement_rate': 'Content quality and timing optimization',
-      'cost_per_acquisition': 'Budget reallocation and bid optimization',
+      conversion_rate: 'A/B testing and funnel optimization',
+      click_through_rate: 'Ad creative and targeting improvements',
+      engagement_rate: 'Content quality and timing optimization',
+      cost_per_acquisition: 'Budget reallocation and bid optimization',
     };
-    
+
     return strategies[metric] || 'Data-driven optimization approach';
   }
 
@@ -647,12 +654,12 @@ export class ReasoningEngine {
     currentMetrics: Record<string, number>
   ): Record<string, number> {
     const impact: Record<string, number> = {};
-    
+
     for (const opt of optimizations) {
       const current = currentMetrics[opt.metric] || 0;
       impact[opt.metric] = current + opt.expectedImprovement;
     }
-    
+
     return impact;
   }
 
@@ -668,14 +675,14 @@ export class ReasoningEngine {
 
   private getResponsibleAgent(metric: string): string {
     const agentMapping: Record<string, string> = {
-      'conversion_rate': 'ad-agent',
-      'click_through_rate': 'ad-agent',
-      'engagement_rate': 'content-agent',
-      'cost_per_acquisition': 'ad-agent',
-      'brand_awareness': 'content-agent',
-      'lead_quality': 'outreach-agent',
+      conversion_rate: 'ad-agent',
+      click_through_rate: 'ad-agent',
+      engagement_rate: 'content-agent',
+      cost_per_acquisition: 'ad-agent',
+      brand_awareness: 'content-agent',
+      lead_quality: 'outreach-agent',
     };
-    
+
     return agentMapping[metric] || 'insight-agent';
   }
 }
@@ -731,8 +738,4 @@ interface Optimization {
 export const reasoningEngine = new ReasoningEngine();
 
 // Export utility functions for testing and integration
-export {
-  CampaignObjectiveSchema,
-  AgentTaskSchema,
-  DecisionContextSchema,
-}; 
+export { CampaignObjectiveSchema, AgentTaskSchema, DecisionContextSchema };

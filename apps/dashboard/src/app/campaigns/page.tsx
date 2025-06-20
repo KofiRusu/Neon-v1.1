@@ -1,46 +1,55 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { trpc } from '../../lib/trpc'
-import { MegaphoneIcon, PlusIcon, ChartBarIcon, PlayIcon, PauseIcon, StopIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { useState, useEffect } from 'react';
+import { trpc } from '../../lib/trpc';
+import {
+  MegaphoneIcon,
+  PlusIcon,
+  ChartBarIcon,
+  PlayIcon,
+  PauseIcon,
+  StopIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 
 interface Campaign {
-  id: string
-  name: string
-  type: 'social_media' | 'email' | 'display' | 'search' | 'video'
-  status: 'active' | 'paused' | 'completed' | 'draft'
-  budget: number
-  spent: number
-  roi: number
-  impressions: number
-  clicks: number
-  conversions: number
-  startDate: string
-  endDate: string
-  targetAudience: string
-  agentsAssigned: string[]
-  createdAt: string
-  lastModified: string
+  id: string;
+  name: string;
+  type: 'social_media' | 'email' | 'display' | 'search' | 'video';
+  status: 'active' | 'paused' | 'completed' | 'draft';
+  budget: number;
+  spent: number;
+  roi: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  startDate: string;
+  endDate: string;
+  targetAudience: string;
+  agentsAssigned: string[];
+  createdAt: string;
+  lastModified: string;
 }
 
 export default function CampaignsPage(): JSX.Element {
-  const { data: campaigns, isLoading } = trpc.campaign.getAll.useQuery({ limit: 20 })
-  const { data: stats } = trpc.campaign.getStats.useQuery()
-  const [filteredCampaigns, setFilteredCampaigns] = useState<Campaign[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | Campaign['status']>('all')
-  const [typeFilter, setTypeFilter] = useState<'all' | Campaign['type']>('all')
-  const [sortBy, setSortBy] = useState<'name' | 'roi' | 'budget' | 'created'>('created')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-  const [showNewCampaignModal, setShowNewCampaignModal] = useState(false)
+  const { data: campaigns, isLoading } = trpc.campaign.getAll.useQuery({ limit: 20 });
+  const { data: stats } = trpc.campaign.getStats.useQuery();
+  const [filteredCampaigns, setFilteredCampaigns] = useState<Campaign[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | Campaign['status']>('all');
+  const [typeFilter, setTypeFilter] = useState<'all' | Campaign['type']>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'roi' | 'budget' | 'created'>('created');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showNewCampaignModal, setShowNewCampaignModal] = useState(false);
 
   useEffect(() => {
     const fetchCampaigns = async (): Promise<void> => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         const mockCampaigns: Campaign[] = [
           {
             id: 'camp-1',
@@ -58,7 +67,7 @@ export default function CampaignsPage(): JSX.Element {
             targetAudience: 'Young Adults 18-35',
             agentsAssigned: ['Content Agent', 'Design Agent', 'Trend Agent'],
             createdAt: '2024-05-15',
-            lastModified: '2024-12-19'
+            lastModified: '2024-12-19',
           },
           {
             id: 'camp-2',
@@ -76,7 +85,7 @@ export default function CampaignsPage(): JSX.Element {
             targetAudience: 'Business Decision Makers',
             agentsAssigned: ['Outreach Agent', 'Content Agent'],
             createdAt: '2024-09-15',
-            lastModified: '2024-12-18'
+            lastModified: '2024-12-18',
           },
           {
             id: 'camp-3',
@@ -94,7 +103,7 @@ export default function CampaignsPage(): JSX.Element {
             targetAudience: 'Holiday Shoppers',
             agentsAssigned: ['Ad Agent', 'Design Agent', 'Insight Agent'],
             createdAt: '2024-11-01',
-            lastModified: '2024-12-01'
+            lastModified: '2024-12-01',
           },
           {
             id: 'camp-4',
@@ -112,7 +121,7 @@ export default function CampaignsPage(): JSX.Element {
             targetAudience: 'Fitness Enthusiasts',
             agentsAssigned: ['Content Agent', 'Design Agent'],
             createdAt: '2024-12-10',
-            lastModified: '2024-12-15'
+            lastModified: '2024-12-15',
           },
           {
             id: 'camp-5',
@@ -130,114 +139,125 @@ export default function CampaignsPage(): JSX.Element {
             targetAudience: 'Fashion Forward Consumers',
             agentsAssigned: ['Ad Agent', 'Trend Agent'],
             createdAt: '2024-02-15',
-            lastModified: '2024-04-20'
-          }
-        ]
-        
-        setFilteredCampaigns(mockCampaigns)
-      } catch (error) {
-        console.error('Error fetching campaigns:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+            lastModified: '2024-04-20',
+          },
+        ];
 
-    fetchCampaigns()
-  }, [])
+        setFilteredCampaigns(mockCampaigns);
+      } catch (error) {
+        logger.error('Error fetching campaigns:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCampaigns();
+  }, []);
 
   useEffect(() => {
-    let filtered = campaigns?.filter(campaign => {
-      const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           campaign.targetAudience.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter
-      const matchesType = typeFilter === 'all' || campaign.type === typeFilter
-      
-      return matchesSearch && matchesStatus && matchesType
-    }) || []
+    const filtered =
+      campaigns?.filter(campaign => {
+        const matchesSearch =
+          campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          campaign.targetAudience.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter;
+        const matchesType = typeFilter === 'all' || campaign.type === typeFilter;
+
+        return matchesSearch && matchesStatus && matchesType;
+      }) || [];
 
     // Sort campaigns
     filtered.sort((a, b) => {
-      let valueA: string | number
-      let valueB: string | number
-      
+      let valueA: string | number;
+      let valueB: string | number;
+
       switch (sortBy) {
         case 'name':
-          valueA = a.name.toLowerCase()
-          valueB = b.name.toLowerCase()
-          break
+          valueA = a.name.toLowerCase();
+          valueB = b.name.toLowerCase();
+          break;
         case 'roi':
-          valueA = a.roi
-          valueB = b.roi
-          break
+          valueA = a.roi;
+          valueB = b.roi;
+          break;
         case 'budget':
-          valueA = a.budget
-          valueB = b.budget
-          break
+          valueA = a.budget;
+          valueB = b.budget;
+          break;
         case 'created':
-          valueA = new Date(a.createdAt).getTime()
-          valueB = new Date(b.createdAt).getTime()
-          break
+          valueA = new Date(a.createdAt).getTime();
+          valueB = new Date(b.createdAt).getTime();
+          break;
         default:
-          valueA = a.name.toLowerCase()
-          valueB = b.name.toLowerCase()
+          valueA = a.name.toLowerCase();
+          valueB = b.name.toLowerCase();
       }
 
       if (sortOrder === 'asc') {
-        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0
+        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
       } else {
-        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0
+        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
       }
-    })
+    });
 
-    setFilteredCampaigns(filtered)
-  }, [campaigns, searchTerm, statusFilter, typeFilter, sortBy, sortOrder])
+    setFilteredCampaigns(filtered);
+  }, [campaigns, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]);
 
-  const handleStatusChange = async (campaignId: string, newStatus: Campaign['status']): Promise<void> => {
+  const handleStatusChange = async (
+    campaignId: string,
+    newStatus: Campaign['status']
+  ): Promise<void> => {
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setFilteredCampaigns(prev => prev.map(campaign => 
-        campaign.id === campaignId 
-          ? { ...campaign, status: newStatus, lastModified: new Date().toISOString().split('T')[0] }
-          : campaign
-      ))
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      setFilteredCampaigns(prev =>
+        prev.map(campaign =>
+          campaign.id === campaignId
+            ? {
+                ...campaign,
+                status: newStatus,
+                lastModified: new Date().toISOString().split('T')[0],
+              }
+            : campaign
+        )
+      );
     } catch (error) {
-      console.error('Error updating campaign status:', error)
+      logger.error('Error updating campaign status:', error);
     }
-  }
+  };
 
   const getStatusColor = (status: Campaign['status']): string => {
     switch (status) {
       case 'active':
-        return 'bg-green-500/20 text-green-400 border-green-500/30'
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
       case 'paused':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'completed':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
       case 'draft':
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
-  }
+  };
 
   const getTypeIcon = (type: Campaign['type']): string => {
     switch (type) {
       case 'social_media':
-        return '📱'
+        return '📱';
       case 'email':
-        return '📧'
+        return '📧';
       case 'display':
-        return '🖼️'
+        return '🖼️';
       case 'search':
-        return '🔍'
+        return '🔍';
       case 'video':
-        return '🎥'
+        return '🎥';
       default:
-        return '��'
+        return '��';
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -248,7 +268,7 @@ export default function CampaignsPage(): JSX.Element {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -258,7 +278,9 @@ export default function CampaignsPage(): JSX.Element {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">Campaign Management</h1>
-            <p className="text-purple-200">Orchestrate and optimize your AI-driven marketing campaigns</p>
+            <p className="text-purple-200">
+              Orchestrate and optimize your AI-driven marketing campaigns
+            </p>
           </div>
           <button
             onClick={() => setShowNewCampaignModal(true)}
@@ -304,14 +326,14 @@ export default function CampaignsPage(): JSX.Element {
                 type="text"
                 placeholder="Search campaigns..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
             <div>
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+                onChange={e => setStatusFilter(e.target.value as typeof statusFilter)}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="all">All Status</option>
@@ -324,7 +346,7 @@ export default function CampaignsPage(): JSX.Element {
             <div>
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
+                onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="all">All Types</option>
@@ -338,7 +360,7 @@ export default function CampaignsPage(): JSX.Element {
             <div>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                onChange={e => setSortBy(e.target.value as typeof sortBy)}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="created">Sort by Created</option>
@@ -360,7 +382,7 @@ export default function CampaignsPage(): JSX.Element {
 
         {/* Campaigns Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredCampaigns.map((campaign) => (
+          {filteredCampaigns.map(campaign => (
             <CampaignCard
               key={campaign.id}
               campaign={campaign}
@@ -396,14 +418,14 @@ export default function CampaignsPage(): JSX.Element {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 interface SummaryCardProps {
-  title: string
-  value: string
-  subtext: string
-  icon: string
+  title: string;
+  value: string;
+  subtext: string;
+  icon: string;
 }
 
 function SummaryCard({ title, value, subtext, icon }: SummaryCardProps): JSX.Element {
@@ -416,19 +438,24 @@ function SummaryCard({ title, value, subtext, icon }: SummaryCardProps): JSX.Ele
       <p className="text-2xl font-bold text-white mt-1">{value}</p>
       <p className="text-purple-300 text-xs mt-1">{subtext}</p>
     </div>
-  )
+  );
 }
 
 interface CampaignCardProps {
-  campaign: Campaign
-  onStatusChange: (id: string, status: Campaign['status']) => Promise<void>
-  getStatusColor: (status: Campaign['status']) => string
-  getTypeIcon: (type: Campaign['type']) => string
+  campaign: Campaign;
+  onStatusChange: (id: string, status: Campaign['status']) => Promise<void>;
+  getStatusColor: (status: Campaign['status']) => string;
+  getTypeIcon: (type: Campaign['type']) => string;
 }
 
-function CampaignCard({ campaign, onStatusChange, getStatusColor, getTypeIcon }: CampaignCardProps): JSX.Element {
-  const budgetUsed = (campaign.spent / campaign.budget) * 100
-  
+function CampaignCard({
+  campaign,
+  onStatusChange,
+  getStatusColor,
+  getTypeIcon,
+}: CampaignCardProps): JSX.Element {
+  const budgetUsed = (campaign.spent / campaign.budget) * 100;
+
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all">
       <div className="flex items-start justify-between mb-4">
@@ -439,7 +466,9 @@ function CampaignCard({ campaign, onStatusChange, getStatusColor, getTypeIcon }:
             <p className="text-purple-200 text-sm">{campaign.targetAudience}</p>
           </div>
         </div>
-        <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(campaign.status)}`}>
+        <div
+          className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(campaign.status)}`}
+        >
           {campaign.status}
         </div>
       </div>
@@ -447,7 +476,9 @@ function CampaignCard({ campaign, onStatusChange, getStatusColor, getTypeIcon }:
       <div className="space-y-3 mb-4">
         <div className="flex justify-between text-sm">
           <span className="text-purple-200">Budget Progress</span>
-          <span className="text-white">${campaign.spent.toLocaleString()} / ${campaign.budget.toLocaleString()}</span>
+          <span className="text-white">
+            ${campaign.spent.toLocaleString()} / ${campaign.budget.toLocaleString()}
+          </span>
         </div>
         <div className="w-full bg-white/20 rounded-full h-2">
           <div
@@ -476,10 +507,7 @@ function CampaignCard({ campaign, onStatusChange, getStatusColor, getTypeIcon }:
         <p className="text-purple-200 text-xs mb-2">Assigned Agents</p>
         <div className="flex flex-wrap gap-1">
           {campaign.agentsAssigned.map((agent, index) => (
-            <span
-              key={index}
-              className="px-2 py-1 bg-white/20 rounded-full text-xs text-white"
-            >
+            <span key={index} className="px-2 py-1 bg-white/20 rounded-full text-xs text-white">
               {agent}
             </span>
           ))}
@@ -513,5 +541,5 @@ function CampaignCard({ campaign, onStatusChange, getStatusColor, getTypeIcon }:
         </button>
       </div>
     </div>
-  )
-} 
+  );
+}

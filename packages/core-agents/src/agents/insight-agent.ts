@@ -8,14 +8,14 @@ export class InsightAgent extends AbstractAgent {
       'predict_trends',
       'customer_insights',
       'performance_analysis',
-      'market_research'
+      'market_research',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'analyze_data':
           return await this.analyzeData(context);
@@ -43,10 +43,10 @@ export class InsightAgent extends AbstractAgent {
           data: {
             pattern: 'increasing_engagement',
             timeframe: '30_days',
-            change: '+15%'
-          }
-        }
-      ]
+            change: '+15%',
+          },
+        },
+      ],
     };
   }
 
@@ -60,10 +60,10 @@ export class InsightAgent extends AbstractAgent {
           data: {
             trend: 'social_commerce',
             probability: 0.82,
-            timeline: '6_months'
-          }
-        }
-      ]
+            timeline: '6_months',
+          },
+        },
+      ],
     };
   }
 
@@ -77,10 +77,10 @@ export class InsightAgent extends AbstractAgent {
           data: {
             segment: 'young_professionals',
             behavior: 'mobile_first',
-            preference: 'video_content'
-          }
-        }
-      ]
+            preference: 'video_content',
+          },
+        },
+      ],
     };
   }
 
@@ -95,10 +95,10 @@ export class InsightAgent extends AbstractAgent {
             metric: 'conversion_rate',
             current: 2.3,
             benchmark: 1.8,
-            status: 'above_average'
-          }
-        }
-      ]
+            status: 'above_average',
+          },
+        },
+      ],
     };
   }
 
@@ -108,15 +108,15 @@ export class InsightAgent extends AbstractAgent {
       insights: [
         {
           type: 'market_analysis',
-          confidence: 0.80,
+          confidence: 0.8,
           data: {
             market: 'ai_marketing',
             size: '$15.7B',
             growth_rate: '27.4%',
-            key_players: ['Adobe', 'Salesforce', 'HubSpot']
-          }
-        }
-      ]
+            key_players: ['Adobe', 'Salesforce', 'HubSpot'],
+          },
+        },
+      ],
     };
   }
-} 
+}

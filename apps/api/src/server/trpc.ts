@@ -1,8 +1,8 @@
-import { initTRPC } from '@trpc/server'
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
-import superjson from 'superjson'
-import { ZodError } from 'zod'
-import { db } from '@neon/data-model'
+import { initTRPC } from '@trpc/server';
+import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
+import { db } from '@neon/data-model';
 
 /**
  * 1. CONTEXT
@@ -11,19 +11,21 @@ import { db } from '@neon/data-model'
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-export const createTRPCContext = (opts: CreateNextContextOptions): {
+export const createTRPCContext = (
+  opts: CreateNextContextOptions
+): {
   db: typeof db;
   req: CreateNextContextOptions['req'];
   res: CreateNextContextOptions['res'];
 } => {
-  const { req, res } = opts
+  const { req, res } = opts;
 
   return {
     db,
     req,
     res,
-  }
-}
+  };
+};
 
 /**
  * 2. INITIALIZATION
@@ -37,23 +39,22 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
-    }
+    };
   },
-})
+});
 
 /**
  * 3. ROUTER & PROCEDURE HELPERS
  *
  * These are helper functions to create routers and procedures
  */
-export const createTRPCRouter = t.router
-export const publicProcedure = t.procedure
+export const createTRPCRouter = t.router;
+export const publicProcedure = t.procedure;
 
 /**
  * Protected procedure that requires authentication
  * TODO: Add authentication middleware here
  */
-export const protectedProcedure = t.procedure 
+export const protectedProcedure = t.procedure;

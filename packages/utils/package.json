@@ -20,4 +20,4 @@
   "exports": {
     ".": "./src/index.ts"
   }
-} 
+}

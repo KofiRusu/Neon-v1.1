@@ -87,4 +87,4 @@ export interface TrendResult {
     volume: number;
     growth: number;
   }>;
-} 
+}

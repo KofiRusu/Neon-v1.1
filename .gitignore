@@ -90,3 +90,6 @@ temp/
 *.njsproj
 *.sln
 *.sw? 
+# CI/CD artifacts
+*.lcov
+junit.xml

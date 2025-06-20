@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
-import { ChartBarIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline'
+import { ChartBarIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 
 export default function AnalyticsPage(): JSX.Element {
   const [metrics, setMetrics] = useState({
@@ -11,15 +11,20 @@ export default function AnalyticsPage(): JSX.Element {
     conversionRate: 0,
     leadQuality: 0,
     agentPerformance: [] as Array<{ name: string; score: number; trend: number }>,
-    campaignMetrics: [] as Array<{ 
-      name: string; 
-      impressions: number; 
-      clicks: number; 
-      conversions: number; 
+    campaignMetrics: [] as Array<{
+      name: string;
+      impressions: number;
+      clicks: number;
+      conversions: number;
       roi: number;
       status: 'active' | 'paused' | 'completed';
     }>,
-    timeSeriesData: [] as Array<{ date: string; revenue: number; leads: number; conversions: number }>
+    timeSeriesData: [] as Array<{
+      date: string;
+      revenue: number;
+      leads: number;
+      conversions: number;
+    }>,
   });
 
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
@@ -31,7 +36,7 @@ export default function AnalyticsPage(): JSX.Element {
       try {
         // Simulate API call - replace with actual API integration
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         setMetrics({
           totalCampaigns: 24,
           activeAgents: 6,
@@ -44,38 +49,38 @@ export default function AnalyticsPage(): JSX.Element {
             { name: 'Outreach Agent', score: 88, trend: -1.2 },
             { name: 'Trend Agent', score: 96, trend: 8.1 },
             { name: 'Insight Agent', score: 92, trend: 3.5 },
-            { name: 'Design Agent', score: 89, trend: 4.2 }
+            { name: 'Design Agent', score: 89, trend: 4.2 },
           ],
           campaignMetrics: [
-            { 
-              name: 'Summer Neon Collection', 
-              impressions: 2450000, 
-              clicks: 83300, 
-              conversions: 2830, 
+            {
+              name: 'Summer Neon Collection',
+              impressions: 2450000,
+              clicks: 83300,
+              conversions: 2830,
               roi: 4.2,
-              status: 'active'
+              status: 'active',
             },
-            { 
-              name: 'B2B Outreach Q4', 
-              impressions: 890000, 
-              clicks: 34200, 
-              conversions: 1150, 
+            {
+              name: 'B2B Outreach Q4',
+              impressions: 890000,
+              clicks: 34200,
+              conversions: 1150,
               roi: 3.8,
-              status: 'active'
+              status: 'active',
             },
-            { 
-              name: 'Black Friday Special', 
-              impressions: 1850000, 
-              clicks: 67800, 
-              conversions: 3420, 
+            {
+              name: 'Black Friday Special',
+              impressions: 1850000,
+              clicks: 67800,
+              conversions: 3420,
               roi: 5.1,
-              status: 'completed'
-            }
+              status: 'completed',
+            },
           ],
-          timeSeriesData: generateTimeSeriesData(timeRange)
+          timeSeriesData: generateTimeSeriesData(timeRange),
         });
       } catch (error) {
-        console.error('Error fetching analytics:', error);
+        logger.error('Error fetching analytics:', error);
       } finally {
         setIsLoading(false);
       }
@@ -88,19 +93,19 @@ export default function AnalyticsPage(): JSX.Element {
     const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
     const data = [];
     const today = new Date();
-    
+
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      
+
       data.push({
         date: date.toISOString().split('T')[0],
         revenue: Math.floor(Math.random() * 5000) + 15000,
         leads: Math.floor(Math.random() * 100) + 50,
-        conversions: Math.floor(Math.random() * 50) + 20
+        conversions: Math.floor(Math.random() * 50) + 20,
       });
     }
-    
+
     return data;
   };
 
@@ -126,7 +131,7 @@ export default function AnalyticsPage(): JSX.Element {
             <p className="text-purple-200">Real-time insights into your AI marketing ecosystem</p>
           </div>
           <div className="flex space-x-2">
-            {(['7d', '30d', '90d'] as const).map((range) => (
+            {(['7d', '30d', '90d'] as const).map(range => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
@@ -219,10 +224,13 @@ export default function AnalyticsPage(): JSX.Element {
                       />
                     </div>
                     <span className="text-white font-semibold w-12">{agent.score}%</span>
-                    <span className={`text-sm font-medium ${
-                      agent.trend >= 0 ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {agent.trend >= 0 ? '+' : ''}{agent.trend}%
+                    <span
+                      className={`text-sm font-medium ${
+                        agent.trend >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}
+                    >
+                      {agent.trend >= 0 ? '+' : ''}
+                      {agent.trend}%
                     </span>
                   </div>
                 </div>
@@ -251,20 +259,30 @@ export default function AnalyticsPage(): JSX.Element {
                   <tr key={index} className="border-b border-white/10">
                     <td className="py-4 text-white font-medium">{campaign.name}</td>
                     <td className="py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        campaign.status === 'active' 
-                          ? 'bg-green-500/20 text-green-400' 
-                          : campaign.status === 'completed'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-yellow-500/20 text-yellow-400'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          campaign.status === 'active'
+                            ? 'bg-green-500/20 text-green-400'
+                            : campaign.status === 'completed'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-yellow-500/20 text-yellow-400'
+                        }`}
+                      >
                         {campaign.status}
                       </span>
                     </td>
-                    <td className="py-4 text-right text-white">{campaign.impressions.toLocaleString()}</td>
-                    <td className="py-4 text-right text-white">{campaign.clicks.toLocaleString()}</td>
-                    <td className="py-4 text-right text-white">{campaign.conversions.toLocaleString()}</td>
-                    <td className="py-4 text-right text-green-400 font-semibold">{campaign.roi}x</td>
+                    <td className="py-4 text-right text-white">
+                      {campaign.impressions.toLocaleString()}
+                    </td>
+                    <td className="py-4 text-right text-white">
+                      {campaign.clicks.toLocaleString()}
+                    </td>
+                    <td className="py-4 text-right text-white">
+                      {campaign.conversions.toLocaleString()}
+                    </td>
+                    <td className="py-4 text-right text-green-400 font-semibold">
+                      {campaign.roi}x
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -318,13 +336,13 @@ function Alert({ type, message }: AlertProps): JSX.Element {
   const colors = {
     success: 'bg-green-500/20 text-green-400 border-green-500/30',
     warning: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    info: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+    info: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   };
 
   const icons = {
     success: '✅',
     warning: '⚠️',
-    info: 'ℹ️'
+    info: 'ℹ️',
   };
 
   return (
@@ -333,4 +351,4 @@ function Alert({ type, message }: AlertProps): JSX.Element {
       <span className="text-sm">{message}</span>
     </div>
   );
-} 
+}

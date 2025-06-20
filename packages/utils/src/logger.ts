@@ -1,6 +1,7 @@
+import { logger } from '@/lib/logger';
 /**
  * NeonHub Logging Utility
- * 
+ *
  * Centralized logging system with different levels and output options
  */
 
@@ -37,7 +38,12 @@ class Logger {
     this.log('error', message, context, source);
   }
 
-  private log(level: LogLevel, message: string, context?: Record<string, unknown>, source?: string): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: Record<string, unknown>,
+    source?: string
+  ): void {
     const logEntry: LogEntry = {
       level,
       message,
@@ -67,7 +73,7 @@ class Logger {
     const timestamp = entry.timestamp.toISOString();
     const contextStr = entry.context ? ` | Context: ${JSON.stringify(entry.context)}` : '';
     const sourceStr = entry.source ? ` | Source: ${entry.source}` : '';
-    
+
     const logMessage = `[${timestamp}] ${entry.level.toUpperCase()}: ${entry.message}${sourceStr}${contextStr}`;
 
     // In production, you might want to send to external logging service
@@ -87,11 +93,11 @@ class Logger {
           break;
         case 'warn':
           // eslint-disable-next-line no-console
-          console.warn(logMessage);
+          logger.warn(logMessage);
           break;
         case 'error':
           // eslint-disable-next-line no-console
-          console.error(logMessage);
+          logger.error(logMessage);
           break;
       }
     }
@@ -103,7 +109,7 @@ class Logger {
     if (process.env.SENTRY_DSN) {
       // Send to Sentry
     }
-    
+
     if (process.env.LOGROCK_APP_ID) {
       // Send to LogRocket
     }
@@ -115,9 +121,7 @@ class Logger {
 }
 
 // Create default logger instance
-export const logger = new Logger(
-  process.env.NODE_ENV === 'development' ? 'debug' : 'info'
-);
+export const logger = new Logger(process.env.NODE_ENV === 'development' ? 'debug' : 'info');
 
 // Export logger factory for creating specific loggers
 export const createLogger = (source: string, level?: LogLevel): Logger => {
@@ -132,9 +136,9 @@ export const createLogger = (source: string, level?: LogLevel): Logger => {
 
 // Convenience functions for common logging patterns
 export const logAgentAction = (
-  agentName: string, 
-  action: string, 
-  result: 'success' | 'error', 
+  agentName: string,
+  action: string,
+  result: 'success' | 'error',
   context?: Record<string, unknown>
 ): void => {
   const message = `Agent ${agentName} ${action}: ${result}`;
@@ -145,11 +149,7 @@ export const logAgentAction = (
   }
 };
 
-export const logPerformanceMetric = (
-  metric: string, 
-  value: number, 
-  threshold?: number
-): void => {
+export const logPerformanceMetric = (metric: string, value: number, threshold?: number): void => {
   const context = { metric, value, threshold };
   if (threshold && value < threshold) {
     logger.warn(`Performance metric ${metric} below threshold`, context, 'Performance');
@@ -158,9 +158,6 @@ export const logPerformanceMetric = (
   }
 };
 
-export const logSystemEvent = (
-  event: string, 
-  details?: Record<string, unknown>
-): void => {
+export const logSystemEvent = (event: string, details?: Record<string, unknown>): void => {
   logger.info(`System event: ${event}`, details, 'System');
-}; 
+};

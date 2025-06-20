@@ -7,16 +7,15 @@ import type { Result } from '@/types';
 /**
  * Delay execution for specified milliseconds
  */
-export const delay = (ms: number): Promise<void> => 
-  new Promise(resolve => setTimeout(resolve, ms));
+export const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Generate a random UUID v4
  */
 export const generateId = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 };
@@ -34,8 +33,8 @@ export const safeJsonParse = <T = unknown>(json: string): Result<T> => {
       error: {
         code: 'JSON_PARSE_ERROR',
         message: 'Failed to parse JSON',
-        details: { originalError: error instanceof Error ? error.message : String(error) }
-      }
+        details: { originalError: error instanceof Error ? error.message : String(error) },
+      },
     };
   }
 };
@@ -48,7 +47,7 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>): void => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -63,12 +62,12 @@ export const throttle = <T extends (...args: unknown[]) => unknown>(
   limit: number
 ): ((...args: Parameters<T>) => void) => {
   let inThrottle: boolean;
-  
+
   return (...args: Parameters<T>): void => {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      setTimeout(() => (inThrottle = false), limit);
     }
   };
 };
@@ -82,23 +81,23 @@ export const retry = async <T>(
   baseDelay: number = 1000
 ): Promise<T> => {
   let lastError: Error | undefined;
-  
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await operation();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       if (attempt === maxAttempts) {
         break;
       }
-      
+
       // Exponential backoff
       const delayMs = baseDelay * Math.pow(2, attempt - 1);
       await delay(delayMs);
     }
   }
-  
+
   throw lastError || new Error('Unknown error occurred');
 };
 
@@ -157,4 +156,4 @@ export {
   logSystemEvent,
   type LogLevel,
   type LogEntry,
-} from './logger'; 
+} from './logger';

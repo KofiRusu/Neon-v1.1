@@ -1,8 +1,8 @@
-import { createTRPCReact } from '@trpc/react-query'
-import { httpBatchLink } from '@trpc/client'
-import type { AppRouter } from '@neon/api/src/server/root'
+import { createTRPCReact } from '@trpc/react-query';
+import { httpBatchLink } from '@trpc/client';
+import type { AppRouter } from '@neon/api/src/server/root';
 
-export const trpc = createTRPCReact<AppRouter>()
+export const trpc = createTRPCReact<AppRouter>();
 
 export const trpcClient = trpc.createClient({
   links: [
@@ -12,8 +12,8 @@ export const trpcClient = trpc.createClient({
       async headers() {
         return {
           // authorization: getAuthCookie(),
-        }
+        };
       },
     }),
   ],
-}) 
+});

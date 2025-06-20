@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { trpc } from '../../lib/trpc'
-import { SparklesIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/outline'
+import { trpc } from '../../lib/trpc';
+import { SparklesIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/outline';
 
 interface RecentActivity {
   id: string;
@@ -12,7 +12,7 @@ interface RecentActivity {
 }
 
 export default function AgentsPage(): JSX.Element {
-  const { data: recentActions, isLoading } = trpc.agent.getRecentActions.useQuery({ limit: 10 })
+  const { data: recentActions, isLoading } = trpc.agent.getRecentActions.useQuery({ limit: 10 });
 
   return (
     <div className="min-h-screen bg-dark-900 p-8">
@@ -67,7 +67,7 @@ export default function AgentsPage(): JSX.Element {
             { name: 'Trend Agent', status: 'active', color: 'text-orange-400' },
             { name: 'Insight Agent', status: 'active', color: 'text-cyan-400' },
             { name: 'Design Agent', status: 'idle', color: 'text-pink-400' },
-          ].map((agent) => (
+          ].map(agent => (
             <div key={agent.name} className="agent-card">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
@@ -82,7 +82,11 @@ export default function AgentsPage(): JSX.Element {
               <div className="flex items-center justify-between">
                 <span className="text-dark-400 text-sm capitalize">{agent.status}</span>
                 <button className="btn-pill">
-                  {agent.status === 'active' ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
+                  {agent.status === 'active' ? (
+                    <PauseIcon className="h-4 w-4" />
+                  ) : (
+                    <PlayIcon className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -90,5 +94,5 @@ export default function AgentsPage(): JSX.Element {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

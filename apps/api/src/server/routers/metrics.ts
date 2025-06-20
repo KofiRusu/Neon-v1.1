@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
+import { z } from 'zod';
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
 export const metricsRouter = createTRPCRouter({
   // Get metrics for a specific campaign
@@ -16,13 +16,14 @@ export const metricsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const where = {
         campaignId: input.campaignId,
-        ...(input.startDate && input.endDate && {
-          timestamp: {
-            gte: input.startDate,
-            lte: input.endDate,
-          },
-        }),
-      }
+        ...(input.startDate &&
+          input.endDate && {
+            timestamp: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+      };
 
       return ctx.db.campaignMetric.findMany({
         where,
@@ -38,7 +39,7 @@ export const metricsRouter = createTRPCRouter({
             },
           },
         },
-      })
+      });
     }),
 
   // Create new metric entry
@@ -64,7 +65,7 @@ export const metricsRouter = createTRPCRouter({
         include: {
           campaign: true,
         },
-      })
+      });
     }),
 
   // Get aggregated metrics for a campaign
@@ -79,13 +80,14 @@ export const metricsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const where = {
         campaignId: input.campaignId,
-        ...(input.startDate && input.endDate && {
-          timestamp: {
-            gte: input.startDate,
-            lte: input.endDate,
-          },
-        }),
-      }
+        ...(input.startDate &&
+          input.endDate && {
+            timestamp: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+      };
 
       const metrics = await ctx.db.campaignMetric.findMany({
         where,
@@ -95,7 +97,7 @@ export const metricsRouter = createTRPCRouter({
           conversions: true,
           timestamp: true,
         },
-      })
+      });
 
       if (metrics.length === 0) {
         return {
@@ -104,13 +106,13 @@ export const metricsRouter = createTRPCRouter({
           totalConversions: 0,
           conversionRate: 0,
           dataPoints: 0,
-        }
+        };
       }
 
-      const totalImpressions = metrics.reduce((sum: number, m) => sum + m.impressions, 0)
-      const totalConversions = metrics.reduce((sum: number, m) => sum + m.conversions, 0)
-      const averageCtr = metrics.reduce((sum: number, m) => sum + m.ctr, 0) / metrics.length
-      const conversionRate = totalImpressions > 0 ? totalConversions / totalImpressions : 0
+      const totalImpressions = metrics.reduce((sum: number, m) => sum + m.impressions, 0);
+      const totalConversions = metrics.reduce((sum: number, m) => sum + m.conversions, 0);
+      const averageCtr = metrics.reduce((sum: number, m) => sum + m.ctr, 0) / metrics.length;
+      const conversionRate = totalImpressions > 0 ? totalConversions / totalImpressions : 0;
 
       return {
         totalImpressions,
@@ -118,7 +120,7 @@ export const metricsRouter = createTRPCRouter({
         totalConversions,
         conversionRate,
         dataPoints: metrics.length,
-      }
+      };
     }),
 
   // Get metrics summary for multiple campaigns
@@ -133,29 +135,30 @@ export const metricsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       // First, get campaign IDs if userId is provided
-      let campaignIds = input.campaignIds
+      let campaignIds = input.campaignIds;
 
       if (input.userId && !campaignIds) {
         const campaigns = await ctx.db.campaign.findMany({
           where: { userId: input.userId },
           select: { id: true },
-        })
-        campaignIds = campaigns.map((c) => c.id)
+        });
+        campaignIds = campaigns.map(c => c.id);
       }
 
       if (!campaignIds || campaignIds.length === 0) {
-        return []
+        return [];
       }
 
       const where = {
         campaignId: { in: campaignIds },
-        ...(input.startDate && input.endDate && {
-          timestamp: {
-            gte: input.startDate,
-            lte: input.endDate,
-          },
-        }),
-      }
+        ...(input.startDate &&
+          input.endDate && {
+            timestamp: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+      };
 
       return ctx.db.campaignMetric.groupBy({
         by: ['campaignId'],
@@ -170,7 +173,7 @@ export const metricsRouter = createTRPCRouter({
         _count: {
           id: true,
         },
-      })
+      });
     }),
 
   // Delete metrics for a campaign
@@ -179,6 +182,6 @@ export const metricsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.campaignMetric.deleteMany({
         where: { campaignId: input.campaignId },
-      })
+      });
     }),
-}) 
+});

@@ -1,14 +1,14 @@
-import { z } from 'zod'
-import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
+import { z } from 'zod';
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
 const agentNames = [
   'ContentAgent',
-  'AdAgent', 
+  'AdAgent',
   'OutreachAgent',
   'TrendAgent',
   'InsightAgent',
-  'DesignAgent'
-] as const
+  'DesignAgent',
+] as const;
 
 export const agentRouter = createTRPCRouter({
   // Get all AI event logs
@@ -27,20 +27,21 @@ export const agentRouter = createTRPCRouter({
       const where = {
         ...(input.agent && { agent: input.agent }),
         ...(input.action && { action: { contains: input.action } }),
-        ...(input.startDate && input.endDate && {
-          createdAt: {
-            gte: input.startDate,
-            lte: input.endDate,
-          },
-        }),
-      }
+        ...(input.startDate &&
+          input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+      };
 
       return ctx.db.aIEventLog.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip: input.offset,
         take: input.limit,
-      })
+      });
     }),
 
   // Log a new AI agent event
@@ -59,7 +60,7 @@ export const agentRouter = createTRPCRouter({
           action: input.action,
           metadata: input.metadata || {},
         },
-      })
+      });
     }),
 
   // Get agent activity summary
@@ -74,13 +75,14 @@ export const agentRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const where = {
         ...(input.agent && { agent: input.agent }),
-        ...(input.startDate && input.endDate && {
-          createdAt: {
-            gte: input.startDate,
-            lte: input.endDate,
-          },
-        }),
-      }
+        ...(input.startDate &&
+          input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+      };
 
       const [totalEvents, agentBreakdown] = await Promise.all([
         ctx.db.aIEventLog.count({ where }),
@@ -91,15 +93,15 @@ export const agentRouter = createTRPCRouter({
             id: true,
           },
         }),
-      ])
+      ]);
 
       return {
         totalEvents,
-        agentBreakdown: agentBreakdown.map((item) => ({
+        agentBreakdown: agentBreakdown.map(item => ({
           agent: item.agent,
           count: item._count.id,
         })),
-      }
+      };
     }),
 
   // Get recent agent actions
@@ -111,7 +113,7 @@ export const agentRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const where = input.agent ? { agent: input.agent } : {}
+      const where = input.agent ? { agent: input.agent } : {};
 
       return ctx.db.aIEventLog.findMany({
         where,
@@ -124,7 +126,7 @@ export const agentRouter = createTRPCRouter({
           createdAt: true,
           metadata: true,
         },
-      })
+      });
     }),
 
   // Get agent performance metrics
@@ -139,20 +141,16 @@ export const agentRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const where = {
         agent: input.agent,
-        ...(input.startDate && input.endDate && {
-          createdAt: {
-            gte: input.startDate,
-            lte: input.endDate,
-          },
-        }),
-      }
+        ...(input.startDate &&
+          input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+      };
 
-      const [
-        totalActions,
-        successfulActions,
-        actionBreakdown,
-        recentActivity
-      ] = await Promise.all([
+      const [totalActions, successfulActions, actionBreakdown, recentActivity] = await Promise.all([
         ctx.db.aIEventLog.count({ where }),
         ctx.db.aIEventLog.count({
           where: {
@@ -177,20 +175,20 @@ export const agentRouter = createTRPCRouter({
             metadata: true,
           },
         }),
-      ])
+      ]);
 
-      const successRate = totalActions > 0 ? successfulActions / totalActions : 0
+      const successRate = totalActions > 0 ? successfulActions / totalActions : 0;
 
       return {
         totalActions,
         successfulActions,
         successRate,
-        actionBreakdown: actionBreakdown.map((item) => ({
+        actionBreakdown: actionBreakdown.map(item => ({
           action: item.action,
           count: item._count.id,
         })),
         recentActivity,
-      }
+      };
     }),
 
   // Delete old logs (cleanup)
@@ -205,8 +203,8 @@ export const agentRouter = createTRPCRouter({
       const where = {
         createdAt: { lt: input.olderThan },
         ...(input.agent && { agent: input.agent }),
-      }
+      };
 
-      return ctx.db.aIEventLog.deleteMany({ where })
+      return ctx.db.aIEventLog.deleteMany({ where });
     }),
-}) 
+});

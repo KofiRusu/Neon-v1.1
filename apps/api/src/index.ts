@@ -13,10 +13,12 @@ const PORT = process.env.API_PORT || 3001;
 
 // Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.NEXTAUTH_URL || 'http://localhost:3000',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+    credentials: true,
+  })
+);
 app.use(compression());
 app.use(express.json());
 
@@ -26,7 +28,7 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     service: 'NeonHub AI Marketing Ecosystem API',
-    version: '0.2.0'
+    version: '0.2.0',
   });
 });
 
@@ -40,14 +42,14 @@ app.get('/api/status', (req, res) => {
       outreach: 'idle',
       trend: 'active',
       insight: 'active',
-      design: 'idle'
+      design: 'idle',
     },
     metrics: {
       totalCampaigns: 12,
       activeAgents: 4,
       roi: '3.2x',
-      leadsGenerated: 1247
-    }
+      leadsGenerated: 1247,
+    },
   });
 });
 
@@ -55,13 +57,28 @@ app.get('/api/status', (req, res) => {
 app.get('/api/agents', (req, res) => {
   res.json({
     agents: [
-      { id: 'content', name: 'Content Agent', status: 'active', lastExecution: new Date().toISOString() },
+      {
+        id: 'content',
+        name: 'Content Agent',
+        status: 'active',
+        lastExecution: new Date().toISOString(),
+      },
       { id: 'ad', name: 'Ad Agent', status: 'active', lastExecution: new Date().toISOString() },
       { id: 'outreach', name: 'Outreach Agent', status: 'idle', lastExecution: null },
-      { id: 'trend', name: 'Trend Agent', status: 'active', lastExecution: new Date().toISOString() },
-      { id: 'insight', name: 'Insight Agent', status: 'active', lastExecution: new Date().toISOString() },
-      { id: 'design', name: 'Design Agent', status: 'idle', lastExecution: null }
-    ]
+      {
+        id: 'trend',
+        name: 'Trend Agent',
+        status: 'active',
+        lastExecution: new Date().toISOString(),
+      },
+      {
+        id: 'insight',
+        name: 'Insight Agent',
+        status: 'active',
+        lastExecution: new Date().toISOString(),
+      },
+      { id: 'design', name: 'Design Agent', status: 'idle', lastExecution: null },
+    ],
   });
 });
 
@@ -77,7 +94,7 @@ app.get('/api/campaigns', (req, res) => {
         budget: 5000,
         roi: 3.2,
         startDate: '2024-06-01',
-        endDate: '2024-08-31'
+        endDate: '2024-08-31',
       },
       {
         id: 'campaign-2',
@@ -87,9 +104,9 @@ app.get('/api/campaigns', (req, res) => {
         budget: 2000,
         roi: 4.1,
         startDate: '2024-07-01',
-        endDate: '2024-09-30'
-      }
-    ]
+        endDate: '2024-09-30',
+      },
+    ],
   });
 });
 
@@ -98,7 +115,7 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
   logger.error('API Error', { error: err.message, stack: err.stack }, 'APIServer');
   res.status(500).json({
     error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
   });
 });
 
@@ -106,19 +123,23 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
 app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Route not found',
-    path: req.originalUrl
+    path: req.originalUrl,
   });
 });
 
 // Start server
 app.listen(PORT, () => {
-  logger.info(`🚀 NeonHub AI Marketing Ecosystem API running on port ${PORT}`, {
-    port: PORT,
-    endpoints: {
-      health: `http://localhost:${PORT}/health`,
-      status: `http://localhost:${PORT}/api/status`,
-      agents: `http://localhost:${PORT}/api/agents`,
-      campaigns: `http://localhost:${PORT}/api/campaigns`
-    }
-  }, 'APIServer');
-}); 
+  logger.info(
+    `🚀 NeonHub AI Marketing Ecosystem API running on port ${PORT}`,
+    {
+      port: PORT,
+      endpoints: {
+        health: `http://localhost:${PORT}/health`,
+        status: `http://localhost:${PORT}/api/status`,
+        agents: `http://localhost:${PORT}/api/agents`,
+        campaigns: `http://localhost:${PORT}/api/campaigns`,
+      },
+    },
+    'APIServer'
+  );
+});

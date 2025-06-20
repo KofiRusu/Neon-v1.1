@@ -32,18 +32,10 @@
       "@neon/utils": ["./packages/utils/src"],
       "@neon/core-agents": ["./packages/core-agents/src"],
       "@neon/reasoning-engine": ["./packages/reasoning-engine/src"]
-    }
+    },
+    "noImplicitAny": true
   },
-  "include": [
-    "packages/**/*",
-    "tests/**/*",
-    "*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage",
-    "playwright-report"
-  ],
+  "include": ["packages/**/*", "tests/**/*", "*.ts"],
+  "exclude": ["node_modules", "dist", "coverage", "playwright-report"],
   "references": []
-} 
+}

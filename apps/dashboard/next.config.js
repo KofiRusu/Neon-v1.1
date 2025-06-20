@@ -5,7 +5,7 @@ const nextConfig = {
     '@neonhub/types',
     '@neonhub/utils',
     '@neonhub/core-agents',
-    '@neonhub/reasoning-engine'
+    '@neonhub/reasoning-engine',
   ],
   images: {
     domains: ['localhost'],
@@ -23,4 +23,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

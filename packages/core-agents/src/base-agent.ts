@@ -37,7 +37,7 @@ export interface BaseAgent {
   name: string;
   type: string;
   capabilities: string[];
-  
+
   execute(payload: AgentPayload): Promise<AgentResult>;
   getStatus(): Promise<AgentStatus>;
   validatePayload(payload: AgentPayload): boolean;
@@ -49,7 +49,7 @@ export abstract class AbstractAgent implements BaseAgent {
   public readonly name: string;
   public readonly type: string;
   public readonly capabilities: string[];
-  
+
   protected status: 'idle' | 'running' | 'error' | 'maintenance' = 'idle';
   protected lastExecution?: Date;
   protected performance?: number;
@@ -80,7 +80,11 @@ export abstract class AbstractAgent implements BaseAgent {
       AgentPayloadSchema.parse(payload);
       return true;
     } catch (error) {
-      logger.error(`Invalid payload for agent ${this.name}`, { error, agentName: this.name }, 'AgentValidation');
+      logger.error(
+        `Invalid payload for agent ${this.name}`,
+        { error, agentName: this.name },
+        'AgentValidation'
+      );
       return false;
     }
   }
@@ -106,17 +110,17 @@ export abstract class AbstractAgent implements BaseAgent {
     executionFn: () => Promise<unknown>
   ): Promise<AgentResult> {
     const startTime = Date.now();
-    
+
     try {
       this.setStatus('running');
-      
+
       if (!this.validatePayload(payload)) {
         throw new Error('Invalid payload');
       }
 
       const result = await executionFn();
       const executionTime = Date.now() - startTime;
-      
+
       this.setStatus('idle');
       this.setLastExecution(new Date());
       this.setPerformance(executionTime);
@@ -134,7 +138,7 @@ export abstract class AbstractAgent implements BaseAgent {
       };
     } catch (error) {
       this.setStatus('error');
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -152,9 +156,15 @@ export abstract class AbstractAgent implements BaseAgent {
 
 // Agent factory for creating agent instances
 export class AgentFactory {
-  private static agents = new Map<string, new (id: string, name: string, ...args: unknown[]) => BaseAgent>();
+  private static agents = new Map<
+    string,
+    new (id: string, name: string, ...args: unknown[]) => BaseAgent
+  >();
 
-  static registerAgent(type: string, agentClass: new (id: string, name: string, ...args: unknown[]) => BaseAgent): void {
+  static registerAgent(
+    type: string,
+    agentClass: new (id: string, name: string, ...args: unknown[]) => BaseAgent
+  ): void {
     this.agents.set(type, agentClass);
   }
 
@@ -204,9 +214,7 @@ export class AgentManager {
   }
 
   async getAllAgentStatuses(): Promise<AgentStatus[]> {
-    const statuses = await Promise.all(
-      this.getAllAgents().map(agent => agent.getStatus())
-    );
+    const statuses = await Promise.all(this.getAllAgents().map(agent => agent.getStatus()));
     return statuses;
   }
 
@@ -215,8 +223,6 @@ export class AgentManager {
   }
 
   getAgentsByCapability(capability: string): BaseAgent[] {
-    return this.getAllAgents().filter(agent => 
-      agent.getCapabilities().includes(capability)
-    );
+    return this.getAllAgents().filter(agent => agent.getCapabilities().includes(capability));
   }
-} 
+}

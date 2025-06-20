@@ -1,26 +1,32 @@
 /**
  * AuditAgent - Autonomous Quality Control Agent for NeonHub
- * 
+ *
  * Provides continuous background quality control for all other agents:
  * - Content evaluation (clarity, grammar, engagement)
  * - Hallucination detection
  * - Agent performance monitoring and logging
  */
 
-import { logEvent, logPerformance, withLogging, logger, type PerformanceMetrics } from '@neon/utils'
-import type { AgentName } from '@neon/types'
+import {
+  logEvent,
+  logPerformance,
+  withLogging,
+  logger,
+  type PerformanceMetrics,
+} from '@neon/utils';
+import type { AgentName } from '@neon/types';
 
 export interface ContentScore {
-  clarity: number;      // 0-100: How clear and understandable the content is
-  grammar: number;      // 0-100: Grammar and language correctness
-  engagement: number;   // 0-100: How engaging and compelling the content is
-  overall: number;      // 0-100: Overall quality score
+  clarity: number; // 0-100: How clear and understandable the content is
+  grammar: number; // 0-100: Grammar and language correctness
+  engagement: number; // 0-100: How engaging and compelling the content is
+  overall: number; // 0-100: Overall quality score
 }
 
 export interface HallucinationResult {
   isHallucination: boolean;
-  confidence: number;     // 0-100: Confidence in the detection
-  reasons: string[];      // Specific reasons for flagging
+  confidence: number; // 0-100: Confidence in the detection
+  reasons: string[]; // Specific reasons for flagging
 }
 
 export interface AgentPerformanceData {
@@ -46,19 +52,23 @@ export class AuditAgent {
       async () => {
         try {
           // Try OpenAI evaluation first (with mock implementation for now)
-          const aiScore = await this.evaluateWithAI(content)
+          const aiScore = await this.evaluateWithAI(content);
           if (aiScore) {
-            return aiScore
+            return aiScore;
           }
         } catch (error) {
-          logger.warn('AI evaluation failed, falling back to static analysis', { error }, 'AuditAgent')
+          logger.warn(
+            'AI evaluation failed, falling back to static analysis',
+            { error },
+            'AuditAgent'
+          );
         }
 
         // Fallback to static analysis
-        return this.evaluateStatically(content)
+        return this.evaluateStatically(content);
       },
       { contentLength: content.length }
-    )
+    );
   }
 
   /**
@@ -69,25 +79,25 @@ export class AuditAgent {
       this.AGENT_NAME,
       'detect_hallucination',
       async () => {
-        const result = await this.analyzeForHallucination(content)
-        
-        // Log detailed hallucination analysis
-                 await logEvent({
-           agent: this.AGENT_NAME,
-           action: 'hallucination_analysis',
-           metadata: {
-             content: `${content.substring(0, 200)}...`,
-             result: result.isHallucination,
-             confidence: result.confidence,
-             reasons: result.reasons,
-           },
-           success: true,
-         })
+        const result = await this.analyzeForHallucination(content);
 
-        return result.isHallucination
+        // Log detailed hallucination analysis
+        await logEvent({
+          agent: this.AGENT_NAME,
+          action: 'hallucination_analysis',
+          metadata: {
+            content: `${content.substring(0, 200)}...`,
+            result: result.isHallucination,
+            confidence: result.confidence,
+            reasons: result.reasons,
+          },
+          success: true,
+        });
+
+        return result.isHallucination;
       },
       { contentLength: content.length }
-    )
+    );
   }
 
   /**
@@ -110,9 +120,9 @@ export class AuditAgent {
             evaluation_timestamp: Date.now(),
           },
           timestamp: new Date(),
-        }
+        };
 
-        await logPerformance(performanceData)
+        await logPerformance(performanceData);
 
         // Also log to agent events for detailed tracking
         await logEvent({
@@ -124,10 +134,10 @@ export class AuditAgent {
             ...metadata,
           },
           success: true,
-        })
+        });
       },
       { targetAgent: agent, score }
-    )
+    );
   }
 
   /**
@@ -138,7 +148,7 @@ export class AuditAgent {
     try {
       // Mock OpenAI implementation - replace with actual OpenAI API call
       // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-      
+
       const mockPrompt = `
         Evaluate the following content for marketing effectiveness on a scale of 0-100:
         
@@ -151,12 +161,16 @@ export class AuditAgent {
           "engagement": <score 0-100>,
           "overall": <score 0-100>
         }
-      `
+      `;
 
       // For now, return null to trigger fallback
       // TODO: Implement actual OpenAI API call
-      logger.debug('OpenAI evaluation prompt prepared', { promptPreview: mockPrompt.substring(0, 100) }, 'AuditAgent')
-      return null
+      logger.debug(
+        'OpenAI evaluation prompt prepared',
+        { promptPreview: mockPrompt.substring(0, 100) },
+        'AuditAgent'
+      );
+      return null;
 
       /* 
       // Actual OpenAI implementation:
@@ -181,8 +195,8 @@ export class AuditAgent {
       }
       */
     } catch (error) {
-      logger.error('OpenAI evaluation error', { error }, 'AuditAgent')
-      return null
+      logger.error('OpenAI evaluation error', { error }, 'AuditAgent');
+      return null;
     }
   }
 
@@ -190,75 +204,69 @@ export class AuditAgent {
    * Static content evaluation based on heuristics
    */
   private static evaluateStatically(content: string): ContentScore {
-    const length = content.length
-    const words = content.split(/\s+/).length
-    const sentences = content.split(/[.!?]+/).length
-    const avgWordsPerSentence = words / Math.max(1, sentences)
+    const length = content.length;
+    const words = content.split(/\s+/).length;
+    const sentences = content.split(/[.!?]+/).length;
+    const avgWordsPerSentence = words / Math.max(1, sentences);
 
     // Grammar heuristics
-    const grammarScore = this.calculateGrammarScore(content)
+    const grammarScore = this.calculateGrammarScore(content);
 
     // Clarity heuristics
-    let clarityScore = 70 // Base score
-    if (length > 50 && length < 500) clarityScore += 10
-    if (avgWordsPerSentence > 5 && avgWordsPerSentence < 20) clarityScore += 10
-    if (content.includes('?') || content.includes('!')) clarityScore += 5
+    let clarityScore = 70; // Base score
+    if (length > 50 && length < 500) clarityScore += 10;
+    if (avgWordsPerSentence > 5 && avgWordsPerSentence < 20) clarityScore += 10;
+    if (content.includes('?') || content.includes('!')) clarityScore += 5;
 
     // Engagement heuristics
-    let engagementScore = 60 // Base score
-    const actionWords = ['discover', 'learn', 'get', 'find', 'boost', 'improve', 'create']
-    const hasActionWords = actionWords.some(word => 
-      content.toLowerCase().includes(word)
-    )
-    if (hasActionWords) engagementScore += 15
-    if (content.includes('!')) engagementScore += 10
-    if (content.includes('?')) engagementScore += 5
+    let engagementScore = 60; // Base score
+    const actionWords = ['discover', 'learn', 'get', 'find', 'boost', 'improve', 'create'];
+    const hasActionWords = actionWords.some(word => content.toLowerCase().includes(word));
+    if (hasActionWords) engagementScore += 15;
+    if (content.includes('!')) engagementScore += 10;
+    if (content.includes('?')) engagementScore += 5;
 
     // Overall score (weighted average)
-    const overall = Math.round(
-      (clarityScore * 0.3) + 
-      (grammarScore * 0.3) + 
-      (engagementScore * 0.4)
-    )
+    const overall = Math.round(clarityScore * 0.3 + grammarScore * 0.3 + engagementScore * 0.4);
 
     return {
       clarity: Math.max(0, Math.min(100, clarityScore)),
       grammar: Math.max(0, Math.min(100, grammarScore)),
       engagement: Math.max(0, Math.min(100, engagementScore)),
       overall: Math.max(0, Math.min(100, overall)),
-    }
+    };
   }
 
   /**
    * Calculate grammar score based on simple heuristics
    */
   private static calculateGrammarScore(content: string): number {
-    let score = 80 // Base score
+    let score = 80; // Base score
 
     // Check for basic capitalization
-    if (content.charAt(0) === content.charAt(0).toUpperCase()) score += 5
+    if (content.charAt(0) === content.charAt(0).toUpperCase()) score += 5;
 
     // Check for proper sentence ending
-    if (/[.!?]$/.test(content.trim())) score += 5
+    if (/[.!?]$/.test(content.trim())) score += 5;
 
     // Penalize excessive punctuation
-    const exclamationCount = (content.match(/!/g) || []).length
-    if (exclamationCount > 3) score -= 10
+    const exclamationCount = (content.match(/!/g) || []).length;
+    if (exclamationCount > 3) score -= 10;
 
     // Check for common grammar issues
-    if (content.includes('there ')) score += 2
-    if (content.includes('their ')) score += 2
-    if (content.includes("it's")) score += 2
+    if (content.includes('there ')) score += 2;
+    if (content.includes('their ')) score += 2;
+    if (content.includes("it's")) score += 2;
 
-    return Math.max(0, Math.min(100, score))
+    return Math.max(0, Math.min(100, score));
   }
 
   /**
    * Analyze content for potential hallucinations
    */
   private static async analyzeForHallucination(content: string): Promise<HallucinationResult> {
-    const reasons: string[] = []
-    let confidence = 0
+    const reasons: string[] = [];
+    let confidence = 0;
 
     // Check for obviously false claims
     const suspiciousPatterns = [
@@ -267,40 +275,40 @@ export class AuditAgent {
       /instant.*results/i,
       /secret.*method/i,
       /doctors hate/i,
-    ]
+    ];
 
     for (const pattern of suspiciousPatterns) {
       if (pattern.test(content)) {
-        reasons.push(`Suspicious marketing claim: ${pattern.source}`)
-        confidence += 30
+        reasons.push(`Suspicious marketing claim: ${pattern.source}`);
+        confidence += 30;
       }
     }
 
     // Check for unrealistic numbers
-    const numberMatches = content.match(/\d+(?:,\d{3})*(?:\.\d+)?/g)
+    const numberMatches = content.match(/\d+(?:,\d{3})*(?:\.\d+)?/g);
     if (numberMatches) {
       for (const match of numberMatches) {
-        const num = parseFloat(match.replace(/,/g, ''))
+        const num = parseFloat(match.replace(/,/g, ''));
         if (num > 1000000) {
-          reasons.push(`Unrealistic large number: ${match}`)
-          confidence += 20
+          reasons.push(`Unrealistic large number: ${match}`);
+          confidence += 20;
         }
       }
     }
 
     // Check for contradictory statements
     if (content.includes('free') && content.includes('price')) {
-      reasons.push('Contradictory pricing claims')
-      confidence += 25
+      reasons.push('Contradictory pricing claims');
+      confidence += 25;
     }
 
-    const isHallucination = confidence >= 50
-    
+    const isHallucination = confidence >= 50;
+
     return {
       isHallucination,
       confidence: Math.min(100, confidence),
       reasons,
-    }
+    };
   }
 
   /**
@@ -323,38 +331,38 @@ export class AuditAgent {
         const [contentScore, hallucinationDetected] = await Promise.all([
           this.evaluateContentOutput(content),
           this.detectHallucination(content),
-        ])
+        ]);
 
         // Determine overall rating
-        let overallRating: 'excellent' | 'good' | 'fair' | 'poor'
-        const overallScore = contentScore.overall
+        let overallRating: 'excellent' | 'good' | 'fair' | 'poor';
+        const overallScore = contentScore.overall;
 
         if (hallucinationDetected) {
-          overallRating = 'poor'
+          overallRating = 'poor';
         } else if (overallScore >= 85) {
-          overallRating = 'excellent'
+          overallRating = 'excellent';
         } else if (overallScore >= 70) {
-          overallRating = 'good'
+          overallRating = 'good';
         } else if (overallScore >= 50) {
-          overallRating = 'fair'
+          overallRating = 'fair';
         } else {
-          overallRating = 'poor'
+          overallRating = 'poor';
         }
 
         // Generate recommendations
-        const recommendations: string[] = []
-        
+        const recommendations: string[] = [];
+
         if (contentScore.clarity < 70) {
-          recommendations.push('Improve content clarity and structure')
+          recommendations.push('Improve content clarity and structure');
         }
         if (contentScore.grammar < 80) {
-          recommendations.push('Review grammar and language usage')
+          recommendations.push('Review grammar and language usage');
         }
         if (contentScore.engagement < 60) {
-          recommendations.push('Add more engaging elements and call-to-actions')
+          recommendations.push('Add more engaging elements and call-to-actions');
         }
         if (hallucinationDetected) {
-          recommendations.push('CRITICAL: Review for false or misleading claims')
+          recommendations.push('CRITICAL: Review for false or misleading claims');
         }
 
         // Log comprehensive audit results
@@ -364,16 +372,16 @@ export class AuditAgent {
           hallucination_detected: hallucinationDetected,
           overall_rating: overallRating,
           recommendations_count: recommendations.length,
-        })
+        });
 
         return {
           contentScore,
           hallucinationDetected,
           overallRating,
           recommendations,
-        }
+        };
       },
       { sourceAgent, contentType: expectedType, contentLength: content.length }
-    )
+    );
   }
-} 
+}

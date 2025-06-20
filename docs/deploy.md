@@ -2,12 +2,14 @@
 
 ## 🚀 Overview
 
-This guide covers the complete deployment process for the NeonHub AI Marketing Ecosystem, from local development to production environments.
+This guide covers the complete deployment process for the NeonHub AI Marketing
+Ecosystem, from local development to production environments.
 
 ## 📋 Prerequisites
 
 ### Required Tools
-- Node.js 18+ 
+
+- Node.js 18+
 - Docker & Docker Compose
 - Git
 - PostgreSQL 14+
@@ -17,6 +19,7 @@ This guide covers the complete deployment process for the NeonHub AI Marketing E
 - PlanetScale account (for database hosting)
 
 ### Environment Variables
+
 Create `.env` files for each environment:
 
 ```bash
@@ -38,6 +41,7 @@ NEXTAUTH_URL="https://your-domain.com"
 ## 🏗️ Local Development Setup
 
 ### 1. Clone and Install
+
 ```bash
 git clone <repository-url>
 cd neonhub-ai-ecosystem
@@ -45,6 +49,7 @@ npm install
 ```
 
 ### 2. Database Setup
+
 ```bash
 # Start PostgreSQL and Redis with Docker
 docker-compose up -d
@@ -60,6 +65,7 @@ npm run db:seed
 ```
 
 ### 3. Start Development Servers
+
 ```bash
 # Start all services
 npm run dev
@@ -70,6 +76,7 @@ npm run dev:api        # API server on :3001
 ```
 
 ### 4. Verify Setup
+
 - Dashboard: http://localhost:3000
 - API: http://localhost:3001
 - Prisma Studio: http://localhost:5555
@@ -77,6 +84,7 @@ npm run dev:api        # API server on :3001
 ## 🐳 Docker Development Environment
 
 ### Docker Compose Configuration
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
@@ -88,14 +96,14 @@ services:
       POSTGRES_USER: neonhub
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:6-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
 
@@ -104,7 +112,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.dashboard
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=development
     volumes:
@@ -116,7 +124,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.api
     ports:
-      - "3001:3001"
+      - '3001:3001'
     environment:
       - NODE_ENV=development
     volumes:
@@ -129,6 +137,7 @@ volumes:
 ```
 
 ### Docker Commands
+
 ```bash
 # Build and start all services
 docker-compose up --build
@@ -149,12 +158,14 @@ docker-compose down -v
 ## 🧪 Staging Environment
 
 ### 1. Staging Infrastructure
+
 - **Frontend**: Vercel (staging branch)
 - **Backend**: Railway or Render
 - **Database**: PlanetScale (staging branch)
 - **Redis**: Upstash Redis
 
 ### 2. Staging Deployment
+
 ```bash
 # Deploy to staging
 git checkout staging
@@ -166,6 +177,7 @@ git push origin staging
 ```
 
 ### 3. Staging Verification
+
 - Run automated tests
 - Verify database migrations
 - Test AI agent functionality
@@ -176,6 +188,7 @@ git push origin staging
 ### 1. Production Infrastructure
 
 #### Frontend (Vercel)
+
 ```bash
 # Deploy to production
 git checkout main
@@ -186,12 +199,14 @@ git push origin main
 ```
 
 #### Backend (Railway/Render)
+
 - Connect GitHub repository
 - Set production environment variables
 - Configure auto-deploy from main branch
 - Set up health checks
 
 #### Database (PlanetScale)
+
 ```bash
 # Create production database
 npx prisma db push --schema=packages/data-model/prisma/schema.prisma
@@ -201,6 +216,7 @@ npx prisma migrate deploy --schema=packages/data-model/prisma/schema.prisma
 ```
 
 ### 2. Production Environment Variables
+
 ```bash
 # Production .env
 DATABASE_URL="your-planetscale-production-url"
@@ -212,6 +228,7 @@ VERCEL_URL="https://neonhub.com"
 ```
 
 ### 3. Production Verification Checklist
+
 - [ ] All environment variables set
 - [ ] Database migrations completed
 - [ ] SSL certificates configured
@@ -223,6 +240,7 @@ VERCEL_URL="https://neonhub.com"
 ## 🔄 CI/CD Pipeline
 
 ### GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy
@@ -271,12 +289,14 @@ jobs:
 ## 📊 Monitoring & Observability
 
 ### Application Monitoring
+
 - **Vercel Analytics**: Frontend performance
 - **Railway/Render Metrics**: Backend performance
 - **PlanetScale Insights**: Database performance
 - **Upstash Redis**: Cache performance
 
 ### Error Tracking
+
 ```bash
 # Install Sentry
 npm install @sentry/nextjs @sentry/node
@@ -295,19 +315,20 @@ module.exports = withSentryConfig({
 ```
 
 ### Health Checks
+
 ```typescript
 // apps/api/src/health.ts
 export async function healthCheck() {
   try {
     // Check database connection
     await prisma.$queryRaw`SELECT 1`;
-    
+
     // Check Redis connection
     await redis.ping();
-    
+
     // Check OpenAI API
     await openai.models.list();
-    
+
     return { status: 'healthy' };
   } catch (error) {
     return { status: 'unhealthy', error: error.message };
@@ -318,24 +339,27 @@ export async function healthCheck() {
 ## 🔐 Security Configuration
 
 ### SSL/TLS
+
 - Vercel provides automatic SSL
 - Configure custom domain with SSL
 - Enable HSTS headers
 
 ### API Security
+
 ```typescript
 // Rate limiting
 import rateLimit from 'express-rate-limit';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
 });
 
 app.use(limiter);
 ```
 
 ### Environment Security
+
 - Use secrets management
 - Rotate API keys regularly
 - Enable audit logging
@@ -344,6 +368,7 @@ app.use(limiter);
 ## 📈 Performance Optimization
 
 ### Frontend Optimization
+
 ```javascript
 // next.config.js
 module.exports = {
@@ -355,10 +380,11 @@ module.exports = {
     optimizeCss: true,
   },
   compress: true,
-}
+};
 ```
 
 ### Backend Optimization
+
 ```typescript
 // Caching strategy
 import { cache } from 'react';
@@ -384,6 +410,7 @@ const optimizedQuery = await prisma.campaign.findMany({
 ## 🔄 Rollback Procedures
 
 ### Database Rollback
+
 ```bash
 # Rollback to previous migration
 npx prisma migrate reset --schema=packages/data-model/prisma/schema.prisma
@@ -393,6 +420,7 @@ npx prisma migrate resolve --rolled-back <migration-name>
 ```
 
 ### Application Rollback
+
 ```bash
 # Vercel rollback
 vercel rollback <deployment-url>
@@ -402,6 +430,7 @@ vercel rollback <deployment-url>
 ```
 
 ### Emergency Rollback
+
 ```bash
 # Quick rollback to previous commit
 git revert HEAD
@@ -415,6 +444,7 @@ git push --force origin main
 ## 🧪 Testing in Production
 
 ### Blue-Green Deployment
+
 1. Deploy new version to green environment
 2. Run smoke tests
 3. Switch traffic to green environment
@@ -422,6 +452,7 @@ git push --force origin main
 5. Keep blue environment as backup
 
 ### Canary Deployment
+
 1. Deploy to 5% of users
 2. Monitor metrics
 3. Gradually increase to 100%
@@ -430,6 +461,7 @@ git push --force origin main
 ## 📋 Post-Deployment Checklist
 
 ### Immediate Checks
+
 - [ ] All services responding
 - [ ] Database connections working
 - [ ] AI agents functioning
@@ -437,6 +469,7 @@ git push --force origin main
 - [ ] Error tracking active
 
 ### Performance Checks
+
 - [ ] Response times acceptable
 - [ ] Database query performance
 - [ ] Cache hit rates
@@ -444,6 +477,7 @@ git push --force origin main
 - [ ] CPU usage normal
 
 ### Security Checks
+
 - [ ] SSL certificates valid
 - [ ] API endpoints secured
 - [ ] Environment variables protected
@@ -455,6 +489,7 @@ git push --force origin main
 ### Common Issues
 
 #### Database Connection Issues
+
 ```bash
 # Check database status
 docker-compose ps postgres
@@ -468,6 +503,7 @@ docker-compose up -d
 ```
 
 #### Redis Connection Issues
+
 ```bash
 # Check Redis status
 docker-compose ps redis
@@ -477,6 +513,7 @@ redis-cli ping
 ```
 
 #### AI Agent Issues
+
 ```bash
 # Check OpenAI API key
 curl -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -487,10 +524,12 @@ npm run logs:agents
 ```
 
 ### Emergency Contacts
+
 - **DevOps**: [contact info]
 - **Database Admin**: [contact info]
 - **Security Team**: [contact info]
 
 ---
 
-*This deployment guide should be updated as the infrastructure evolves and new deployment patterns are established.* 
+_This deployment guide should be updated as the infrastructure evolves and new
+deployment patterns are established._

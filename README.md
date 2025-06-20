@@ -1,13 +1,16 @@
+<!-- AUTO-GENERATED DOCS: 2025-06-20T23:47:39.548Z -->
+
 # NeonHub AI Marketing Ecosystem
 
-> A self-operating, AI-driven marketing and sales platform that creates, tests, and optimizes content across platforms autonomously.
+> A self-operating, AI-driven marketing and sales platform that creates, tests,
+> and optimizes content across platforms autonomously.
 
 ## 🧠 Core Mission
 
 Build a self-operating, AI-driven marketing and sales platform for NeonHub that:
 
 - ✅ Creates, tests, and posts content across platforms
-- ✅ Optimizes ads and outreach autonomously  
+- ✅ Optimizes ads and outreach autonomously
 - ✅ Predicts trends and reacts in real time
 - ✅ Converts both B2C and B2B leads at scale
 - ✅ Requires zero manual marketing input
@@ -17,11 +20,13 @@ Build a self-operating, AI-driven marketing and sales platform for NeonHub that:
 ### System Components
 
 1. **AI Command Dashboard** (`apps/dashboard/`) - Next.js + Tailwind + tRPC
+
    - Real-time control center for all marketing operations
    - Agent control panel and performance monitoring
    - Campaign management and analytics visualization
 
 2. **Autonomous AI Agents** (`packages/core-agents/`) - LangChain + OpenAI
+
    - **ContentAgent**: Generates posts, captions, emails, product copy
    - **AdAgent**: Runs A/B tests, reallocates budgets, optimizes creative
    - **OutreachAgent**: Sends personalized B2B emails, manages follow-up chains
@@ -30,16 +35,19 @@ Build a self-operating, AI-driven marketing and sales platform for NeonHub that:
    - **DesignAgent**: Creates and tests new sign designs based on trends
 
 3. **Campaign Engine** (`packages/reasoning-engine/`)
+
    - Campaign scheduler and planner
    - Auto-responders, retargeting rules, cold email flows
    - Real-time performance tracking and auto-optimization
 
 4. **Data & Analytics Core** (`packages/data-model/`)
+
    - Centralized PostgreSQL database via Prisma
    - Campaign stats, behavioral data, AI decisions
    - Machine learning feedback loop
 
 5. **Global Outreach Engine**
+
    - Lead scraper & enrichment tool
    - Auto-email sequencer
    - Language/localization module
@@ -59,7 +67,17 @@ Build a self-operating, AI-driven marketing and sales platform for NeonHub that:
 - Redis 6+
 - OpenAI API key
 
-### Installation
+#
+
+## 📚 API Documentation
+
+- **tRPC API**: [docs/trpc-api.md](./docs/trpc-api.md)
+- **OpenAPI Spec**: [docs/api-overview.json](./docs/api-overview.json)
+- **Architecture**: [docs/architecture.md](./docs/architecture.md)
+
+_Documentation auto-updated by NeonHub Documentation Agent_
+
+## Installation
 
 ```bash
 # Clone the repository
@@ -121,41 +139,45 @@ After starting the development environment:
 ## 🧠 AI Agents
 
 ### ContentAgent
+
 ```typescript
 import { ContentAgent } from '@neonhub/core-agents';
 
 const agent = new ContentAgent('content-1', 'Content Generator');
 const result = await agent.execute({
   task: 'generate_posts',
-  context: { platform: 'instagram', topic: 'neon signs' }
+  context: { platform: 'instagram', topic: 'neon signs' },
 });
 ```
 
 ### AdAgent
+
 ```typescript
 import { AdAgent } from '@neonhub/core-agents';
 
 const agent = new AdAgent('ad-1', 'Ad Optimizer');
 const result = await agent.execute({
   task: 'optimize_ads',
-  context: { campaignId: 'campaign-123' }
+  context: { campaignId: 'campaign-123' },
 });
 ```
 
 ### TrendAgent
+
 ```typescript
 import { TrendAgent } from '@neonhub/core-agents';
 
 const agent = new TrendAgent('trend-1', 'Trend Detector');
 const result = await agent.execute({
   task: 'detect_trends',
-  context: { platform: 'tiktok', category: 'design' }
+  context: { platform: 'tiktok', category: 'design' },
 });
 ```
 
 ## 🔄 Development Workflow
 
 ### Running Tests
+
 ```bash
 # Unit tests
 npm run test
@@ -168,6 +190,7 @@ npm run test:coverage
 ```
 
 ### Database Operations
+
 ```bash
 # Generate Prisma client
 npm run db:generate
@@ -183,6 +206,7 @@ npm run db:reset
 ```
 
 ### Docker Commands
+
 ```bash
 # Start all services
 npm run docker:up
@@ -224,21 +248,25 @@ neonhub-ai-ecosystem/
 ## 🎯 Key Features
 
 ### Autonomous Marketing
+
 - **Zero Manual Input**: AI agents handle all marketing tasks
 - **Real-time Optimization**: Continuous performance improvement
 - **Cross-platform Integration**: Facebook, Instagram, TikTok, LinkedIn, Email
 
 ### AI-Powered Content
+
 - **Dynamic Content Generation**: Context-aware posts and captions
 - **A/B Testing Automation**: Statistical testing and optimization
 - **Trend Integration**: Viral content detection and adaptation
 
 ### Lead Generation & Nurturing
+
 - **Automated Outreach**: Personalized B2B email sequences
 - **Lead Scoring**: AI-powered qualification and prioritization
 - **Multi-language Support**: Global market reach
 
 ### Performance Analytics
+
 - **Real-time Metrics**: Live campaign performance monitoring
 - **Predictive Analytics**: Revenue and trend forecasting
 - **ROI Optimization**: Automated budget allocation
@@ -254,18 +282,21 @@ neonhub-ai-ecosystem/
 ## 📈 Performance Metrics
 
 ### Technical KPIs
+
 - **99.9% Uptime**: High availability infrastructure
 - **< 200ms API Response**: Optimized performance
 - **80%+ Test Coverage**: Comprehensive testing
 - **Zero Critical Vulnerabilities**: Security-first approach
 
 ### Business KPIs
+
 - **50% Reduction** in manual marketing tasks
 - **30% Increase** in conversion rates
 - **40% Improvement** in campaign ROI
 - **60% Faster** content creation
 
 ### AI Performance
+
 - **90%+ Agent Task Completion** rate
 - **< 5% False Positive** trend detection
 - **85%+ Content Engagement** rate
@@ -274,6 +305,7 @@ neonhub-ai-ecosystem/
 ## 🚀 Deployment
 
 ### Production Deployment
+
 ```bash
 # Deploy to production
 git checkout main
@@ -285,6 +317,7 @@ git push origin main
 ```
 
 ### Environment Setup
+
 - **Frontend**: Vercel (automatic deployment)
 - **Backend**: Railway or Render
 - **Database**: PlanetScale (managed PostgreSQL)
@@ -300,6 +333,7 @@ git push origin main
 5. Open a Pull Request
 
 ### Development Guidelines
+
 - Follow TypeScript strict mode
 - Maintain 80%+ test coverage
 - Use ESLint + Prettier for code formatting
@@ -308,23 +342,27 @@ git push origin main
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
 
 ## 🆘 Support
 
 - **Documentation**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/neonhub/ai-ecosystem/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/neonhub/ai-ecosystem/discussions)
+- **Discussions**:
+  [GitHub Discussions](https://github.com/neonhub/ai-ecosystem/discussions)
 
 ## 🔮 Roadmap
 
 ### Phase 2 (Q2 2024)
+
 - Advanced ML model training pipeline
 - Real-time video content generation
 - Voice-based interaction systems
 - Advanced predictive analytics
 
 ### Phase 3 (Q3 2024)
+
 - Multi-tenant architecture
 - Advanced AI agent collaboration
 - Blockchain integration for transparency
@@ -334,4 +372,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ by the NeonHub Team**
 
-*Empowering businesses with autonomous AI marketing that drives real results.* 
+_Empowering businesses with autonomous AI marketing that drives real results._

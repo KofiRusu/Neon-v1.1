@@ -1,13 +1,13 @@
 /**
  * Agent Logging Utility for NeonHub AI Marketing System
- * 
+ *
  * Provides centralized logging for all AI agents with database persistence
  * and error handling capabilities.
  */
 
-import { db } from '@neon/data-model'
-import type { AgentName } from '@neon/types'
-import { logger } from './logger'
+import { db } from '@neon/data-model';
+import type { AgentName } from '@neon/types';
+import { logger } from './logger';
 
 export interface LogEventData {
   agent: AgentName;
@@ -42,13 +42,17 @@ export async function logEvent(data: LogEventData): Promise<void> {
           ...data.metadata,
         },
       },
-    })
+    });
   } catch (error) {
     // Fallback logging to console if database logging fails
     // Use our structured logger instead of console
-    logger.error('Failed to log agent event to database', { error, eventData: data }, 'AgentLogger')
+    logger.error(
+      'Failed to log agent event to database',
+      { error, eventData: data },
+      'AgentLogger'
+    );
     // Log event data for debugging
-    logger.debug('Agent Event', data, 'AgentLogger')
+    logger.debug('Agent Event', data, 'AgentLogger');
   }
 }
 
@@ -66,9 +70,13 @@ export async function logPerformance(data: PerformanceMetrics): Promise<void> {
         evaluatedAt: data.timestamp || new Date(),
       },
       success: true,
-    })
+    });
   } catch (error) {
-    logger.error('Failed to log agent performance', { error, performanceData: data }, 'AgentLogger')
+    logger.error(
+      'Failed to log agent performance',
+      { error, performanceData: data },
+      'AgentLogger'
+    );
   }
 }
 
@@ -87,7 +95,7 @@ export async function logSuccess(
     metadata: metadata || {},
     success: true,
     ...(duration !== undefined && { duration }),
-  })
+  });
 }
 
 /**
@@ -99,15 +107,15 @@ export async function logError(
   error: string | Error,
   metadata?: Record<string, unknown>
 ): Promise<void> {
-  const errorMessage = error instanceof Error ? error.message : error
-  
+  const errorMessage = error instanceof Error ? error.message : error;
+
   await logEvent({
     agent,
     action,
     metadata: metadata || {},
     success: false,
     error: errorMessage,
-  })
+  });
 }
 
 /**
@@ -116,11 +124,11 @@ export async function logError(
 export function createTimer(): {
   stop: () => number;
 } {
-  const startTime = Date.now()
-  
+  const startTime = Date.now();
+
   return {
     stop: (): number => Date.now() - startTime,
-  }
+  };
 }
 
 /**
@@ -132,17 +140,17 @@ export async function withLogging<T>(
   fn: () => Promise<T>,
   metadata?: Record<string, unknown>
 ): Promise<T> {
-  const timer = createTimer()
-  
+  const timer = createTimer();
+
   try {
-    const result = await fn()
-    const duration = timer.stop()
-    
-    await logSuccess(agent, action, metadata, duration)
-    return result
+    const result = await fn();
+    const duration = timer.stop();
+
+    await logSuccess(agent, action, metadata, duration);
+    return result;
   } catch (error) {
-    const duration = timer.stop()
-    await logError(agent, action, error as Error, { ...metadata, duration })
-    throw error
+    const duration = timer.stop();
+    await logError(agent, action, error as Error, { ...metadata, duration });
+    throw error;
   }
-} 
+}

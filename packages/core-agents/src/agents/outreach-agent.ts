@@ -8,14 +8,14 @@ export class OutreachAgent extends AbstractAgent {
       'social_outreach',
       'lead_generation',
       'follow_up',
-      'campaign_management'
+      'campaign_management',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'send_emails':
           return await this.sendEmails(context);
@@ -40,9 +40,9 @@ export class OutreachAgent extends AbstractAgent {
         {
           id: 'email_001',
           type: 'email',
-          status: 'sent'
-        }
-      ]
+          status: 'sent',
+        },
+      ],
     };
   }
 
@@ -53,9 +53,9 @@ export class OutreachAgent extends AbstractAgent {
         {
           id: 'social_001',
           type: 'social_media',
-          status: 'active'
-        }
-      ]
+          status: 'active',
+        },
+      ],
     };
   }
 
@@ -66,9 +66,9 @@ export class OutreachAgent extends AbstractAgent {
         {
           id: 'lead_001',
           type: 'lead_generation',
-          status: 'running'
-        }
-      ]
+          status: 'running',
+        },
+      ],
     };
   }
 
@@ -79,9 +79,9 @@ export class OutreachAgent extends AbstractAgent {
         {
           id: 'followup_001',
           type: 'follow_up',
-          status: 'scheduled'
-        }
-      ]
+          status: 'scheduled',
+        },
+      ],
     };
   }
 
@@ -92,9 +92,9 @@ export class OutreachAgent extends AbstractAgent {
         {
           id: 'campaign_001',
           type: 'multi_channel',
-          status: 'active'
-        }
-      ]
+          status: 'active',
+        },
+      ],
     };
   }
-} 
+}

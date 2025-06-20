@@ -28,7 +28,10 @@
     "db:studio": "cd packages/data-model && npx prisma studio",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "ci": "npm run lint && npm run type-check && npm run test && npm run test:e2e"
+    "ci": "npm run lint && npm run type-check && npm run test && npm run test:e2e",
+    "type-coverage": "type-coverage",
+    "test:ci": "npm test -- --ci --coverage --watchAll=false",
+    "lint:ci": "npm run lint -- --max-warnings 0"
   },
   "keywords": [
     "ai",

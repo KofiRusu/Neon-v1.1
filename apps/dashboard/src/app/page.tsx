@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { trpc } from '../lib/trpc';
-import { 
-  ChartBarIcon, 
-  CogIcon, 
-  UserGroupIcon, 
+import {
+  ChartBarIcon,
+  CogIcon,
+  UserGroupIcon,
   SparklesIcon,
   PlayIcon,
   PauseIcon,
@@ -17,7 +17,7 @@ import {
   BellIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-  FunnelIcon
+  FunnelIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Dashboard() {
@@ -29,37 +29,135 @@ export default function Dashboard() {
   const { data: recentAgentActivity } = trpc.agent.getRecentActions.useQuery({ limit: 5 });
 
   const agents = [
-    { id: 'content', name: 'Content Agent', status: 'active', icon: DocumentTextIcon, color: 'text-blue-400', description: 'AI-powered content generation' },
-    { id: 'ad', name: 'Ad Agent', status: 'active', icon: MegaphoneIcon, color: 'text-green-400', description: 'Automated ad optimization' },
-    { id: 'outreach', name: 'Outreach Agent', status: 'idle', icon: UserGroupIcon, color: 'text-purple-400', description: 'Lead nurturing & engagement' },
-    { id: 'trend', name: 'Trend Agent', status: 'active', icon: ArrowTrendingUpIcon, color: 'text-orange-400', description: 'Market trend analysis' },
-    { id: 'insight', name: 'Insight Agent', status: 'active', icon: ChartBarIcon, color: 'text-cyan-400', description: 'Performance analytics' },
-    { id: 'design', name: 'Design Agent', status: 'idle', icon: PaintBrushIcon, color: 'text-pink-400', description: 'Visual asset creation' },
+    {
+      id: 'content',
+      name: 'Content Agent',
+      status: 'active',
+      icon: DocumentTextIcon,
+      color: 'text-blue-400',
+      description: 'AI-powered content generation',
+    },
+    {
+      id: 'ad',
+      name: 'Ad Agent',
+      status: 'active',
+      icon: MegaphoneIcon,
+      color: 'text-green-400',
+      description: 'Automated ad optimization',
+    },
+    {
+      id: 'outreach',
+      name: 'Outreach Agent',
+      status: 'idle',
+      icon: UserGroupIcon,
+      color: 'text-purple-400',
+      description: 'Lead nurturing & engagement',
+    },
+    {
+      id: 'trend',
+      name: 'Trend Agent',
+      status: 'active',
+      icon: ArrowTrendingUpIcon,
+      color: 'text-orange-400',
+      description: 'Market trend analysis',
+    },
+    {
+      id: 'insight',
+      name: 'Insight Agent',
+      status: 'active',
+      icon: ChartBarIcon,
+      color: 'text-cyan-400',
+      description: 'Performance analytics',
+    },
+    {
+      id: 'design',
+      name: 'Design Agent',
+      status: 'idle',
+      icon: PaintBrushIcon,
+      color: 'text-pink-400',
+      description: 'Visual asset creation',
+    },
   ];
 
   const metrics = [
-    { name: 'Total Campaigns', value: campaignStats?.total?.toString() || '0', change: '+2', changeType: 'positive', icon: MegaphoneIcon, color: 'text-blue-400' },
-    { name: 'Active Campaigns', value: campaignStats?.active?.toString() || '0', change: '+1', changeType: 'positive', icon: SparklesIcon, color: 'text-green-400' },
-    { name: 'Completed', value: campaignStats?.completed?.toString() || '0', change: '+0.3x', changeType: 'positive', icon: ChartBarIcon, color: 'text-cyan-400' },
-    { name: 'Draft Campaigns', value: campaignStats?.draft?.toString() || '0', change: '+156', changeType: 'positive', icon: UserGroupIcon, color: 'text-purple-400' },
+    {
+      name: 'Total Campaigns',
+      value: campaignStats?.total?.toString() || '0',
+      change: '+2',
+      changeType: 'positive',
+      icon: MegaphoneIcon,
+      color: 'text-blue-400',
+    },
+    {
+      name: 'Active Campaigns',
+      value: campaignStats?.active?.toString() || '0',
+      change: '+1',
+      changeType: 'positive',
+      icon: SparklesIcon,
+      color: 'text-green-400',
+    },
+    {
+      name: 'Completed',
+      value: campaignStats?.completed?.toString() || '0',
+      change: '+0.3x',
+      changeType: 'positive',
+      icon: ChartBarIcon,
+      color: 'text-cyan-400',
+    },
+    {
+      name: 'Draft Campaigns',
+      value: campaignStats?.draft?.toString() || '0',
+      change: '+156',
+      changeType: 'positive',
+      icon: UserGroupIcon,
+      color: 'text-purple-400',
+    },
   ];
 
   // Use real activity data from API or fallback to mock data
-  const recentActivity = recentAgentActivity?.map((activity) => ({
+  const recentActivity = recentAgentActivity?.map(activity => ({
     id: activity.id,
     agent: activity.agent,
     action: activity.action,
     time: new Date(activity.createdAt).toLocaleTimeString(),
     status: 'completed',
-    type: 'agent'
+    type: 'agent',
   })) || [
-    { id: 1, agent: 'Content Agent', action: 'System initialized', time: 'Just now', status: 'completed', type: 'content' },
-    { id: 2, agent: 'Ad Agent', action: 'Monitoring setup', time: 'Just now', status: 'completed', type: 'ads' },
-    { id: 3, agent: 'Trend Agent', action: 'Data collection started', time: 'Just now', status: 'completed', type: 'trends' },
-    { id: 4, agent: 'Insight Agent', action: 'Analytics ready', time: 'Just now', status: 'completed', type: 'analytics' },
+    {
+      id: 1,
+      agent: 'Content Agent',
+      action: 'System initialized',
+      time: 'Just now',
+      status: 'completed',
+      type: 'content',
+    },
+    {
+      id: 2,
+      agent: 'Ad Agent',
+      action: 'Monitoring setup',
+      time: 'Just now',
+      status: 'completed',
+      type: 'ads',
+    },
+    {
+      id: 3,
+      agent: 'Trend Agent',
+      action: 'Data collection started',
+      time: 'Just now',
+      status: 'completed',
+      type: 'trends',
+    },
+    {
+      id: 4,
+      agent: 'Insight Agent',
+      action: 'Analytics ready',
+      time: 'Just now',
+      status: 'completed',
+      type: 'analytics',
+    },
   ];
 
-  const filteredAgents = agents.filter(agent => 
+  const filteredAgents = agents.filter(agent =>
     agent.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -88,21 +186,21 @@ export default function Dashboard() {
                   placeholder="Search agents, campaigns..."
                   className="input pl-10 pr-4 w-64"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
-              
+
               {/* Notifications */}
               <button className="btn-secondary relative">
                 <BellIcon className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-neon-400 rounded-full animate-pulse"></span>
               </button>
-              
+
               {/* Settings */}
               <button className="btn-secondary">
                 <CogIcon className="h-5 w-5" />
               </button>
-              
+
               {/* User Avatar */}
               <div className="w-10 h-10 bg-gradient-to-r from-neon-400 to-neon-500 rounded-full flex items-center justify-center neon-glow">
                 <span className="text-white font-medium">N</span>
@@ -147,7 +245,9 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-3xl font-bold text-gradient mb-2">Welcome back, User!</h1>
-                    <p className="text-dark-400">Your AI agents are working hard to optimize your marketing campaigns.</p>
+                    <p className="text-dark-400">
+                      Your AI agents are working hard to optimize your marketing campaigns.
+                    </p>
                   </div>
                   <button className="btn-primary flex items-center space-x-2">
                     <PlusIcon className="h-5 w-5" />
@@ -158,13 +258,17 @@ export default function Dashboard() {
 
               {/* Metrics Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {metrics.map((metric) => (
+                {metrics.map(metric => (
                   <div key={metric.name} className="metric-card">
                     <div className="flex items-center justify-between mb-4">
                       <metric.icon className={`h-8 w-8 ${metric.color}`} />
-                      <div className={`text-sm font-medium px-2 py-1 rounded-full ${
-                        metric.changeType === 'positive' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                      }`}>
+                      <div
+                        className={`text-sm font-medium px-2 py-1 rounded-full ${
+                          metric.changeType === 'positive'
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-red-500/20 text-red-400'
+                        }`}
+                      >
                         {metric.change}
                       </div>
                     </div>
@@ -186,7 +290,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredAgents.map((agent) => (
+                  {filteredAgents.map(agent => (
                     <div key={agent.id} className="agent-card">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">
@@ -201,7 +305,11 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between">
                         <span className="text-dark-400 text-sm capitalize">{agent.status}</span>
                         <button className="btn-pill">
-                          {agent.status === 'active' ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
+                          {agent.status === 'active' ? (
+                            <PauseIcon className="h-4 w-4" />
+                          ) : (
+                            <PlayIcon className="h-4 w-4" />
+                          )}
                         </button>
                       </div>
                     </div>
@@ -213,10 +321,12 @@ export default function Dashboard() {
               <div className="card-glow">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
-                  <button className="text-neon-400 hover:text-neon-300 text-sm font-medium">View All</button>
+                  <button className="text-neon-400 hover:text-neon-300 text-sm font-medium">
+                    View All
+                  </button>
                 </div>
                 <div className="space-y-3">
-                  {recentActivity.map((activity) => (
+                  {recentActivity.map(activity => (
                     <div key={activity.id} className="activity-item">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
@@ -268,4 +378,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-} 
+}

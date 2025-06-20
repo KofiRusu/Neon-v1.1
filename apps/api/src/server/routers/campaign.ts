@@ -1,6 +1,6 @@
-import { z } from 'zod'
-import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
-import { type CampaignType, type CampaignStatus } from '@neon/data-model'
+import { z } from 'zod';
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
+import { type CampaignType, type CampaignStatus } from '@neon/data-model';
 
 export const campaignRouter = createTRPCRouter({
   // Get all campaigns
@@ -17,7 +17,7 @@ export const campaignRouter = createTRPCRouter({
       const where = {
         ...(input.userId && { userId: input.userId }),
         ...(input.status && { status: input.status as CampaignStatus }),
-      }
+      };
 
       return ctx.db.campaign.findMany({
         where,
@@ -31,30 +31,34 @@ export const campaignRouter = createTRPCRouter({
         orderBy: { createdAt: 'desc' },
         skip: input.offset,
         take: input.limit,
-      })
+      });
     }),
 
   // Get campaign by ID
-  getById: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.campaign.findUnique({
-        where: { id: input.id },
-        include: {
-          user: true,
-          metrics: {
-            orderBy: { timestamp: 'desc' },
-          },
+  getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return ctx.db.campaign.findUnique({
+      where: { id: input.id },
+      include: {
+        user: true,
+        metrics: {
+          orderBy: { timestamp: 'desc' },
         },
-      })
-    }),
+      },
+    });
+  }),
 
   // Create new campaign
   create: protectedProcedure
     .input(
       z.object({
         name: z.string().min(1),
-        type: z.enum(['CONTENT_GENERATION', 'AD_OPTIMIZATION', 'B2B_OUTREACH', 'TREND_ANALYSIS', 'DESIGN_GENERATION']),
+        type: z.enum([
+          'CONTENT_GENERATION',
+          'AD_OPTIMIZATION',
+          'B2B_OUTREACH',
+          'TREND_ANALYSIS',
+          'DESIGN_GENERATION',
+        ]),
         userId: z.string(),
         status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED', 'FAILED']).default('DRAFT'),
       })
@@ -70,7 +74,7 @@ export const campaignRouter = createTRPCRouter({
         include: {
           user: true,
         },
-      })
+      });
     }),
 
   // Update campaign
@@ -83,7 +87,7 @@ export const campaignRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input
+      const { id, ...data } = input;
       return ctx.db.campaign.update({
         where: { id },
         data: data as { name?: string; status?: CampaignStatus },
@@ -94,7 +98,7 @@ export const campaignRouter = createTRPCRouter({
             take: 5,
           },
         },
-      })
+      });
     }),
 
   // Delete campaign
@@ -103,30 +107,30 @@ export const campaignRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.campaign.delete({
         where: { id: input.id },
-      })
+      });
     }),
 
   // Get campaign statistics
   getStats: publicProcedure
     .input(z.object({ userId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
-      const where = input.userId ? { userId: input.userId } : {}
+      const where = input.userId ? { userId: input.userId } : {};
 
       const [total, active, completed] = await Promise.all([
         ctx.db.campaign.count({ where }),
-        ctx.db.campaign.count({ 
-          where: { ...where, status: 'ACTIVE' } 
+        ctx.db.campaign.count({
+          where: { ...where, status: 'ACTIVE' },
         }),
-        ctx.db.campaign.count({ 
-          where: { ...where, status: 'COMPLETED' } 
+        ctx.db.campaign.count({
+          where: { ...where, status: 'COMPLETED' },
         }),
-      ])
+      ]);
 
       return {
         total,
         active,
         completed,
         draft: total - active - completed,
-      }
+      };
     }),
-}) 
+});

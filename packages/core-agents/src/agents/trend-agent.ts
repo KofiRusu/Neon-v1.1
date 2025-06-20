@@ -8,14 +8,14 @@ export class TrendAgent extends AbstractAgent {
       'predict_viral_content',
       'track_hashtags',
       'monitor_competitors',
-      'seasonal_analysis'
+      'seasonal_analysis',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'analyze_trends':
           return await this.analyzeTrends(context);
@@ -40,14 +40,14 @@ export class TrendAgent extends AbstractAgent {
         {
           keyword: 'AI marketing',
           volume: 125000,
-          growth: 0.23
+          growth: 0.23,
         },
         {
           keyword: 'social commerce',
           volume: 89000,
-          growth: 0.18
-        }
-      ]
+          growth: 0.18,
+        },
+      ],
     };
   }
 
@@ -58,9 +58,9 @@ export class TrendAgent extends AbstractAgent {
         {
           keyword: 'video content',
           volume: 200000,
-          growth: 0.35
-        }
-      ]
+          growth: 0.35,
+        },
+      ],
     };
   }
 
@@ -71,14 +71,14 @@ export class TrendAgent extends AbstractAgent {
         {
           keyword: '#MarketingTips',
           volume: 45000,
-          growth: 0.12
+          growth: 0.12,
         },
         {
           keyword: '#DigitalMarketing',
           volume: 78000,
-          growth: 0.08
-        }
-      ]
+          growth: 0.08,
+        },
+      ],
     };
   }
 
@@ -89,9 +89,9 @@ export class TrendAgent extends AbstractAgent {
         {
           keyword: 'competitor analysis',
           volume: 32000,
-          growth: 0.15
-        }
-      ]
+          growth: 0.15,
+        },
+      ],
     };
   }
 
@@ -102,9 +102,9 @@ export class TrendAgent extends AbstractAgent {
         {
           keyword: 'holiday marketing',
           volume: 156000,
-          growth: 0.45
-        }
-      ]
+          growth: 0.45,
+        },
+      ],
     };
   }
-} 
+}

@@ -8,14 +8,14 @@ export class ContentAgent extends AbstractAgent {
       'optimize_seo',
       'create_headlines',
       'content_strategy',
-      'social_media_posts'
+      'social_media_posts',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'generate_content':
           return await this.generateContent(context);
@@ -40,8 +40,8 @@ export class ContentAgent extends AbstractAgent {
       metadata: {
         wordCount: 150,
         tone: 'professional',
-        keywords: ['marketing', 'automation', 'AI']
-      }
+        keywords: ['marketing', 'automation', 'AI'],
+      },
     };
   }
 
@@ -52,8 +52,8 @@ export class ContentAgent extends AbstractAgent {
       metadata: {
         wordCount: 200,
         tone: 'informative',
-        keywords: ['SEO', 'optimization', 'search engine']
-      }
+        keywords: ['SEO', 'optimization', 'search engine'],
+      },
     };
   }
 
@@ -64,8 +64,8 @@ export class ContentAgent extends AbstractAgent {
       metadata: {
         wordCount: 8,
         tone: 'engaging',
-        keywords: ['headlines', 'engagement', 'conversions']
-      }
+        keywords: ['headlines', 'engagement', 'conversions'],
+      },
     };
   }
 
@@ -76,8 +76,8 @@ export class ContentAgent extends AbstractAgent {
       metadata: {
         wordCount: 300,
         tone: 'strategic',
-        keywords: ['strategy', 'content planning', 'audience']
-      }
+        keywords: ['strategy', 'content planning', 'audience'],
+      },
     };
   }
 
@@ -89,8 +89,8 @@ export class ContentAgent extends AbstractAgent {
       metadata: {
         wordCount: 12,
         tone: 'casual',
-        keywords: ['social media', 'engagement', 'marketing']
-      }
+        keywords: ['social media', 'engagement', 'marketing'],
+      },
     };
   }
-} 
+}

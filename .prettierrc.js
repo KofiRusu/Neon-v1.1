@@ -16,15 +16,15 @@ module.exports = {
       files: ['*.json', '*.jsonc'],
       options: {
         printWidth: 80,
-        tabWidth: 2
-      }
+        tabWidth: 2,
+      },
     },
     {
       files: ['*.md'],
       options: {
         printWidth: 80,
-        proseWrap: 'always'
-      }
-    }
-  ]
-}; 
+        proseWrap: 'always',
+      },
+    },
+  ],
+};

@@ -1,8 +1,8 @@
-import { createTRPCRouter } from './trpc'
-import { userRouter } from './routers/user'
-import { campaignRouter } from './routers/campaign'
-import { metricsRouter } from './routers/metrics'
-import { agentRouter } from './routers/agent'
+import { createTRPCRouter } from './trpc';
+import { userRouter } from './routers/user';
+import { campaignRouter } from './routers/campaign';
+import { metricsRouter } from './routers/metrics';
+import { agentRouter } from './routers/agent';
 
 /**
  * This is the primary router for your server.
@@ -14,7 +14,7 @@ export const appRouter = createTRPCRouter({
   campaign: campaignRouter,
   metrics: metricsRouter,
   agent: agentRouter,
-})
+});
 
 // export type definition of API
-export type AppRouter = typeof appRouter 
+export type AppRouter = typeof appRouter;

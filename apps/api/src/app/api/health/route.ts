@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 export async function GET(): Promise<NextResponse> {
   try {
     // For now, we'll skip the database check to get the API working
     // TODO: Add database health check when database is properly configured
-    
+
     const healthData = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -15,9 +15,9 @@ export async function GET(): Promise<NextResponse> {
         api: 'healthy',
       },
       uptime: process.uptime(),
-    }
+    };
 
-    return NextResponse.json(healthData, { status: 200 })
+    return NextResponse.json(healthData, { status: 200 });
   } catch (error) {
     const errorData = {
       status: 'unhealthy',
@@ -30,8 +30,8 @@ export async function GET(): Promise<NextResponse> {
       },
       error: error instanceof Error ? error.message : 'Unknown error',
       uptime: process.uptime(),
-    }
+    };
 
-    return NextResponse.json(errorData, { status: 503 })
+    return NextResponse.json(errorData, { status: 503 });
   }
-} 
+}
