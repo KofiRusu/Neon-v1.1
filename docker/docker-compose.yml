@@ -1,0 +1,266 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: neonhub-postgres
+    environment:
+      POSTGRES_DB: neonhub_dev
+      POSTGRES_USER: neonhub
+      POSTGRES_PASSWORD: neonhub_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - neonhub-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neonhub -d neonhub_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: neonhub-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - neonhub-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js Dashboard
+  dashboard:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dashboard
+    container_name: neonhub-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://neonhub:neonhub_password@postgres:5432/neonhub_dev
+      - REDIS_URL=redis://redis:6379
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    volumes:
+      - ../apps/dashboard:/app/apps/dashboard
+      - ../packages:/app/packages
+      - /app/apps/dashboard/node_modules
+      - /app/packages/*/node_modules
+    networks:
+      - neonhub-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Server
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: neonhub-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://neonhub:neonhub_password@postgres:5432/neonhub_dev
+      - REDIS_URL=redis://redis:6379
+      - PORT=3001
+    volumes:
+      - ../apps/api:/app/apps/api
+      - ../packages:/app/packages
+      - /app/apps/api/node_modules
+      - /app/packages/*/node_modules
+    networks:
+      - neonhub-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prisma Studio (Database GUI)
+  prisma-studio:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prisma-studio
+    container_name: neonhub-prisma-studio
+    ports:
+      - "5555:5555"
+    environment:
+      - DATABASE_URL=postgresql://neonhub:neonhub_password@postgres:5432/neonhub_dev
+    volumes:
+      - ../packages/data-model:/app/packages/data-model
+    networks:
+      - neonhub-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  # AI Agent Worker
+  agent-worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.agent-worker
+    container_name: neonhub-agent-worker
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://neonhub:neonhub_password@postgres:5432/neonhub_dev
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ../packages/core-agents:/app/packages/core-agents
+      - ../packages/reasoning-engine:/app/packages/reasoning-engine
+      - /app/packages/*/node_modules
+    networks:
+      - neonhub-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - workers
+
+  # Background Job Processor
+  job-processor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.job-processor
+    container_name: neonhub-job-processor
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://neonhub:neonhub_password@postgres:5432/neonhub_dev
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ../packages/reasoning-engine:/app/packages/reasoning-engine
+      - /app/packages/*/node_modules
+    networks:
+      - neonhub-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - workers
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: neonhub-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - neonhub-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: neonhub-grafana
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - neonhub-network
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+  # Development Tools
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: neonhub-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - neonhub-network
+    profiles:
+      - tools
+
+  # Elasticsearch for Logging
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: neonhub-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - neonhub-network
+    profiles:
+      - monitoring
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: neonhub-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - neonhub-network
+    depends_on:
+      - elasticsearch
+    profiles:
+      - monitoring
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
+networks:
+  neonhub-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

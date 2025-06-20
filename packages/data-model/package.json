@@ -1,26 +1,47 @@
 {
   "name": "@neon/data-model",
-  "version": "1.0.0",
-  "description": "Database models and Prisma schema for NeonHub",
-  "main": "src/index.ts",
+  "version": "0.2.0",
+  "description": "Database schema and data models for NeonHub AI Marketing Ecosystem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:seed": "tsx src/seed.ts"
+    "db:seed": "tsx src/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:format": "prisma format",
+    "db:validate": "prisma validate"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1"
   },
   "devDependencies": {
+    "@types/node": "^20.10.0",
     "prisma": "^5.19.1",
-    "tsx": "^4.19.1"
+    "tsx": "^4.19.1",
+    "typescript": "^5.8.3"
   },
   "exports": {
     ".": "./src/index.ts",
     "./client": "./src/client.ts"
-  }
+  },
+  "peerDependencies": {
+    "@prisma/client": "^5.19.1"
+  },
+  "keywords": [
+    "prisma",
+    "database",
+    "schema",
+    "neonhub",
+    "marketing",
+    "ai"
+  ],
+  "author": "NeonHub Team",
+  "license": "MIT"
 } 

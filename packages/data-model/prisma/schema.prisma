@@ -3,7 +3,10 @@
 
 generator client {
   provider = "prisma-client-js"
+<<<<<<< HEAD
   output   = "../node_modules/.prisma/client"
+=======
+>>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 }
 
 datasource db {
@@ -11,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+<<<<<<< HEAD
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -20,10 +24,30 @@ model User {
 
   // Relations
   campaigns Campaign[]
+=======
+// User Management
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          UserRole  @default(USER)
+  avatar        String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  campaigns     Campaign[]
+  agentExecutions AgentExecution[]
+  analytics     Analytics[]
+  sessions      Session[]
+  accounts      Account[]
+>>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 
   @@map("users")
 }
 
+<<<<<<< HEAD
 model Campaign {
   id        String         @id @default(cuid())
   name      String
@@ -38,10 +62,77 @@ model Campaign {
 
   // Relations
   metrics CampaignMetric[]
+=======
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Campaign Management
+model Campaign {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  type        CampaignType
+  status      CampaignStatus @default(DRAFT)
+  budget      Float?
+  startDate   DateTime?
+  endDate     DateTime?
+  targetAudience Json?
+  platforms   Platform[]
+  metrics     Json?
+  settings    Json?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  userId      String
+  userId2     String?
+
+  // Relations
+  user        User           @relation(fields: [userId], references: [id])
+  user2       User?          @relation("CampaignUser2", fields: [userId2], references: [id])
+  agentExecutions AgentExecution[]
+  analytics   Analytics[]
+  abTests     ABTest[]
+>>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 
   @@map("campaigns")
 }
 
+<<<<<<< HEAD
 model CampaignMetric {
   id          String   @id @default(cuid())
   impressions Int      @default(0)
@@ -64,10 +155,158 @@ model AIEventLog {
   createdAt DateTime @default(now())
 
   @@map("ai_event_logs")
+=======
+// AI Agents
+model Agent {
+  id          String   @id @default(cuid())
+  name        String
+  type        AgentType
+  status      AgentStatus @default(ACTIVE)
+  capabilities Json?
+  settings    Json?
+  version     String   @default("1.0.0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  executions  AgentExecution[]
+
+  @@map("agents")
+}
+
+model AgentExecution {
+  id          String   @id @default(cuid())
+  agentId     String
+  campaignId  String?
+  userId      String?
+  task        String
+  payload     Json?
+  result      Json?
+  status      ExecutionStatus @default(PENDING)
+  performance Float?
+  error       String?
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  metadata    Json?
+
+  // Relations
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("agent_executions")
+}
+
+// Analytics & Metrics
+model Analytics {
+  id          String   @id @default(cuid())
+  campaignId  String?
+  userId      String?
+  type        AnalyticsType
+  data        Json
+  period      String?  // daily, weekly, monthly
+  date        DateTime @default(now())
+  metadata    Json?
+
+  // Relations
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("analytics")
+}
+
+// A/B Testing
+model ABTest {
+  id          String   @id @default(cuid())
+  campaignId  String
+  name        String
+  description String?
+  status      ABTestStatus @default(RUNNING)
+  variants    Json
+  results     Json?
+  winner      String?
+  confidence  Float?
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  settings    Json?
+
+  // Relations
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+
+  @@map("ab_tests")
+}
+
+// Content Management
+model Content {
+  id          String   @id @default(cuid())
+  title       String
+  type        ContentType
+  platform    Platform
+  content     Json
+  status      ContentStatus @default(DRAFT)
+  performance Json?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contents")
+}
+
+// Lead Management
+model Lead {
+  id          String   @id @default(cuid())
+  email       String
+  name        String?
+  company     String?
+  position    String?
+  phone       String?
+  source      String?
+  status      LeadStatus @default(NEW)
+  score       Float?
+  tags        String[]
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("leads")
+}
+
+// Trend Analysis
+model Trend {
+  id          String   @id @default(cuid())
+  keyword     String
+  platform    Platform
+  category    String?
+  score       Float
+  volume      Int?
+  growth      Float?
+  data        Json
+  detectedAt  DateTime @default(now())
+
+  @@map("trends")
+}
+
+// Design Templates
+model DesignTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  template    Json
+  preview     String?
+  tags        String[]
+  usage       Int      @default(0)
+  rating      Float?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("design_templates")
+>>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 }
 
 // Enums
 enum UserRole {
+<<<<<<< HEAD
   USER
   ADMIN
   SUPER_ADMIN
@@ -79,6 +318,22 @@ enum CampaignType {
   B2B_OUTREACH
   TREND_ANALYSIS
   DESIGN_GENERATION
+=======
+  ADMIN
+  MANAGER
+  USER
+  VIEWER
+}
+
+enum CampaignType {
+  SOCIAL_MEDIA
+  EMAIL
+  ADS
+  CONTENT
+  INFLUENCER
+  EVENT
+  PRODUCT_LAUNCH
+>>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 }
 
 enum CampaignStatus {
@@ -86,5 +341,91 @@ enum CampaignStatus {
   ACTIVE
   PAUSED
   COMPLETED
+<<<<<<< HEAD
   FAILED
+=======
+  CANCELLED
+}
+
+enum Platform {
+  FACEBOOK
+  INSTAGRAM
+  TIKTOK
+  TWITTER
+  LINKEDIN
+  YOUTUBE
+  EMAIL
+  WEBSITE
+  SHOPIFY
+  GOOGLE_ADS
+  META_ADS
+}
+
+enum AgentType {
+  CONTENT
+  AD
+  OUTREACH
+  TREND
+  INSIGHT
+  DESIGN
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  DEPRECATED
+}
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum AnalyticsType {
+  ENGAGEMENT
+  REACH
+  CONVERSION
+  REVENUE
+  CLICKS
+  IMPRESSIONS
+  SENTIMENT
+  PERFORMANCE
+}
+
+enum ABTestStatus {
+  DRAFT
+  RUNNING
+  COMPLETED
+  STOPPED
+}
+
+enum ContentType {
+  POST
+  STORY
+  REEL
+  VIDEO
+  EMAIL
+  AD
+  BLOG
+  PRODUCT
+}
+
+enum ContentStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+>>>>>>> f0f3c113352d03431cdc7c9a3c4d528a2130224b
 } 

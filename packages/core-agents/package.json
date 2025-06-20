@@ -1,25 +1,50 @@
 {
   "name": "@neon/core-agents",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "AI agents for NeonHub marketing automation",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@neon/data-model": "*",
     "@neon/types": "*",
-    "@neon/utils": "*"
+    "@neon/utils": "*",
+    "langchain": "^0.3.28",
+    "openai": "^4.20.0",
+    "zod": "^3.22.0",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0",
+    "puppeteer": "^24.10.2",
+    "redis": "^4.6.0",
+    "node-cron": "^3.0.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@types/node": "^20.10.0",
+    "@types/node-cron": "^3.0.0",
     "jest": "^30.0.2",
+    "ts-jest": "^29.1.0",
     "typescript": "^5.8.3"
   },
   "exports": {
     ".": "./src/index.ts"
-  }
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "langchain",
+    "openai",
+    "marketing",
+    "automation",
+    "neonhub"
+  ],
+  "author": "NeonHub Team",
+  "license": "MIT"
 } 
