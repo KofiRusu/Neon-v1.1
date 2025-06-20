@@ -7,7 +7,7 @@
  * - Agent performance monitoring and logging
  */
 
-import { logEvent, logPerformance, withLogging, type PerformanceMetrics } from '@neon/utils'
+import { logEvent, logPerformance, withLogging, logger, type PerformanceMetrics } from '@neon/utils'
 import type { AgentName } from '@neon/types'
 
 export interface ContentScore {
@@ -51,8 +51,7 @@ export class AuditAgent {
             return aiScore
           }
         } catch (error) {
-          // eslint-disable-next-line no-console
-          console.warn('AI evaluation failed, falling back to static analysis:', error)
+          logger.warn('AI evaluation failed, falling back to static analysis', { error }, 'AuditAgent')
         }
 
         // Fallback to static analysis
@@ -156,7 +155,7 @@ export class AuditAgent {
 
       // For now, return null to trigger fallback
       // TODO: Implement actual OpenAI API call
-      console.log('OpenAI evaluation prompt prepared:', `${mockPrompt.substring(0, 100)  }...`)
+      logger.debug('OpenAI evaluation prompt prepared', { promptPreview: mockPrompt.substring(0, 100) }, 'AuditAgent')
       return null
 
       /* 
@@ -182,7 +181,7 @@ export class AuditAgent {
       }
       */
     } catch (error) {
-      console.error('OpenAI evaluation error:', error)
+      logger.error('OpenAI evaluation error', { error }, 'AuditAgent')
       return null
     }
   }

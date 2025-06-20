@@ -7,6 +7,7 @@
 
 import { db } from '@neon/data-model'
 import type { AgentName } from '@neon/types'
+import { logger } from './logger'
 
 export interface LogEventData {
   agent: AgentName;
@@ -44,10 +45,10 @@ export async function logEvent(data: LogEventData): Promise<void> {
     })
   } catch (error) {
     // Fallback logging to console if database logging fails
-    // eslint-disable-next-line no-console
-    console.error('Failed to log agent event to database:', error)
-    // eslint-disable-next-line no-console
-    console.log('Agent Event:', JSON.stringify(data, null, 2))
+    // Use our structured logger instead of console
+    logger.error('Failed to log agent event to database', { error, eventData: data }, 'AgentLogger')
+    // Log event data for debugging
+    logger.debug('Agent Event', data, 'AgentLogger')
   }
 }
 
@@ -67,8 +68,7 @@ export async function logPerformance(data: PerformanceMetrics): Promise<void> {
       success: true,
     })
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to log agent performance:', error)
+    logger.error('Failed to log agent performance', { error, performanceData: data }, 'AgentLogger')
   }
 }
 

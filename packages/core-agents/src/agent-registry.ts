@@ -1,4 +1,5 @@
 import { AgentFactory } from './base-agent';
+import { logger } from '@neon/utils';
 
 // Import all agent classes
 import { ContentAgent } from './agents/content-agent';
@@ -21,8 +22,7 @@ export function registerAllAgents(): void {
   AgentFactory.registerAgent('insight', InsightAgent);
   AgentFactory.registerAgent('design', DesignAgent);
   
-  console.log('Agent registry initialized');
-  console.log('Available agent types:', AgentFactory.getAvailableTypes());
+  logger.info('Agent registry initialized', { agentTypes: AgentFactory.getAvailableTypes() }, 'AgentRegistry');
 }
 
 /**

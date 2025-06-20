@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { logger } from '@neon/utils';
 
 // Base schemas for agent communication
 export const AgentPayloadSchema = z.object({
@@ -79,7 +80,7 @@ export abstract class AbstractAgent implements BaseAgent {
       AgentPayloadSchema.parse(payload);
       return true;
     } catch (error) {
-      console.error(`Invalid payload for agent ${this.name}:`, error);
+      logger.error(`Invalid payload for agent ${this.name}`, { error, agentName: this.name }, 'AgentValidation');
       return false;
     }
   }

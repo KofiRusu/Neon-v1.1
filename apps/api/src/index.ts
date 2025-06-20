@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
+import { logger } from '@neon/utils';
 
 // Load environment variables
 dotenv.config();
@@ -94,7 +95,7 @@ app.get('/api/campaigns', (req, res) => {
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err.stack);
+  logger.error('API Error', { error: err.message, stack: err.stack }, 'APIServer');
   res.status(500).json({
     error: 'Something went wrong!',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
@@ -111,9 +112,13 @@ app.use('*', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 NeonHub AI Marketing Ecosystem API running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔗 API status: http://localhost:${PORT}/api/status`);
-  console.log(`🤖 Agents: http://localhost:${PORT}/api/agents`);
-  console.log(`📈 Campaigns: http://localhost:${PORT}/api/campaigns`);
+  logger.info(`🚀 NeonHub AI Marketing Ecosystem API running on port ${PORT}`, {
+    port: PORT,
+    endpoints: {
+      health: `http://localhost:${PORT}/health`,
+      status: `http://localhost:${PORT}/api/status`,
+      agents: `http://localhost:${PORT}/api/agents`,
+      campaigns: `http://localhost:${PORT}/api/campaigns`
+    }
+  }, 'APIServer');
 }); 

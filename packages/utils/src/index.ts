@@ -146,4 +146,15 @@ export {
   withLogging,
   type LogEventData,
   type PerformanceMetrics,
-} from './agentLogger'; 
+} from './agentLogger';
+
+// Export main logging utilities
+export {
+  logger,
+  createLogger,
+  logAgentAction,
+  logPerformanceMetric,
+  logSystemEvent,
+  type LogLevel,
+  type LogEntry,
+} from './logger'; 
