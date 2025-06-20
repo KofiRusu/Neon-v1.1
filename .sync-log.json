@@ -490,5 +490,17 @@
     "level": "info",
     "message": "Pulled latest changes from origin/main",
     "device": "Kofis-MacBook-Air-local-darwin-arm64"
+  },
+  {
+    "timestamp": "2025-06-20T16:43:21.511Z",
+    "level": "info",
+    "message": "Starting workspace sync...",
+    "device": "Kofis-MacBook-Air-local-darwin-arm64"
+  },
+  {
+    "timestamp": "2025-06-20T16:43:22.009Z",
+    "level": "info",
+    "message": "Pulled latest changes from origin/main",
+    "device": "Kofis-MacBook-Air-local-darwin-arm64"
   }
 ]
