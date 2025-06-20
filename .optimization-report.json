@@ -1,20 +1,18 @@
 {
   "title": "🤖 NeonHub Full Project Optimization Report",
-  "executedAt": "2025-06-20T23:37:35.264Z",
+  "executedAt": "2025-06-20T23:47:59.999Z",
   "summary": {
     "total": 11,
     "completed": 5,
     "failed": 6,
     "improvements": [
       "Applied Prettier code formatting",
-      "Improved logging in 3 files",
       "Identified functions needing explicit return types",
-      "Fixed 6 lint warnings",
       "Found 47 'any' types that could be made more specific",
       "Found 41 TypeScript errors to fix",
       "Function return type coverage: 0% (0/34)",
       "Created test structure (some tests need implementation)",
-      "Found 3 existing CI/CD workflows",
+      "Found 4 existing CI/CD workflows",
       "No moderate or high security vulnerabilities found",
       "Build process needs attention - check npm run build",
       "Environment configuration example found",
@@ -54,25 +52,19 @@
       "status": "completed",
       "improvements": [
         "Applied Prettier code formatting",
-        "Improved logging in 3 files",
-        "Identified functions needing explicit return types",
-        "Fixed 6 lint warnings"
+        "Identified functions needing explicit return types"
       ],
       "metrics": {
         "lintErrorsBefore": 21,
         "lintErrorsAfter": 21,
-        "warningsBefore": 11,
+        "warningsBefore": 5,
         "warningsAfter": 5,
         "filesScanned": 0,
         "fixesApplied": 1,
-        "duration": 5290
+        "duration": 5153
       },
-      "duration": 5290,
-      "filesChanged": [
-        "./tests/integration/agent-workflows.test.ts",
-        "./tests/integration/database-operations.test.ts",
-        "./tests/integration/api-endpoints.test.ts"
-      ]
+      "duration": 5153,
+      "filesChanged": []
     },
     "type-safety": {
       "status": "completed",
@@ -85,9 +77,9 @@
         "anyTypes": 47,
         "typeErrors": 41,
         "functionTypeCoverage": 0,
-        "duration": 4027
+        "duration": 3646
       },
-      "duration": 4027,
+      "duration": 3646,
       "filesChanged": []
     },
     "testing": {
@@ -102,9 +94,9 @@
         "coverageAfter": 0,
         "newTestsCreated": 7,
         "testSuitesFixed": 0,
-        "duration": 15692
+        "duration": 13502
       },
-      "duration": 15692,
+      "duration": 13502,
       "filesChanged": [
         "./apps/dashboard/.next/types/app/agents/page.test.ts",
         "./apps/dashboard/.next/types/app/page.test.ts",
@@ -118,14 +110,14 @@
     "ci-cd": {
       "status": "completed",
       "improvements": [
-        "Found 3 existing CI/CD workflows",
+        "Found 4 existing CI/CD workflows",
         "No moderate or high security vulnerabilities found",
         "Build process needs attention - check npm run build",
         "Environment configuration example found"
       ],
       "metrics": {
-        "workflowCount": 3,
-        "totalJobs": 58,
+        "workflowCount": 4,
+        "totalJobs": 74,
         "hasSecurityChecks": true,
         "hasCaching": true,
         "securityVulnerabilities": 0,
@@ -135,9 +127,9 @@
           "hasLocal": false,
           "hasProduction": false
         },
-        "duration": 13528
+        "duration": 11939
       },
-      "duration": 13528,
+      "duration": 11939,
       "filesChanged": []
     },
     "documentation": {
@@ -155,9 +147,9 @@
         "jsdocCoverage": 24,
         "readmeUpdates": 1,
         "generatedDocs": 1,
-        "duration": 654
+        "duration": 652
       },
-      "duration": 654,
+      "duration": 652,
       "filesChanged": [
         "docs/api-overview.json",
         "README.md"
