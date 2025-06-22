@@ -3,6 +3,11 @@ import { userRouter } from './routers/user';
 import { campaignRouter } from './routers/campaign';
 import { metricsRouter } from './routers/metrics';
 import { agentRouter } from './routers/agent';
+import { contentRouter } from './routers/content';
+import { seoRouter } from './routers/seo';
+import { emailRouter } from './routers/email';
+import { socialRouter } from './routers/social';
+import { supportRouter } from './routers/support';
 
 /**
  * This is the primary router for your server.
@@ -14,6 +19,11 @@ export const appRouter = createTRPCRouter({
   campaign: campaignRouter,
   metrics: metricsRouter,
   agent: agentRouter,
+  content: contentRouter,
+  seo: seoRouter,
+  email: emailRouter,
+  social: socialRouter,
+  support: supportRouter,
 });
 
 // export type definition of API

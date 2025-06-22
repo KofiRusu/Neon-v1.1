@@ -3,6 +3,10 @@ import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 
 const agentNames = [
   'ContentAgent',
+  'SEOAgent',
+  'EmailMarketingAgent',
+  'SocialPostingAgent',
+  'CustomerSupportAgent',
   'AdAgent',
   'OutreachAgent',
   'TrendAgent',
@@ -58,7 +62,7 @@ export const agentRouter = createTRPCRouter({
         data: {
           agent: input.agent,
           action: input.action,
-          metadata: input.metadata || {},
+          metadata: (input.metadata || {}) as any,
         },
       });
     }),

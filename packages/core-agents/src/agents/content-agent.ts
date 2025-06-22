@@ -1,96 +1,233 @@
-import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
-import { AgentContextOrUndefined, ContentResult } from '../types';
+import { AbstractAgent } from '../base-agent';
+import type { AgentResult, AgentPayload } from '../base-agent';
+
+export interface ContentGenerationContext {
+  type: 'blog' | 'social_post' | 'email' | 'caption' | 'copy';
+  tone: 'professional' | 'casual' | 'friendly' | 'authoritative' | 'playful';
+  audience: string;
+  topic: string;
+  keywords?: string[];
+  length?: 'short' | 'medium' | 'long';
+  platform?: 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'email';
+}
+
+export interface ContentGenerationResult extends AgentResult {
+  content: string;
+  suggestedTitle?: string;
+        hashtags?: string[] | undefined;
+  readingTime?: number;
+  seoScore?: number | undefined;
+}
 
 export class ContentAgent extends AbstractAgent {
-  constructor(id: string, name: string) {
-    super(id, name, 'content', [
+  constructor() {
+    super('content-agent', 'ContentAgent', 'content', [
       'generate_content',
-      'optimize_seo',
-      'create_headlines',
-      'content_strategy',
-      'social_media_posts',
+      'generate_blog',
+      'generate_caption',
+      'generate_post'
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
-      const { task, context } = payload;
-
-      switch (task) {
-        case 'generate_content':
-          return await this.generateContent(context);
-        case 'optimize_seo':
-          return await this.optimizeSEO(context);
-        case 'create_headlines':
-          return await this.createHeadlines(context);
-        case 'content_strategy':
-          return await this.createContentStrategy(context);
-        case 'social_media_posts':
-          return await this.createSocialMediaPosts(context);
-        default:
-          throw new Error(`Unknown task: ${task}`);
+      const context = payload.context as ContentGenerationContext;
+      
+      // Validate input
+      if (!context.topic || !context.type || !context.audience) {
+        throw new Error('Missing required context: topic, type, and audience are required');
       }
+
+      // Generate content based on type
+      const result = await this.generateContent(context);
+      
+      return result;
     });
   }
 
-  private async generateContent(_context: AgentContextOrUndefined): Promise<ContentResult> {
-    // TODO: Implement content generation
+  private async generateContent(context: ContentGenerationContext): Promise<ContentGenerationResult> {
+    // In a real implementation, this would integrate with OpenAI, Claude, or another LLM
+    // For now, we'll create template-based content
+    
+    const content = await this.createContentTemplate(context);
+    const hashtags = context.type === 'social_post' ? this.generateHashtags(context) : undefined;
+    const readingTime = this.calculateReadingTime(content);
+    const seoScore = context.keywords ? this.calculateSEOScore(content, context.keywords) : undefined;
+
     return {
-      content: 'Generated content based on context and requirements.',
-      metadata: {
-        wordCount: 150,
-        tone: 'professional',
-        keywords: ['marketing', 'automation', 'AI'],
-      },
+      content,
+      suggestedTitle: this.generateTitle(context),
+      hashtags,
+      readingTime,
+      seoScore,
+      success: true
     };
   }
 
-  private async optimizeSEO(_context: AgentContextOrUndefined): Promise<ContentResult> {
-    // TODO: Implement SEO optimization
-    return {
-      content: 'SEO-optimized content with targeted keywords and meta descriptions.',
-      metadata: {
-        wordCount: 200,
-        tone: 'informative',
-        keywords: ['SEO', 'optimization', 'search engine'],
-      },
+  private async createContentTemplate(context: ContentGenerationContext): Promise<string> {
+    const templates = {
+      blog: this.generateBlogContent(context),
+      social_post: this.generateSocialPost(context),
+      email: this.generateEmailContent(context),
+      caption: this.generateCaptionContent(context),
+      copy: this.generateCopyContent(context)
     };
+
+    return templates[context.type] || templates.copy;
   }
 
-  private async createHeadlines(_context: AgentContextOrUndefined): Promise<ContentResult> {
-    // TODO: Implement headline creation
-    return {
-      content: 'Compelling Headlines That Drive Engagement and Conversions',
-      metadata: {
-        wordCount: 8,
-        tone: 'engaging',
-        keywords: ['headlines', 'engagement', 'conversions'],
-      },
-    };
+  private generateBlogContent(context: ContentGenerationContext): string {
+    const { topic, audience, tone, keywords = [] } = context;
+    
+    return `# ${this.generateTitle(context)}
+
+## Introduction
+
+When it comes to ${topic}, ${audience} face unique challenges that require a ${tone} approach. ${keywords.length > 0 ? `Understanding ${keywords.join(', ')} is crucial for success.` : ''}
+
+## Key Points
+
+- **Strategic Insight**: ${topic} requires careful consideration of your target audience
+- **Best Practices**: Implementing proven strategies that work for ${audience}
+- **Action Items**: Clear steps you can take immediately
+
+## Conclusion
+
+By focusing on ${topic} with a ${tone} approach, you'll be able to connect more effectively with ${audience} and achieve your goals.
+
+*This content was generated by NeonHub AI Content Agent*`;
   }
 
-  private async createContentStrategy(_context: AgentContextOrUndefined): Promise<ContentResult> {
-    // TODO: Implement content strategy
-    return {
-      content: 'Comprehensive content strategy aligned with business goals and audience needs.',
-      metadata: {
-        wordCount: 300,
-        tone: 'strategic',
-        keywords: ['strategy', 'content planning', 'audience'],
-      },
+  private generateSocialPost(context: ContentGenerationContext): string {
+    const { topic, audience, tone, platform } = context;
+    
+    const platformSpecific = {
+      twitter: `🚀 ${topic} insight for ${audience}:\n\n${this.getToneMessage(tone, topic)}\n\nWhat's your experience? 👇`,
+      instagram: `✨ ${topic} ✨\n\n${this.getToneMessage(tone, topic)}\n\nPerfect for ${audience} looking to level up! 📈`,
+      linkedin: `Professional insight on ${topic} for ${audience}:\n\n${this.getToneMessage(tone, topic)}\n\nThoughts? Let's discuss in the comments.`,
+      facebook: `Hey ${audience}! 👋\n\nLet's talk about ${topic}:\n\n${this.getToneMessage(tone, topic)}\n\nWho else finds this helpful?`
     };
+
+    return platformSpecific[platform as keyof typeof platformSpecific] || platformSpecific.instagram;
   }
 
-  private async createSocialMediaPosts(_context: AgentContextOrUndefined): Promise<ContentResult> {
-    // TODO: Implement social media post creation
-    return {
-      content: `Engage your audience with compelling social media content! 🚀 
-#SocialMedia #Marketing #Engagement`,
-      metadata: {
-        wordCount: 12,
-        tone: 'casual',
-        keywords: ['social media', 'engagement', 'marketing'],
-      },
+  private generateEmailContent(context: ContentGenerationContext): string {
+    const { topic, audience, tone } = context;
+    
+    return `Subject: ${this.generateTitle(context)}
+
+Hi there!
+
+I hope this email finds you well. I wanted to share some insights about ${topic} that I think you'll find valuable.
+
+${this.getToneMessage(tone, topic)}
+
+This is particularly relevant for ${audience} because it addresses the core challenges you face daily.
+
+Here's what you can do next:
+1. Apply these insights to your current projects
+2. Share this with your team
+3. Let me know how it works for you
+
+Best regards,
+The NeonHub Team
+
+P.S. This email was personalized by our AI Content Agent to match your interests.`;
+  }
+
+  private generateCaptionContent(context: ContentGenerationContext): string {
+    const { topic, audience, tone } = context;
+    
+    return `${this.getToneMessage(tone, topic)} Perfect for ${audience} ready to take action! 💪`;
+  }
+
+  private generateCopyContent(context: ContentGenerationContext): string {
+    const { topic, audience, tone } = context;
+    
+    return `${this.getToneMessage(tone, topic)}\n\nDesigned specifically for ${audience} who want results that matter.`;
+  }
+
+  private getToneMessage(tone: string, topic: string): string {
+    const messages = {
+      professional: `${topic} requires a strategic, data-driven approach that delivers measurable results.`,
+      casual: `Here's the thing about ${topic} - it doesn't have to be complicated!`,
+      friendly: `Let's chat about ${topic} and how it can make a real difference for you.`,
+      authoritative: `Based on extensive research, ${topic} is a critical factor in achieving success.`,
+      playful: `Ready to have some fun with ${topic}? Let's dive in and explore the possibilities! 🎉`
     };
+
+    return messages[tone as keyof typeof messages] || messages.professional;
+  }
+
+  private generateTitle(context: ContentGenerationContext): string {
+    const { topic, audience, type } = context;
+    
+    const titles = {
+      blog: `The Complete Guide to ${topic} for ${audience}`,
+      social_post: `${topic} Tips for ${audience}`,
+      email: `Your ${topic} Strategy Update`,
+      caption: `${topic} Made Simple`,
+      copy: `Transform Your ${topic} Approach`
+    };
+
+    return titles[type] || `${topic} for ${audience}`;
+  }
+
+  private generateHashtags(context: ContentGenerationContext): string[] {
+    const { topic, audience } = context;
+    
+    const baseHashtags = ['#AI', '#Marketing', '#NeonHub'];
+    const topicHashtags = topic.split(' ').map(word => `#${word.charAt(0).toUpperCase() + word.slice(1)}`);
+    const audienceHashtags = audience.split(' ').map(word => `#${word.charAt(0).toUpperCase() + word.slice(1)}`);
+    
+    return [...baseHashtags, ...topicHashtags.slice(0, 2), ...audienceHashtags.slice(0, 2)].slice(0, 8);
+  }
+
+  private calculateReadingTime(content: string): number {
+    const wordsPerMinute = 200;
+    const wordCount = content.split(/\s+/).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  }
+
+  private calculateSEOScore(content: string, keywords: string[]): number {
+    let score = 0;
+    const contentLower = content.toLowerCase();
+    
+    keywords.forEach(keyword => {
+      const keywordCount = (contentLower.match(new RegExp(keyword.toLowerCase(), 'g')) || []).length;
+      if (keywordCount > 0) score += 20;
+      if (keywordCount > 2) score += 10;
+    });
+
+    // Basic SEO checks
+    if (content.length > 300) score += 20; // Good length
+    if (content.includes('##') || content.includes('#')) score += 10; // Has headers
+    
+    return Math.min(score, 100);
+  }
+
+  // New methods for Phase 1 features
+  async generatePost(context: ContentGenerationContext): Promise<AgentResult> {
+    return this.execute({ 
+      task: 'generate_post',
+      context,
+      priority: 'medium'
+    });
+  }
+
+  async generateBlog(context: ContentGenerationContext): Promise<AgentResult> {
+    return this.execute({ 
+      task: 'generate_blog',
+      context: { ...context, type: 'blog', length: 'long' },
+      priority: 'medium'
+    });
+  }
+
+  async generateCaption(context: ContentGenerationContext): Promise<AgentResult> {
+    return this.execute({ 
+      task: 'generate_caption',
+      context: { ...context, type: 'caption', length: 'short' },
+      priority: 'medium'
+    });
   }
 }

@@ -137,9 +137,10 @@ export type DecisionContext = z.infer<typeof DecisionContextSchema>;
 
 // Decision Engine
 export class ReasoningEngine {
-  private activeObjectives: Map<string, CampaignObjective> = new Map();
-  private taskQueue: AgentTask[] = [];
-  private performanceHistory: Map<string, number[]> = new Map();
+  // TODO: Implement usage of these properties in future iterations
+  // private activeObjectives: Map<string, CampaignObjective> = new Map();
+  // private taskQueue: AgentTask[] = [];
+  // private performanceHistory: Map<string, number[]> = new Map();
 
   /**
    * Strategic Decision Making
@@ -177,7 +178,7 @@ export class ReasoningEngine {
    * Campaign Orchestration
    */
   async orchestrateCampaign(
-    campaignId: string,
+    _campaignId: string,
     objectives: CampaignObjective[],
     constraints: { budget: number; timeline: number }
   ): Promise<{
@@ -389,7 +390,7 @@ export class ReasoningEngine {
 
   private async generateEngagementActions(
     objective: CampaignObjective,
-    context: DecisionContext
+    _context: DecisionContext
   ): Promise<AgentTask[]> {
     return [
       {
@@ -429,6 +430,10 @@ export class ReasoningEngine {
   private formulateDecision(objectives: CampaignObjective[], gaps: Record<string, number>): string {
     const primaryObjective = objectives[0];
     const largestGap = Object.entries(gaps).sort(([, a], [, b]) => b - a)[0];
+
+    if (!primaryObjective || !largestGap) {
+      return 'No clear objectives or performance gaps identified';
+    }
 
     return `Focus on ${primaryObjective.type} with immediate attention to ${largestGap[0]} improvement`;
   }
@@ -483,7 +488,7 @@ export class ReasoningEngine {
   }
 
   private optimizeResourceAllocation(
-    objectives: CampaignObjective[],
+    _objectives: CampaignObjective[],
     constraints: { budget: number; timeline: number }
   ): ResourceAllocation {
     // Resource allocation optimization logic
@@ -576,7 +581,7 @@ export class ReasoningEngine {
 
   private optimizeExecutionPlan(
     assignments: Map<string, AgentTask[]>,
-    dependencyGraph: Map<string, string[]>
+    _dependencyGraph: Map<string, string[]>
   ): {
     order: string[];
     parallelGroups: AgentTask[][];
@@ -587,7 +592,7 @@ export class ReasoningEngine {
     const parallelGroups: AgentTask[][] = [];
 
     // Group tasks that can run in parallel
-    for (const [agent, tasks] of assignments) {
+    for (const [_agent, tasks] of assignments) {
       if (tasks.length > 0) {
         parallelGroups.push(tasks);
       }
@@ -736,6 +741,3 @@ interface Optimization {
 
 // Export the main reasoning engine
 export const reasoningEngine = new ReasoningEngine();
-
-// Export utility functions for testing and integration
-export { CampaignObjectiveSchema, AgentTaskSchema, DecisionContextSchema };

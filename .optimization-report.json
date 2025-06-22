@@ -150,10 +150,7 @@
         "duration": 652
       },
       "duration": 652,
-      "filesChanged": [
-        "docs/api-overview.json",
-        "README.md"
-      ]
+      "filesChanged": ["docs/api-overview.json", "README.md"]
     },
     "performance-security": {
       "status": "failed",

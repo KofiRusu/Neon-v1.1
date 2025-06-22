@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChartBarIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 
 export default function AnalyticsPage(): JSX.Element {
   const [metrics, setMetrics] = useState({
@@ -80,7 +79,7 @@ export default function AnalyticsPage(): JSX.Element {
           timeSeriesData: generateTimeSeriesData(timeRange),
         });
       } catch (error) {
-        logger.error('Error fetching analytics:', error);
+        console.error('Error fetching analytics:', error);
       } finally {
         setIsLoading(false);
       }

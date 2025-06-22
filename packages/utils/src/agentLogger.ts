@@ -9,7 +9,7 @@ import { db } from '@neon/data-model';
 import type { AgentName } from '@neon/types';
 import { logger } from './logger';
 
-export interface LogEventData {
+export interface LogEventData extends Record<string, unknown> {
   agent: AgentName;
   action: string;
   metadata?: Record<string, unknown>;

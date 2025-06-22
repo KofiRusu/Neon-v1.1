@@ -3,12 +3,8 @@
 import { useState, useEffect } from 'react';
 import { trpc } from '../../lib/trpc';
 import {
-  MegaphoneIcon,
-  PlusIcon,
-  ChartBarIcon,
   PlayIcon,
   PauseIcon,
-  StopIcon,
   PencilIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -34,7 +30,6 @@ interface Campaign {
 
 export default function CampaignsPage(): JSX.Element {
   const { data: campaigns, isLoading } = trpc.campaign.getAll.useQuery({ limit: 20 });
-  const { data: stats } = trpc.campaign.getStats.useQuery();
   const [filteredCampaigns, setFilteredCampaigns] = useState<Campaign[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | Campaign['status']>('all');
@@ -45,7 +40,6 @@ export default function CampaignsPage(): JSX.Element {
 
   useEffect(() => {
     const fetchCampaigns = async (): Promise<void> => {
-      setIsLoading(true);
       try {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -145,9 +139,7 @@ export default function CampaignsPage(): JSX.Element {
 
         setFilteredCampaigns(mockCampaigns);
       } catch (error) {
-        logger.error('Error fetching campaigns:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error fetching campaigns:', error);
       }
     };
 
@@ -223,7 +215,7 @@ export default function CampaignsPage(): JSX.Element {
         )
       );
     } catch (error) {
-      logger.error('Error updating campaign status:', error);
+      console.error('Error updating campaign status:', error);
     }
   };
 

@@ -1,4 +1,3 @@
-import { logger } from '@/lib/logger';
 /**
  * NeonHub Logging Utility
  *
@@ -11,8 +10,8 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: Date;
-  context?: Record<string, unknown>;
-  source?: string;
+  context?: Record<string, unknown> | undefined;
+  source?: string | undefined;
 }
 
 class Logger {
@@ -93,17 +92,17 @@ class Logger {
           break;
         case 'warn':
           // eslint-disable-next-line no-console
-          logger.warn(logMessage);
+          console.warn(logMessage);
           break;
         case 'error':
           // eslint-disable-next-line no-console
-          logger.error(logMessage);
+          console.error(logMessage);
           break;
       }
     }
   }
 
-  private sendToExternalLogger(entry: LogEntry): void {
+  private sendToExternalLogger(_entry: LogEntry): void {
     // Implementation for external logging service
     // This could be Sentry, LogRocket, Datadog, etc.
     if (process.env.SENTRY_DSN) {

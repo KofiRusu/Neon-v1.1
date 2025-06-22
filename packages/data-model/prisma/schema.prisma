@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
@@ -11,23 +8,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User Management
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  role          UserRole  @default(USER)
-  avatar        String?
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
-  campaigns     Campaign[]
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String?
+  role            UserRole         @default(USER)
+  avatar          String?
+  emailVerified   DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  accounts        Account[]
   agentExecutions AgentExecution[]
-  analytics     Analytics[]
-  sessions      Session[]
-  accounts      Account[]
+  analytics       Analytics[]
+  campaigns       Campaign[]
+  sessions        Session[]
 
   @@map("users")
 }
@@ -38,15 +32,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -71,80 +64,70 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Campaign Management
 model Campaign {
-  id          String         @id @default(cuid())
-  name        String
-  description String?
-  type        CampaignType
-  status      CampaignStatus @default(DRAFT)
-  budget      Float?
-  startDate   DateTime?
-  endDate     DateTime?
-  targetAudience Json?
-  platforms   Platform[]
-  metrics     Json?
-  settings    Json?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  userId      String
-
-  // Relations
-  user        User           @relation(fields: [userId], references: [id])
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  type            CampaignType
+  status          CampaignStatus   @default(DRAFT)
+  budget          Float?
+  startDate       DateTime?
+  endDate         DateTime?
+  targetAudience  Json?
+  platforms       Platform[]
+  metrics         Json?
+  settings        Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  userId          String
+  abTests         ABTest[]
   agentExecutions AgentExecution[]
-  analytics   Analytics[]
-  abTests     ABTest[]
+  analytics       Analytics[]
   campaignMetrics CampaignMetric[]
+  user            User             @relation(fields: [userId], references: [id])
 
   @@map("campaigns")
 }
 
-// Legacy metrics table for backward compatibility
 model CampaignMetric {
   id          String   @id @default(cuid())
   impressions Int      @default(0)
-  ctr         Float    @default(0.0) // Click-through rate
+  ctr         Float    @default(0.0)
   conversions Int      @default(0)
   timestamp   DateTime @default(now())
-
-  // Foreign keys
-  campaignId String
-  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@map("campaign_metrics")
 }
 
-// AI Event Logs (legacy)
 model AIEventLog {
   id        String   @id @default(cuid())
-  agent     String   // Agent name (ContentAgent, AdAgent, etc.)
-  action    String   // Action performed
-  metadata  Json?    // Additional data about the event
+  agent     String
+  action    String
+  metadata  Json?
   createdAt DateTime @default(now())
 
   @@map("ai_event_logs")
 }
 
-// AI Agents
 model Agent {
-  id          String   @id @default(cuid())
-  name        String
-  type        AgentType
-  status      AgentStatus @default(ACTIVE)
+  id           String           @id @default(cuid())
+  name         String
+  type         AgentType
+  status       AgentStatus      @default(ACTIVE)
   capabilities Json?
-  settings    Json?
-  version     String   @default("1.0.0")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  executions  AgentExecution[]
+  settings     Json?
+  version      String           @default("1.0.0")
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  executions   AgentExecution[]
 
   @@map("agents")
 }
 
 model AgentExecution {
-  id          String   @id @default(cuid())
+  id          String          @id @default(cuid())
   agentId     String
   campaignId  String?
   userId      String?
@@ -154,39 +137,33 @@ model AgentExecution {
   status      ExecutionStatus @default(PENDING)
   performance Float?
   error       String?
-  startedAt   DateTime @default(now())
+  startedAt   DateTime        @default(now())
   completedAt DateTime?
   metadata    Json?
-
-  // Relations
-  agent       Agent    @relation(fields: [agentId], references: [id])
-  campaign    Campaign? @relation(fields: [campaignId], references: [id])
-  user        User?    @relation(fields: [userId], references: [id])
+  agent       Agent           @relation(fields: [agentId], references: [id])
+  campaign    Campaign?       @relation(fields: [campaignId], references: [id])
+  user        User?           @relation(fields: [userId], references: [id])
 
   @@map("agent_executions")
 }
 
-// Analytics & Metrics
 model Analytics {
-  id          String   @id @default(cuid())
-  campaignId  String?
-  userId      String?
-  type        AnalyticsType
-  data        Json
-  period      String?  // daily, weekly, monthly
-  date        DateTime @default(now())
-  metadata    Json?
-
-  // Relations
-  campaign    Campaign? @relation(fields: [campaignId], references: [id])
-  user        User?    @relation(fields: [userId], references: [id])
+  id         String        @id @default(cuid())
+  campaignId String?
+  userId     String?
+  type       AnalyticsType
+  data       Json
+  period     String?
+  date       DateTime      @default(now())
+  metadata   Json?
+  campaign   Campaign?     @relation(fields: [campaignId], references: [id])
+  user       User?         @relation(fields: [userId], references: [id])
 
   @@map("analytics")
 }
 
-// A/B Testing
 model ABTest {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   campaignId  String
   name        String
   description String?
@@ -195,19 +172,16 @@ model ABTest {
   results     Json?
   winner      String?
   confidence  Float?
-  startDate   DateTime @default(now())
+  startDate   DateTime     @default(now())
   endDate     DateTime?
   settings    Json?
-
-  // Relations
-  campaign    Campaign @relation(fields: [campaignId], references: [id])
+  campaign    Campaign     @relation(fields: [campaignId], references: [id])
 
   @@map("ab_tests")
 }
 
-// Content Management
 model Content {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   title       String
   type        ContentType
   platform    Platform
@@ -215,64 +189,117 @@ model Content {
   status      ContentStatus @default(DRAFT)
   performance Json?
   metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@map("contents")
 }
 
-// Lead Management
 model Lead {
-  id          String   @id @default(cuid())
-  email       String
-  name        String?
-  company     String?
-  position    String?
-  phone       String?
-  source      String?
-  status      LeadStatus @default(NEW)
-  score       Float?
-  tags        String[]
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String     @id @default(cuid())
+  email     String
+  name      String?
+  company   String?
+  position  String?
+  phone     String?
+  source    String?
+  status    LeadStatus @default(NEW)
+  score     Float?
+  tags      String[]
+  metadata  Json?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("leads")
 }
 
-// Trend Analysis
 model Trend {
-  id          String   @id @default(cuid())
-  keyword     String
-  platform    Platform
-  category    String?
-  score       Float
-  volume      Int?
-  growth      Float?
-  data        Json
-  detectedAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  keyword    String
+  platform   Platform
+  category   String?
+  score      Float
+  volume     Int?
+  growth     Float?
+  data       Json
+  detectedAt DateTime @default(now())
 
   @@map("trends")
 }
 
-// Design Templates
 model DesignTemplate {
-  id          String   @id @default(cuid())
-  name        String
-  category    String
-  template    Json
-  preview     String?
-  tags        String[]
-  usage       Int      @default(0)
-  rating      Float?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  template  Json
+  preview   String?
+  tags      String[]
+  usage     Int      @default(0)
+  rating    Float?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("design_templates")
 }
 
-// Enums
+model EmailCampaign {
+  id         String              @id @default(cuid())
+  name       String
+  subject    String
+  content    Json
+  recipients Json
+  status     EmailCampaignStatus @default(DRAFT)
+  scheduleAt DateTime?
+  sentAt     DateTime?
+  openRate   Float?
+  clickRate  Float?
+  bounceRate Float?
+  metadata   Json?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  @@map("email_campaigns")
+}
+
+model SocialSchedule {
+  id          String           @id @default(cuid())
+  platform    Platform
+  content     Json
+  caption     String?
+  scheduledAt DateTime
+  publishedAt DateTime?
+  status      SocialPostStatus @default(SCHEDULED)
+  engagement  Json?
+  reach       Int?
+  impressions Int?
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("social_schedules")
+}
+
+model SupportTicket {
+  id           String          @id @default(cuid())
+  ticketId     String          @unique
+  customer     Json
+  subject      String
+  priority     SupportPriority @default(MEDIUM)
+  status       SupportStatus   @default(OPEN)
+  channel      SupportChannel
+  messages     Json
+  assignedTo   String?
+  resolution   String?
+  satisfaction Float?
+  resolvedAt   DateTime?
+  metadata     Json?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@map("support_tickets")
+}
+
 enum UserRole {
   USER
   ADMIN
@@ -321,6 +348,10 @@ enum Platform {
 
 enum AgentType {
   CONTENT
+  SEO
+  EMAIL_MARKETING
+  SOCIAL_POSTING
+  CUSTOMER_SUPPORT
   AD
   OUTREACH
   TREND
@@ -385,4 +416,46 @@ enum LeadStatus {
   QUALIFIED
   CONVERTED
   LOST
-} 
+}
+
+enum EmailCampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  PAUSED
+  CANCELLED
+  FAILED
+}
+
+enum SocialPostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum SupportPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum SupportChannel {
+  WHATSAPP
+  EMAIL
+  CHAT
+  PHONE
+  SOCIAL
+}

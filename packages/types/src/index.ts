@@ -75,6 +75,10 @@ export interface PaginatedResponse<T> {
 // AI Agent types
 export type AgentName =
   | 'ContentAgent'
+  | 'SEOAgent'
+  | 'EmailMarketingAgent'
+  | 'SocialPostingAgent'
+  | 'CustomerSupportAgent'
   | 'AdAgent'
   | 'OutreachAgent'
   | 'TrendAgent'

@@ -23,7 +23,7 @@ app.use(compression());
 app.use(express.json());
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -33,7 +33,7 @@ app.get('/health', (req, res) => {
 });
 
 // Basic API routes
-app.get('/api/status', (req, res) => {
+app.get('/api/status', (_req, res) => {
   res.json({
     message: 'NeonHub AI Marketing Ecosystem API is running',
     agents: {
@@ -54,7 +54,7 @@ app.get('/api/status', (req, res) => {
 });
 
 // Agent status endpoint
-app.get('/api/agents', (req, res) => {
+app.get('/api/agents', (_req, res) => {
   res.json({
     agents: [
       {
@@ -83,7 +83,7 @@ app.get('/api/agents', (req, res) => {
 });
 
 // Campaigns endpoint
-app.get('/api/campaigns', (req, res) => {
+app.get('/api/campaigns', (_req, res) => {
   res.json({
     campaigns: [
       {
@@ -111,7 +111,7 @@ app.get('/api/campaigns', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   logger.error('API Error', { error: err.message, stack: err.stack }, 'APIServer');
   res.status(500).json({
     error: 'Something went wrong!',

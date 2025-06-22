@@ -2,7 +2,7 @@
  * Utility functions for Neon0.2 monorepo
  */
 
-import type { Result } from '@/types';
+import type { Result } from '@neon/types';
 
 /**
  * Delay execution for specified milliseconds

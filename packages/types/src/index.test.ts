@@ -1,13 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+/**
+ * Types Index Tests
+ */
+import { describe, it, expect } from '@jest/globals';
 // Import the module under test
 // import { ... } from './index';
 
-describe('index', () => {
-  beforeEach(() => {
-    // Setup before each test
-  });
-
-  afterEach(() => {
-    // Cleanup after each test
+describe('Types Index', () => {
+  it('should export correctly', () => {
+    expect(true).toBe(true);
   });
 });

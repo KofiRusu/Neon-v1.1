@@ -23,10 +23,6 @@ export const campaignRouter = createTRPCRouter({
         where,
         include: {
           user: true,
-          metrics: {
-            orderBy: { timestamp: 'desc' },
-            take: 1,
-          },
         },
         orderBy: { createdAt: 'desc' },
         skip: input.offset,
@@ -40,9 +36,6 @@ export const campaignRouter = createTRPCRouter({
       where: { id: input.id },
       include: {
         user: true,
-        metrics: {
-          orderBy: { timestamp: 'desc' },
-        },
       },
     });
   }),
@@ -93,10 +86,6 @@ export const campaignRouter = createTRPCRouter({
         data: data as { name?: string; status?: CampaignStatus },
         include: {
           user: true,
-          metrics: {
-            orderBy: { timestamp: 'desc' },
-            take: 5,
-          },
         },
       });
     }),

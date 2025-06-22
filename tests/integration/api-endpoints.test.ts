@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { logger } from '@neon/utils';
 
 describe('api-endpoints Integration Tests', () => {
   beforeAll(async () => {
