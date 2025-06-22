@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import Navigation from '@/components/Navigation';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'NeonHub AI Marketing Ecosystem',
-  description: 'Self-operating, AI-driven marketing and sales platform',
+  description: 'Advanced AI-powered marketing automation platform',
   keywords: ['AI', 'Marketing', 'Automation', 'NeonHub', 'Ecosystem'],
   authors: [{ name: 'NeonHub Team' }],
   viewport: 'width=device-width, initial-scale=1',
@@ -16,8 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-dark-900">
-        {children}
+      <body className={inter.className}>
+        <div className="min-h-screen bg-dark-900">
+          <Navigation />
+          <div className="flex">
+            {children}
+          </div>
+        </div>
       </body>
     </html>
   );
