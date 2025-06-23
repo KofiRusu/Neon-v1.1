@@ -1,0 +1,43 @@
+name: Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pre-deploy-check:
+    name: Pre-deploy Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Full Project Optimization
+        run: node scripts/optimization-master.js
+
+      - name: Autonomous Completion Check
+        run: node scripts/autonomous-completion-agent.js
+
+  deploy-vercel:
+    name: Deploy to Vercel
+    needs: pre-deploy-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Vercel CLI
+        run: npm install -g vercel
+
+      - name: Authenticate with Vercel
+        run: vercel login --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        run: vercel --prod --confirm

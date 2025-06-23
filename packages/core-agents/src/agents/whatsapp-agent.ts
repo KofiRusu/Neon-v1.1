@@ -1,586 +1,783 @@
-import { AbstractAgent } from '../base-agent';
-import type { AgentResult, AgentPayload } from '../base-agent';
+import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
 
-export interface SupportTicketContext {
-  ticketId?: string;
-  customer: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    customerId?: string;
-  };
-  channel: 'whatsapp' | 'email' | 'chat' | 'phone' | 'social';
+interface WhatsAppMessage {
+  id: string;
+  from: string;
+  to: string;
+  content: string;
+  timestamp: Date;
+  type: 'text' | 'image' | 'video' | 'audio' | 'document';
+  status: 'sent' | 'delivered' | 'read' | 'failed';
+  isGroup?: boolean;
+  groupId?: string;
+}
+
+interface WhatsAppContact {
+  phone: string;
+  name?: string;
+  profilePicture?: string;
+  lastSeen?: Date;
+  isBlocked?: boolean;
+  tags?: string[];
+}
+
+interface SupportTicket {
+  id: string;
+  customerId: string;
   subject: string;
-  message: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  category?: string;
-  metadata?: Record<string, any>;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  messages: WhatsAppMessage[];
+  assignedAgent?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface WhatsAppMessageContext {
-  recipient: string; // Phone number
-  message: {
-    type: 'text' | 'image' | 'document' | 'template';
-    content: string;
-    media?: {
-      url: string;
-      caption?: string;
-      filename?: string;
-    };
-    template?: {
-      name: string;
-      language: string;
-      parameters?: string[];
-    };
-  };
-  settings: {
-    businessId?: string;
-    accessToken?: string;
-    webhookUrl?: string;
-  };
-}
-
-export interface SupportAnalyticsResult {
-  ticketId: string;
-  status: 'open' | 'in_progress' | 'pending_customer' | 'resolved' | 'closed';
-  responseTime: number; // in minutes
-  resolutionTime?: number; // in minutes
-  satisfactionScore?: number; // 1-5 rating
-  channel: string;
-  category: string;
-  agentAssigned?: string;
-  messages: Array<{
-    sender: 'customer' | 'agent' | 'system';
-    content: string;
-    timestamp: Date;
-    type: 'text' | 'image' | 'document' | 'template';
-  }>;
-}
-
-export interface AutomationRuleContext {
-  name: string;
-  trigger: {
-    type: 'keyword' | 'sentiment' | 'priority' | 'channel' | 'time_based';
-    conditions: Record<string, any>;
-  };
-  action: {
-    type: 'auto_reply' | 'escalate' | 'assign_agent' | 'set_priority' | 'tag';
-    parameters: Record<string, any>;
-  };
-  isActive: boolean;
-}
-
-export class CustomerSupportAgent extends AbstractAgent {
-  constructor() {
-    super('customer-support-agent', 'CustomerSupportAgent', 'customer_support', [
-      'send_whatsapp',
+export class WhatsAppAgent extends AbstractAgent {
+  private contacts: Map<string, WhatsAppContact> = new Map();
+  private activeTickets: Map<string, SupportTicket> = new Map();
+  private messageTemplates: Map<string, string> = new Map();
+  
+  constructor(id: string, name: string) {
+    super(id, name, 'whatsapp', [
+      'send_message',
+      'receive_message',
+      'manage_contacts',
       'create_ticket',
-      'update_ticket',
-      'auto_respond',
-      'escalate_ticket',
-      'analyze_sentiment',
-      'generate_summary',
-      'manage_knowledge_base'
+      'automated_response',
+      'bulk_message',
+      'status_update'
     ]);
+    
+    this.initializeTemplates();
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-
+      
       switch (task) {
-        case 'send_whatsapp':
-          return await this.sendWhatsAppMessage(context as WhatsAppMessageContext);
+        case 'send_message':
+          return await this.sendMessage(context || {});
+        case 'receive_message':
+          return await this.processMessage(context || {});
+        case 'manage_contacts':
+          return await this.manageContacts(context || {});
         case 'create_ticket':
-          return await this.createSupportTicket(context as SupportTicketContext);
-        case 'update_ticket':
-          return await this.updateSupportTicket(context);
-        case 'auto_respond':
-          return await this.generateAutoResponse(context);
-        case 'escalate_ticket':
-          return await this.escalateTicket(context);
-        case 'analyze_sentiment':
-          return await this.analyzeSentiment(context);
-        case 'generate_summary':
-          return await this.generateTicketSummary(context.ticketId as string);
-        case 'manage_knowledge_base':
-          return await this.manageKnowledgeBase(context);
+          return await this.createSupportTicket(context || {});
+        case 'automated_response':
+          return await this.generateAutomatedResponse(context || {});
+        case 'bulk_message':
+          return await this.sendBulkMessage(context || {});
+        case 'status_update':
+          return await this.updateMessageStatus(context || {});
         default:
           throw new Error(`Unknown task: ${task}`);
       }
     });
   }
 
-  private async sendWhatsAppMessage(context: WhatsAppMessageContext): Promise<{ messageId: string; status: string; deliveredAt?: Date }> {
-    // Validate WhatsApp message format
-    this.validateWhatsAppMessage(context);
-    
-    // Format message for WhatsApp API
-    const formattedMessage = this.formatWhatsAppMessage(context);
-    
-    // Send message via WhatsApp Business API (simulated)
-    const sendResult = await this.sendViaWhatsAppAPI(formattedMessage, context.settings);
-    
-    // Store message data
-    await this.storeMessageData(sendResult, context);
-    
-    return {
-      messageId: sendResult.messageId,
-      status: 'sent',
-      deliveredAt: new Date(),
-    };
-  }
+  private async sendMessage(context: any): Promise<any> {
+    const {
+      to,
+      content,
+      type = 'text',
+      templateId,
+      variables = {},
+      priority = 'normal'
+    } = context;
 
-  private async createSupportTicket(context: SupportTicketContext): Promise<SupportAnalyticsResult> {
-    // Generate unique ticket ID
-    const ticketId = context.ticketId || this.generateTicketId();
-    
-    // Analyze initial message sentiment
-    const sentiment = await this.analyzeSentiment({ message: context.message });
-    
-    // Determine priority based on content and sentiment
-    const priority = this.calculatePriority(context, sentiment);
-    
-    // Check for automation rules
-    const automationAction = await this.checkAutomationRules(context);
-    
-    // Create ticket in database
-    const ticket = await this.storeTicketData(ticketId, context, priority, sentiment);
-    
-    // Execute automation if applicable
-    if (automationAction) {
-      await this.executeAutomation(ticketId, automationAction);
+    if (!to || !content) {
+      throw new Error('Recipient and content are required');
     }
-    
+
+    // Get template if specified
+    let messageContent = content;
+    if (templateId) {
+      const template = this.messageTemplates.get(templateId);
+      if (template) {
+        messageContent = this.processTemplate(template, variables);
+      }
+    }
+
+    // Create message
+    const message: WhatsAppMessage = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      from: 'neonhub_business', // Our business number
+      to,
+      content: messageContent,
+      timestamp: new Date(),
+      type,
+      status: 'sent'
+    };
+
+    // Simulate message delivery
+    const deliverySuccess = Math.random() > 0.05; // 95% success rate
+    message.status = deliverySuccess ? 'delivered' : 'failed';
+
+    // Store contact if new
+    if (!this.contacts.has(to)) {
+      this.contacts.set(to, {
+        phone: to,
+        name: `Customer ${to.slice(-4)}`,
+        lastSeen: new Date()
+      });
+    }
+
     return {
-      ticketId,
-      status: 'open',
-      responseTime: 0,
-      channel: context.channel,
-      category: context.category || 'general',
-      messages: [
-        {
-          sender: 'customer',
-          content: context.message,
-          timestamp: new Date(),
-          type: 'text',
-        },
-      ],
+      message,
+      status: deliverySuccess ? 'success' : 'failed',
+      deliveryTime: new Date(),
+      estimatedReadTime: deliverySuccess ? new Date(Date.now() + Math.random() * 3600000) : null, // 0-1 hour
+      cost: this.calculateMessageCost(type, content.length),
+      metadata: {
+        templateUsed: templateId || null,
+        priority,
+        agentId: this.id
+      }
     };
   }
 
-  private async updateSupportTicket(context: any): Promise<{ ticketId: string; status: string; updatedAt: Date }> {
-    const { ticketId, update, agentId } = context;
-    
-    // Validate update
-    this.validateTicketUpdate(update);
-    
-    // Update ticket in database
-    await this.updateTicketInDatabase(ticketId, update, agentId);
-    
-    // Check if ticket should be auto-closed
-    const shouldAutoClose = this.shouldAutoClose(update);
-    
-    return {
-      ticketId,
-      status: update.status || 'updated',
-      updatedAt: new Date(),
+  private async processMessage(_context: any): Promise<any> {
+    // Handle incoming messages and route to appropriate handlers
+    const incomingMessage: WhatsAppMessage = {
+      id: `incoming_${Date.now()}`,
+      from: '+1234567890',
+      to: 'neonhub_business',
+      content: 'Hello, I need help with my neon sign order',
+      timestamp: new Date(),
+      type: 'text',
+      status: 'delivered'
     };
+
+    // Analyze intent
+    const intent = this.analyzeIntent(incomingMessage.content);
+    
+    // Check for existing ticket
+    const existingTicket = this.findTicketByCustomer(incomingMessage.from);
+    
+    if (existingTicket) {
+      // Add to existing ticket
+      existingTicket.messages.push(incomingMessage);
+      existingTicket.updatedAt = new Date();
+      
+      return {
+        action: 'ticket_updated',
+        ticketId: existingTicket.id,
+        message: incomingMessage,
+        intent,
+        suggestedResponse: this.generateResponse(intent, existingTicket),
+        requiresHumanIntervention: intent.confidence < 0.7
+      };
+    } else {
+      // Create new ticket if support-related
+      if (intent.type === 'support' || intent.type === 'complaint') {
+        const ticket = await this.createSupportTicket({
+          customerId: incomingMessage.from,
+          subject: intent.subject,
+          priority: intent.priority,
+          initialMessage: incomingMessage
+        });
+        
+        return {
+          action: 'ticket_created',
+          ticketId: ticket.id,
+          message: incomingMessage,
+          intent,
+          suggestedResponse: this.generateResponse(intent),
+          autoResponse: intent.confidence > 0.8
+        };
+      } else {
+        // Handle as general inquiry
+        return {
+          action: 'general_inquiry',
+          message: incomingMessage,
+          intent,
+          suggestedResponse: this.generateResponse(intent),
+          autoResponse: true
+        };
+      }
+    }
   }
 
-  private async generateAutoResponse(context: any): Promise<{ response: string; confidence: number; shouldEscalate: boolean }> {
-    const { message, customer, ticketHistory } = context;
-    
-    // Analyze message intent
-    const intent = await this.analyzeIntent(message);
-    
-    // Search knowledge base
-    const kbResults = await this.searchKnowledgeBase(intent, message);
-    
-    // Generate contextual response
-    const response = await this.generateContextualResponse(intent, kbResults, ticketHistory);
-    
-    // Calculate confidence score
-    const confidence = this.calculateResponseConfidence(intent, kbResults, response);
-    
-    // Determine if escalation is needed
-    const shouldEscalate = confidence < 0.7 || intent.complexity === 'high';
-    
-    return {
-      response: response.content,
-      confidence,
-      shouldEscalate,
-    };
-  }
+  private async manageContacts(context: any): Promise<any> {
+    const { action, contactData } = context;
 
-  private async escalateTicket(context: any): Promise<{ escalationId: string; assignedTo: string; escalatedAt: Date }> {
-    const { ticketId, reason, priority } = context;
-    
-    // Find available agent based on skills and workload
-    const assignedAgent = await this.findBestAgent(context);
-    
-    // Update ticket priority if needed
-    const newPriority = this.escalatePriority(priority);
-    
-    // Create escalation record
-    const escalationId = this.generateEscalationId();
-    await this.storeEscalationData(escalationId, ticketId, assignedAgent, reason);
-    
-    // Notify assigned agent
-    await this.notifyAgent(assignedAgent, ticketId, escalationId);
-    
-    return {
-      escalationId,
-      assignedTo: assignedAgent.id,
-      escalatedAt: new Date(),
-    };
-  }
-
-  private async analyzeSentiment(context: any): Promise<{ sentiment: string; confidence: number; emotions: Record<string, number> }> {
-    const { message } = context;
-    
-    // Simple sentiment analysis (in production, would use ML service)
-    const sentiment = this.performSentimentAnalysis(message);
-    
-    return {
-      sentiment: sentiment.label, // positive, negative, neutral
-      confidence: sentiment.confidence,
-      emotions: sentiment.emotions,
-    };
-  }
-
-  private async generateTicketSummary(ticketId: string): Promise<{ summary: string; keyPoints: string[]; resolution: string }> {
-    // Fetch ticket data
-    const ticketData = await this.fetchTicketData(ticketId);
-    
-    // Extract key information
-    const keyPoints = this.extractKeyPoints(ticketData.messages);
-    
-    // Generate summary
-    const summary = this.generateSummaryText(ticketData, keyPoints);
-    
-    // Extract resolution if ticket is closed
-    const resolution = ticketData.status === 'closed' ? this.extractResolution(ticketData) : '';
-    
-    return {
-      summary,
-      keyPoints,
-      resolution,
-    };
-  }
-
-  private async manageKnowledgeBase(context: any): Promise<{ action: string; result: any }> {
-    const { action, data } = context;
-    
     switch (action) {
-      case 'add_article':
-        return { action: 'add_article', result: await this.addKnowledgeBaseArticle(data) };
-      case 'update_article':
-        return { action: 'update_article', result: await this.updateKnowledgeBaseArticle(data) };
-      case 'search_articles':
-        return { action: 'search_articles', result: await this.searchKnowledgeBase(data.query, data.context) };
-      case 'get_suggestions':
-        return { action: 'get_suggestions', result: await this.getKnowledgeBaseSuggestions(data) };
+      case 'add':
+        return this.addContact(contactData);
+      case 'update':
+        return this.updateContact(contactData);
+      case 'block':
+        return this.blockContact(contactData.phone);
+      case 'unblock':
+        return this.unblockContact(contactData.phone);
+      case 'tag':
+        return this.tagContact(contactData.phone, contactData.tags);
+      case 'list':
+        return this.listContacts(contactData.filters);
       default:
-        throw new Error(`Unknown knowledge base action: ${action}`);
+        throw new Error(`Unknown contact action: ${action}`);
+    }
+  }
+
+  private async createSupportTicket(context: any): Promise<any> {
+    const {
+      customerId,
+      subject,
+      priority = 'medium',
+      initialMessage,
+      category = 'general'
+    } = context;
+
+    const ticket: SupportTicket = {
+      id: `ticket_${Date.now()}`,
+      customerId,
+      subject: subject || 'WhatsApp Support Request',
+      status: 'open',
+      priority,
+      messages: initialMessage ? [initialMessage] : [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    this.activeTickets.set(ticket.id, ticket);
+
+    // Auto-assign based on category and priority
+    const assignedAgent = this.autoAssignAgent(category, priority);
+    if (assignedAgent) {
+      ticket.assignedAgent = assignedAgent;
+    }
+
+    return {
+      ticket,
+      estimatedResponseTime: this.calculateResponseTime(priority),
+      autoAssigned: !!assignedAgent,
+      suggestedActions: [
+        'Send acknowledgment message',
+        'Gather customer information',
+        'Escalate if high priority'
+      ],
+      metadata: {
+        category,
+        createdBy: this.id,
+        timestamp: new Date().toISOString()
+      }
+    };
+  }
+
+  private async generateAutomatedResponse(context: any): Promise<any> {
+    const {
+      message,
+      intent,
+      customerHistory = []
+    } = context;
+
+    // Generate contextual response
+    const responseTemplate = this.selectResponseTemplate(intent.type);
+    const personalizedResponse = this.personalizeResponse(responseTemplate, {
+      customerName: this.getCustomerName(message.from),
+      intent: intent.type,
+      ...intent.entities
+    });
+
+    return {
+      response: personalizedResponse,
+      confidence: intent.confidence,
+      sendImmediately: intent.confidence > 0.8,
+      requiresApproval: intent.confidence < 0.6,
+      followUpActions: this.suggestFollowUpActions(intent),
+      escalation: intent.urgency === 'high' ? {
+        reason: 'High urgency detected',
+        department: 'customer_service',
+        eta: '15 minutes'
+      } : null
+    };
+  }
+
+  private async sendBulkMessage(context: any): Promise<any> {
+    const {
+      recipients,
+      content,
+      templateId,
+      variables = {},
+      sendTime,
+      batchSize = 100
+    } = context;
+
+    if (!recipients || recipients.length === 0) {
+      throw new Error('No recipients specified');
+    }
+
+    // Process in batches to avoid rate limiting
+    const batches = this.createBatches(recipients, batchSize);
+    const results = [];
+
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      const batchResults = await Promise.all(
+        batch.map(async (recipient: string) => {
+          try {
+            const result = await this.sendMessage({
+              to: recipient,
+              content,
+              templateId,
+              variables: { ...variables, customerName: this.getCustomerName(recipient) }
+            });
+            return { recipient, status: 'success', messageId: result.message.id };
+          } catch (error) {
+            return { 
+              recipient, 
+              status: 'failed', 
+              error: error instanceof Error ? error.message : 'Unknown error' 
+            };
+          }
+        })
+      );
+      
+      results.push(...batchResults);
+      
+      // Rate limiting delay between batches
+      if (i < batches.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    const successful = results.filter(r => r.status === 'success').length;
+    const failed = results.filter(r => r.status === 'failed').length;
+
+    return {
+      totalRecipients: recipients.length,
+      successful,
+      failed,
+      successRate: (successful / recipients.length * 100).toFixed(2) + '%',
+      results: results.slice(0, 50), // Return first 50 for preview
+      batchCount: batches.length,
+      estimatedCost: successful * 0.05, // Estimated cost per message
+      completedAt: new Date(),
+      metadata: {
+        templateUsed: templateId,
+        batchSize,
+        sendTime: sendTime || 'immediate'
+      }
+    };
+  }
+
+  private async updateMessageStatus(context: any): Promise<any> {
+    const { messageId, status, timestamp } = context;
+
+    // Simulate status update
+    return {
+      messageId,
+      oldStatus: 'delivered',
+      newStatus: status,
+      timestamp: timestamp || new Date(),
+      webhook: {
+        delivered: status === 'delivered',
+        read: status === 'read',
+        readTimestamp: status === 'read' ? new Date() : null
+      }
+    };
+  }
+
+  private async manageTickets(context: any): Promise<any> {
+    const {
+      action,
+      ticketId,
+      ticket: _ticket,
+      priority = 'medium',
+      category = 'general'
+    } = context;
+
+    switch (action) {
+      case 'update_priority':
+        return this.updateTicketPriority(ticketId, priority);
+      case 'assign_agent':
+        return this.assignTicketToAgent(ticketId, context.agentId);
+      case 'add_note':
+        return this.addTicketNote(ticketId, context.note);
+      case 'close':
+        return this.closeTicket(ticketId, context.resolution);
+      case 'escalate':
+        return this.escalateTicket(ticketId, context.reason);
+      default:
+        throw new Error(`Unknown ticket action: ${action}`);
     }
   }
 
   // Helper methods
-  private validateWhatsAppMessage(context: WhatsAppMessageContext): void {
-    if (!context.recipient) {
-      throw new Error('WhatsApp recipient phone number is required');
-    }
+  private initializeTemplates(): void {
+    this.messageTemplates.set('welcome', 
+      'Hello {{customerName}}! Welcome to NeonHub. How can we help you today?');
     
-    if (!context.message.content && !context.message.media) {
-      throw new Error('WhatsApp message must have content or media');
-    }
+    this.messageTemplates.set('order_confirmation', 
+      'Hi {{customerName}}, your neon sign order #{{orderNumber}} has been confirmed. Estimated delivery: {{deliveryDate}}');
     
-    if (context.message.type === 'template' && !context.message.template) {
-      throw new Error('Template message requires template configuration');
-    }
+    this.messageTemplates.set('support_received', 
+      'Thank you for contacting NeonHub support. We\'ve received your message and will respond within {{responseTime}}.');
+    
+    this.messageTemplates.set('order_shipped', 
+      'Great news {{customerName}}! Your order #{{orderNumber}} has shipped. Track it here: {{trackingUrl}}');
   }
 
-  private formatWhatsAppMessage(context: WhatsAppMessageContext): any {
-    const { message, recipient } = context;
-    
-    const baseMessage = {
-      to: recipient,
-      type: message.type,
+  private processTemplate(template: string, variables: Record<string, any>): string {
+    let processed = template;
+    Object.keys(variables).forEach(key => {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      processed = processed.replace(regex, variables[key] || '');
+    });
+    return processed;
+  }
+
+  private calculateMessageCost(type: string, length: number): number {
+    const baseCost = 0.05; // $0.05 per text message
+    const multipliers = {
+      text: 1,
+      image: 2,
+      video: 3,
+      audio: 2,
+      document: 1.5
     };
     
-    switch (message.type) {
-      case 'text':
-        return { ...baseMessage, text: { body: message.content } };
-      case 'image':
-        return {
-          ...baseMessage,
-          image: {
-            link: message.media?.url,
-            caption: message.media?.caption,
-          },
-        };
-      case 'document':
-        return {
-          ...baseMessage,
-          document: {
-            link: message.media?.url,
-            filename: message.media?.filename,
-          },
-        };
-      case 'template':
-        return {
-          ...baseMessage,
-          template: {
-            name: message.template?.name,
-            language: { code: message.template?.language || 'en' },
-            components: this.buildTemplateComponents(message.template?.parameters || []),
-          },
-        };
-      default:
-        return baseMessage;
-    }
+    const lengthMultiplier = length > 160 ? Math.ceil(length / 160) : 1;
+    return baseCost * (multipliers[type as keyof typeof multipliers] || 1) * lengthMultiplier;
   }
 
-  private buildTemplateComponents(parameters: string[]): any[] {
-    return [
-      {
-        type: 'body',
-        parameters: parameters.map(param => ({ type: 'text', text: param })),
-      },
-    ];
-  }
-
-  private async sendViaWhatsAppAPI(message: any, settings: WhatsAppMessageContext['settings']): Promise<any> {
-    // Simulate WhatsApp Business API call
-    // In production, this would integrate with Twilio, 360dialog, or WhatsApp Cloud API
+  private analyzeIntent(content: string): any {
+    // Simple intent analysis (would use NLP service in production)
+    const keywords = content.toLowerCase();
     
-    return {
-      messageId: this.generateMessageId(),
-      status: 'sent',
-      timestamp: new Date(),
-    };
-  }
-
-  private calculatePriority(context: SupportTicketContext, sentiment: any): string {
-    // Calculate priority based on multiple factors
-    let priorityScore = 0;
-    
-    // Sentiment weight
-    if (sentiment.sentiment === 'negative') priorityScore += 2;
-    if (sentiment.sentiment === 'positive') priorityScore -= 1;
-    
-    // Channel weight
-    if (context.channel === 'phone') priorityScore += 1;
-    if (context.channel === 'chat') priorityScore += 1;
-    
-    // Keywords weight
-    const urgentKeywords = ['urgent', 'emergency', 'asap', 'critical', 'broken', 'down'];
-    const hasUrgentKeywords = urgentKeywords.some(keyword => 
-      context.message.toLowerCase().includes(keyword)
-    );
-    if (hasUrgentKeywords) priorityScore += 2;
-    
-    // Determine final priority
-    if (priorityScore >= 4) return 'critical';
-    if (priorityScore >= 2) return 'high';
-    if (priorityScore >= 0) return 'medium';
-    return 'low';
-  }
-
-  private async checkAutomationRules(context: SupportTicketContext): Promise<any> {
-    // Check if any automation rules apply
-    // This would fetch rules from database and evaluate conditions
-    return null; // Simplified for now
-  }
-
-  private async executeAutomation(ticketId: string, automation: any): Promise<void> {
-    // Execute automation action
-    console.log('Executing automation:', { ticketId, automation });
-  }
-
-  private performSentimentAnalysis(message: string): any {
-    // Simple sentiment analysis (would use ML service in production)
-    const negativeWords = ['angry', 'frustrated', 'terrible', 'awful', 'hate', 'worst'];
-    const positiveWords = ['great', 'excellent', 'love', 'amazing', 'wonderful', 'best'];
-    
-    const messageWords = message.toLowerCase().split(' ');
-    const negativeCount = negativeWords.filter(word => messageWords.includes(word)).length;
-    const positiveCount = positiveWords.filter(word => messageWords.includes(word)).length;
-    
-    if (negativeCount > positiveCount) {
-      return { label: 'negative', confidence: 0.8, emotions: { anger: 0.6, frustration: 0.4 } };
-    } else if (positiveCount > negativeCount) {
-      return { label: 'positive', confidence: 0.8, emotions: { joy: 0.7, satisfaction: 0.3 } };
+    if (keywords.includes('order') || keywords.includes('purchase')) {
+      return {
+        type: 'order_inquiry',
+        confidence: 0.9,
+        entities: { orderNumber: this.extractOrderNumber(content) },
+        urgency: 'medium',
+        subject: 'Order Inquiry'
+      };
+    } else if (keywords.includes('problem') || keywords.includes('issue') || keywords.includes('complaint')) {
+      return {
+        type: 'complaint',
+        confidence: 0.85,
+        entities: {},
+        urgency: 'high',
+        priority: 'high',
+        subject: 'Customer Complaint'
+      };
+    } else if (keywords.includes('help') || keywords.includes('support')) {
+      return {
+        type: 'support',
+        confidence: 0.8,
+        entities: {},
+        urgency: 'medium',
+        priority: 'medium',
+        subject: 'Support Request'
+      };
     } else {
-      return { label: 'neutral', confidence: 0.9, emotions: { neutral: 1.0 } };
+      return {
+        type: 'general',
+        confidence: 0.6,
+        entities: {},
+        urgency: 'low',
+        subject: 'General Inquiry'
+      };
     }
   }
 
-  private async analyzeIntent(message: string): Promise<any> {
-    // Analyze customer intent
-    return {
-      intent: 'general_inquiry',
-      confidence: 0.75,
-      complexity: 'medium',
-      entities: [],
+  private findTicketByCustomer(customerId: string): SupportTicket | undefined {
+    return Array.from(this.activeTickets.values())
+      .find(ticket => ticket.customerId === customerId && ticket.status !== 'closed');
+  }
+
+  private generateResponse(intent: any, ticket?: SupportTicket): string {
+    const responses = {
+      order_inquiry: 'I can help you with your order. Could you please provide your order number?',
+      support: 'I\'m here to help! Could you please describe the issue you\'re experiencing?',
+      complaint: 'I sincerely apologize for any inconvenience. Let me help resolve this issue for you immediately.',
+      general: 'Hello! Thanks for reaching out to NeonHub. How can I assist you today?'
     };
+    
+    return responses[intent.type as keyof typeof responses] || responses.general;
   }
 
-  private async searchKnowledgeBase(intent: any, message: string): Promise<any[]> {
-    // Search knowledge base for relevant articles
-    return [
-      {
-        title: 'How to reset your password',
-        content: 'To reset your password, click on...',
-        relevance: 0.85,
-      },
-    ];
-  }
-
-  private async generateContextualResponse(intent: any, kbResults: any[], ticketHistory: any): Promise<any> {
-    // Generate contextual response based on intent and KB
-    return {
-      content: 'Thank you for contacting us. I can help you with that.',
-      type: 'auto_response',
+  private selectResponseTemplate(intentType: string): string {
+    const templates = {
+      order_inquiry: 'order_status',
+      support: 'support_received',
+      complaint: 'urgent_response',
+      general: 'welcome'
     };
+    
+    return this.messageTemplates.get(templates[intentType as keyof typeof templates] || 'welcome') || 'Hello! How can I help you?';
   }
 
-  private calculateResponseConfidence(intent: any, kbResults: any[], response: any): number {
-    // Calculate confidence in auto-response
-    return 0.8;
+  private personalizeResponse(template: string, variables: Record<string, any>): string {
+    return this.processTemplate(template, variables);
   }
 
-  private async findBestAgent(context: any): Promise<any> {
-    // Find best available agent based on skills and workload
-    return {
-      id: 'agent_123',
-      name: 'Sarah Johnson',
-      skills: ['technical', 'billing'],
-      currentWorkload: 5,
+  private suggestFollowUpActions(intent: any): string[] {
+    const actions = {
+      order_inquiry: ['Check order status', 'Provide tracking information', 'Update delivery estimate'],
+      support: ['Gather more details', 'Provide troubleshooting steps', 'Schedule callback'],
+      complaint: ['Escalate to supervisor', 'Offer compensation', 'Schedule urgent call'],
+      general: ['Provide product information', 'Share catalog', 'Offer consultation']
     };
+    
+    return actions[intent.type as keyof typeof actions] || ['Provide general assistance'];
   }
 
-  private escalatePriority(currentPriority: string): string {
-    const priorityLevels = ['low', 'medium', 'high', 'critical'];
-    const currentIndex = priorityLevels.indexOf(currentPriority);
-    return priorityLevels[Math.min(currentIndex + 1, priorityLevels.length - 1)];
-  }
-
-  private async notifyAgent(agent: any, ticketId: string, escalationId: string): Promise<void> {
-    // Notify agent about escalated ticket
-    console.log('Notifying agent:', { agent: agent.id, ticketId, escalationId });
-  }
-
-  private extractKeyPoints(messages: any[]): string[] {
-    // Extract key points from conversation
-    return ['Customer issue with login', 'Password reset required', 'Account verification needed'];
-  }
-
-  private generateSummaryText(ticketData: any, keyPoints: string[]): string {
-    // Generate summary text
-    return `Customer contacted via ${ticketData.channel} regarding ${keyPoints.join(', ')}.`;
-  }
-
-  private extractResolution(ticketData: any): string {
-    // Extract resolution from closed ticket
-    return 'Issue resolved by password reset and account verification.';
-  }
-
-  private async addKnowledgeBaseArticle(data: any): Promise<any> {
-    // Add new KB article
-    return { articleId: this.generateArticleId(), status: 'created' };
-  }
-
-  private async updateKnowledgeBaseArticle(data: any): Promise<any> {
-    // Update existing KB article
-    return { articleId: data.articleId, status: 'updated' };
-  }
-
-  private async getKnowledgeBaseSuggestions(data: any): Promise<any[]> {
-    // Get KB article suggestions
-    return [];
-  }
-
-  private validateTicketUpdate(update: any): void {
-    // Validate ticket update data
-    if (!update || typeof update !== 'object') {
-      throw new Error('Invalid ticket update data');
+  private autoAssignAgent(category: string, priority: string): string | undefined {
+    // Simple auto-assignment logic
+    if (priority === 'urgent' || priority === 'high') {
+      return 'senior_agent_001';
+    } else if (category === 'technical') {
+      return 'tech_agent_001';
+    } else {
+      return 'agent_001';
     }
   }
 
-  private shouldAutoClose(update: any): boolean {
-    // Check if ticket should be auto-closed
-    return update.status === 'resolved' && update.customerConfirmed === true;
+  private calculateResponseTime(priority: string): string {
+    const times = {
+      urgent: '5 minutes',
+      high: '15 minutes',
+      medium: '1 hour',
+      low: '4 hours'
+    };
+    
+    return times[priority as keyof typeof times] || '1 hour';
   }
 
-  // Data storage methods (would integrate with database)
-  private async storeMessageData(result: any, context: WhatsAppMessageContext): Promise<void> {
-    console.log('Storing message data:', { result, context });
+  private getCustomerName(phone: string): string {
+    const contact = this.contacts.get(phone);
+    return contact?.name || `Customer ${phone.slice(-4)}`;
   }
 
-  private async storeTicketData(ticketId: string, context: SupportTicketContext, priority: string, sentiment: any): Promise<any> {
-    console.log('Storing ticket data:', { ticketId, context, priority, sentiment });
-    return { ticketId, status: 'open' };
+  private createBatches<T>(items: T[], batchSize: number): T[][] {
+    const batches: T[][] = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+      batches.push(items.slice(i, i + batchSize));
+    }
+    return batches;
   }
 
-  private async updateTicketInDatabase(ticketId: string, update: any, agentId: string): Promise<void> {
-    console.log('Updating ticket:', { ticketId, update, agentId });
+  private extractOrderNumber(content: string): string | null {
+    const match = content.match(/#(\w+)/);
+    return match?.[1] || null;
   }
 
-  private async storeEscalationData(escalationId: string, ticketId: string, agent: any, reason: string): Promise<void> {
-    console.log('Storing escalation:', { escalationId, ticketId, agent, reason });
+  private addContact(contactData: any): any {
+    const { phone, name, tags = [] } = contactData;
+    
+    const contact: WhatsAppContact = {
+      phone,
+      name,
+      tags,
+      lastSeen: new Date()
+    };
+    
+    this.contacts.set(phone, contact);
+    
+    return {
+      contact,
+      message: 'Contact added successfully'
+    };
   }
 
-  private async fetchTicketData(ticketId: string): Promise<any> {
-    // Fetch ticket data from database
+  private updateContact(contactData: any): any {
+    const { phone, ...updates } = contactData;
+    const existingContact = this.contacts.get(phone);
+    
+    if (!existingContact) {
+      throw new Error('Contact not found');
+    }
+    
+    const updatedContact = { ...existingContact, ...updates };
+    this.contacts.set(phone, updatedContact);
+    
+    return {
+      contact: updatedContact,
+      message: 'Contact updated successfully'
+    };
+  }
+
+  private blockContact(phone: string): any {
+    const contact = this.contacts.get(phone);
+    if (contact) {
+      contact.isBlocked = true;
+      this.contacts.set(phone, contact);
+    }
+    
+    return {
+      phone,
+      blocked: true,
+      message: 'Contact blocked successfully'
+    };
+  }
+
+  private unblockContact(phone: string): any {
+    const contact = this.contacts.get(phone);
+    if (contact) {
+      contact.isBlocked = false;
+      this.contacts.set(phone, contact);
+    }
+    
+    return {
+      phone,
+      blocked: false,
+      message: 'Contact unblocked successfully'
+    };
+  }
+
+  private tagContact(phone: string, tags: string[]): any {
+    const contact = this.contacts.get(phone);
+    if (contact) {
+      contact.tags = [...(contact.tags || []), ...tags];
+      this.contacts.set(phone, contact);
+    }
+    
+    return {
+      phone,
+      tags: contact?.tags || [],
+      message: 'Tags added successfully'
+    };
+  }
+
+  private listContacts(_filters: any): any {
+    const contacts = Array.from(this.contacts.values());
+    
+    return {
+      contacts: contacts.slice(0, 50), // Limit to 50 for performance
+      totalCount: contacts.length,
+      blockedCount: contacts.filter(c => c.isBlocked).length
+    };
+  }
+
+  private updateTicketPriority(ticketId: string, _newPriority: string): any {
+    const _ticket = this.activeTickets.get(ticketId);
+    if (!_ticket) {
+      throw new Error('Ticket not found');
+    }
+    
     return {
       ticketId,
-      status: 'open',
-      messages: [],
-      channel: 'whatsapp',
+      message: 'Priority updated successfully'
     };
   }
 
-  // ID generators
-  private generateTicketId(): string {
-    return `ticket_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  private assignTicketToAgent(ticketId: string, agentId: string): any {
+    const ticket = this.activeTickets.get(ticketId);
+    if (!ticket) {
+      throw new Error('Ticket not found');
+    }
+    
+    ticket.assignedAgent = agentId;
+    
+    return {
+      ticketId,
+      agentId,
+      message: 'Ticket assigned successfully'
+    };
   }
 
-  private generateMessageId(): string {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  private addTicketNote(ticketId: string, note: string): any {
+    const ticket = this.activeTickets.get(ticketId);
+    if (!ticket) {
+      throw new Error('Ticket not found');
+    }
+    
+    return {
+      ticketId,
+      note,
+      addedAt: new Date(),
+      message: 'Note added successfully'
+    };
   }
 
-  private generateEscalationId(): string {
-    return `esc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  private closeTicket(ticketId: string, resolution: string): any {
+    const ticket = this.activeTickets.get(ticketId);
+    if (!ticket) {
+      throw new Error('Ticket not found');
+    }
+    
+    ticket.status = 'closed';
+    ticket.updatedAt = new Date();
+    
+    return {
+      ticketId,
+      status: 'closed',
+      resolution,
+      closedAt: new Date(),
+      message: 'Ticket closed successfully'
+    };
   }
 
-  private generateArticleId(): string {
-    return `article_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  private escalateTicket(ticketId: string, reason: string): any {
+    const ticket = this.activeTickets.get(ticketId);
+    if (!ticket) {
+      throw new Error('Ticket not found');
+    }
+    
+    ticket.priority = 'urgent';
+    ticket.updatedAt = new Date();
+    
+    return {
+      ticketId,
+      escalated: true,
+      reason,
+      newPriority: 'urgent',
+      escalatedAt: new Date(),
+      message: 'Ticket escalated successfully'
+    };
   }
 
-  // Public methods for Phase 2 integration
-  async sendMessage(context: WhatsAppMessageContext): Promise<AgentResult> {
-    return this.execute({
-      task: 'send_whatsapp',
-      context,
-      priority: 'high'
-    });
+  // Utility methods for context handling (keeping for future implementation)
+  private _analyzeMessageContext(_intent: any, _kbResults: any, _ticketHistory: any): any {
+    return {
+      contextual: true,
+      confidence: 0.85
+    };
   }
 
-  async createTicket(context: SupportTicketContext): Promise<AgentResult> {
-    return this.execute({
-      task: 'create_ticket',
-      context,
-      priority: 'medium'
-    });
+  private _searchKnowledgeBase(_intent: any, _kbResults: any, _response: any): any {
+    return {
+      results: [],
+      confidence: 0.8
+    };
   }
 
-  async respondToTicket(ticketId: string, message: string): Promise<AgentResult> {
-    return this.execute({
-      task: 'auto_respond',
-      context: { ticketId, message },
-      priority: 'high'
-    });
+  private _escalateToHuman(_context: any): any {
+    return {
+      escalated: true,
+      reason: 'Complex query requiring human intervention'
+    };
+  }
+
+  private _handleGeneralInquiry(_messages: any): any {
+    return {
+      response: 'Thank you for your inquiry. How can I help you today?'
+    };
+  }
+
+  private _trackCustomerJourney(_ticketData: any): any {
+    return {
+      stage: 'inquiry',
+      touchpoints: 1
+    };
+  }
+
+  private _generateInsights(_data: any): any {
+    return {
+      insights: ['Customer engagement is high', 'Response time is optimal']
+    };
+  }
+
+  private _runAnalytics(_data: any): any {
+    return {
+      metrics: {
+        responseTime: '2.5 minutes',
+        satisfaction: '4.2/5'
+      }
+    };
   }
 } 

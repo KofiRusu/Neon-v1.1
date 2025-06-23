@@ -1,4 +1,4 @@
-import { SocialPostingAgent } from "@neon/core-agents";
+import { SocialAgent } from "@neon/core-agents";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -34,8 +34,8 @@ export const socialRouter = createTRPCRouter({
       }),
     }))
     .mutation(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
-      return await socialAgent.schedulePostAsync(input);
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
+      return await socialAgent.schedulePost(input);
     }),
 
   publishPost: publicProcedure
@@ -69,8 +69,8 @@ export const socialRouter = createTRPCRouter({
       }),
     }))
     .mutation(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
-      return await socialAgent.publishPostAsync(input);
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
+      return await socialAgent.publishPost(input);
     }),
 
   getPostAnalytics: publicProcedure
@@ -79,7 +79,7 @@ export const socialRouter = createTRPCRouter({
       platform: z.string(),
     }))
     .query(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
       return await socialAgent.getPostAnalytics(input.postId, input.platform);
     }),
 
@@ -98,9 +98,9 @@ export const socialRouter = createTRPCRouter({
       campaigns: z.array(z.string()).optional(),
     }))
     .mutation(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
       return await socialAgent.execute({
-        task: 'manage_calendar',
+        task: 'create_calendar',
         context: input,
         priority: 'medium'
       });
@@ -120,9 +120,9 @@ export const socialRouter = createTRPCRouter({
       }),
     }))
     .query(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
       return await socialAgent.execute({
-        task: 'social_listening',
+        task: 'track_mentions',
         context: input,
         priority: 'low'
       });
@@ -145,9 +145,9 @@ export const socialRouter = createTRPCRouter({
       customizations: z.record(z.any()),
     }))
     .mutation(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
       return await socialAgent.execute({
-        task: 'cross_platform_posting',
+        task: 'schedule_post',
         context: input,
         priority: 'high'
       });
@@ -161,9 +161,9 @@ export const socialRouter = createTRPCRouter({
       goals: z.any(),
     }))
     .mutation(async ({ input }) => {
-      const socialAgent = new SocialPostingAgent();
+      const socialAgent = new SocialAgent('social-posting', 'Social Posting Agent');
       return await socialAgent.execute({
-        task: 'content_optimization',
+        task: 'schedule_post',
         context: input,
         priority: 'medium'
       });

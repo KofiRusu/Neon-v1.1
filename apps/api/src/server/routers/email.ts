@@ -1,4 +1,4 @@
-import { EmailMarketingAgent } from "@neon/core-agents";
+import { EmailAgent } from "@neon/core-agents";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -31,7 +31,7 @@ export const emailRouter = createTRPCRouter({
       }),
     }))
     .mutation(async ({ input }) => {
-      const emailAgent = new EmailMarketingAgent();
+      const emailAgent = new EmailAgent('email-marketing', 'Email Marketing Agent');
       return await emailAgent.sendCampaign(input);
     }),
 
@@ -58,7 +58,7 @@ export const emailRouter = createTRPCRouter({
       }),
     }))
     .mutation(async ({ input }) => {
-      const emailAgent = new EmailMarketingAgent();
+      const emailAgent = new EmailAgent('email-marketing', 'Email Marketing Agent');
       return await emailAgent.createSequence(input);
     }),
 
@@ -67,7 +67,7 @@ export const emailRouter = createTRPCRouter({
       campaignId: z.string(),
     }))
     .query(async ({ input }) => {
-      const emailAgent = new EmailMarketingAgent();
+      const emailAgent = new EmailAgent('email-marketing', 'Email Marketing Agent');
       return await emailAgent.getAnalytics(input.campaignId);
     }),
 
@@ -80,7 +80,7 @@ export const emailRouter = createTRPCRouter({
       totalCount: z.number().optional(),
     }))
     .mutation(async ({ input }) => {
-      const emailAgent = new EmailMarketingAgent();
+      const emailAgent = new EmailAgent('email-marketing', 'Email Marketing Agent');
       return await emailAgent.execute({
         task: 'manage_lists',
         context: input,
@@ -99,7 +99,7 @@ export const emailRouter = createTRPCRouter({
       testDuration: z.number(),
     }))
     .mutation(async ({ input }) => {
-      const emailAgent = new EmailMarketingAgent();
+      const emailAgent = new EmailAgent('email-marketing', 'Email Marketing Agent');
       return await emailAgent.execute({
         task: 'a_b_testing',
         context: input,

@@ -1,0 +1,128 @@
+name: Workspace Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run validation daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  validate-sync:
+    name: Validate Workspace Sync
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50  # Get enough history to analyze commits
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Validate sync scripts exist
+        run: |
+          if [ -f "scripts/auto-sync.js" ]; then
+            echo "✅ Auto-sync script found"
+          else
+            echo "❌ Auto-sync script missing"
+            exit 1
+          fi
+          
+          if [ -f "scripts/handle-conflicts.js" ]; then
+            echo "✅ Conflict handler script found"
+          else
+            echo "❌ Conflict handler script missing"
+            exit 1
+          fi
+          
+      - name: Validate git hooks
+        run: |
+          if [ -f ".git/hooks/post-commit" ]; then
+            echo "✅ Post-commit hook found"
+          else
+            echo "⚠️ Post-commit hook missing"
+          fi
+          
+          if [ -f ".git/hooks/post-merge" ]; then
+            echo "✅ Post-merge hook found"
+          else
+            echo "⚠️ Post-merge hook missing"
+          fi
+          
+      - name: Test conflict resolution
+        run: |
+          echo "🔍 Testing conflict resolution script..."
+          node ./scripts/handle-conflicts.js
+          
+      - name: Test auto-sync script (dry run)
+        run: |
+          echo "🧪 Testing auto-sync script in dry-run mode..."
+          node ./scripts/auto-sync.js --dry-run
+          
+      - name: Analyze commit history
+        run: |
+          echo "📊 WORKSPACE SYNC METRICS:"
+          echo "=========================="
+          
+          # Count auto-commits
+          AUTO_COMMITS=$(git log --oneline --grep="Auto-commit from device" | wc -l)
+          echo "🤖 Auto-commits: $AUTO_COMMITS"
+          
+          # Check sync log
+          if [ -f ".sync-log.json" ]; then
+            SYNC_ENTRIES=$(wc -l < .sync-log.json)
+            echo "📝 Sync log entries: $SYNC_ENTRIES"
+            
+            # Show recent sync activity
+            echo ""
+            echo "🕒 RECENT SYNC ACTIVITY:"
+            echo "======================="
+            tail -5 .sync-log.json | jq -r '.timestamp + " - " + .message' 2>/dev/null || echo "Unable to parse sync log"
+          else
+            echo "⚠️ Sync log not found"
+          fi
+          
+          # Validate minimum sync activity
+          if [ "$AUTO_COMMITS" -lt 5 ]; then
+            echo "❌ Insufficient auto-commit activity (minimum: 5, found: $AUTO_COMMITS)"
+            exit 1
+          else
+            echo "✅ Adequate sync activity detected"
+          fi
+          
+      - name: Check for recent conflicts
+        run: |
+          echo "🔍 Checking recent commit history for conflicts..."
+          CONFLICT_COMMITS=$(git log --oneline --grep="CONFLICT\|Merge conflict\|resolve conflict" -10 | wc -l)
+          
+          if [ "$CONFLICT_COMMITS" -gt 0 ]; then
+            echo "⚠️ Found $CONFLICT_COMMITS conflict-related commits in recent history"
+            git log --oneline --grep="CONFLICT\|Merge conflict\|resolve conflict" -5
+          else
+            echo "✅ No recent conflict-related commits found"
+          fi
+          
+      - name: Workspace health summary
+        run: |
+          echo ""
+          echo "🏥 WORKSPACE HEALTH SUMMARY:"
+          echo "============================"
+          echo "✅ Sync scripts: Present and functional"
+          echo "✅ Conflict resolution: Working"
+          echo "✅ Commit automation: Active ($(git log --oneline --grep='Auto-commit from device' | wc -l) auto-commits)"
+          echo "✅ Workspace validation: Complete"
+          echo ""
+          echo "🌟 AUTONOMOUS WORKSPACE STATUS: OPERATIONAL" 

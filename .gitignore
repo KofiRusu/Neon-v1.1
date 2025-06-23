@@ -50,6 +50,9 @@ Thumbs.db
 logs/
 *.log
 
+# Git push protection log
+.pushlog
+
 # Runtime data
 pids/
 *.pid

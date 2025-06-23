@@ -1,0 +1,99 @@
+{
+  "name": "NeonHub Branch Protection Rules",
+  "description": "High-integrity Git protection for production branches",
+  "rules": {
+    "main": {
+      "required_status_checks": {
+        "strict": true,
+        "contexts": [
+          "TypeScript Check",
+          "ESLint",
+          "Unit Tests",
+          "Integration Tests",
+          "Build Validation"
+        ]
+      },
+      "enforce_admins": true,
+      "required_pull_request_reviews": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews": true,
+        "require_code_owner_reviews": true,
+        "restrictions": {
+          "users": [],
+          "teams": []
+        }
+      },
+      "restrictions": null,
+      "required_conversation_resolution": true,
+      "allow_force_pushes": false,
+      "allow_deletions": false
+    },
+    "release": {
+      "required_status_checks": {
+        "strict": true,
+        "contexts": [
+          "TypeScript Check",
+          "ESLint",
+          "Unit Tests",
+          "Integration Tests",
+          "E2E Tests",
+          "Build Validation",
+          "Security Scan"
+        ]
+      },
+      "enforce_admins": true,
+      "required_pull_request_reviews": {
+        "required_approving_review_count": 2,
+        "dismiss_stale_reviews": true,
+        "require_code_owner_reviews": true
+      },
+      "allow_force_pushes": false,
+      "allow_deletions": false
+    },
+    "production": {
+      "required_status_checks": {
+        "strict": true,
+        "contexts": [
+          "TypeScript Check",
+          "ESLint",
+          "Unit Tests",
+          "Integration Tests",
+          "E2E Tests",
+          "Build Validation",
+          "Security Scan",
+          "Performance Tests"
+        ]
+      },
+      "enforce_admins": true,
+      "required_pull_request_reviews": {
+        "required_approving_review_count": 2,
+        "dismiss_stale_reviews": true,
+        "require_code_owner_reviews": true
+      },
+      "allow_force_pushes": false,
+      "allow_deletions": false
+    }
+  },
+  "protected_paths": [
+    "packages/data-model/prisma/schema.prisma",
+    "env.example",
+    ".env.production",
+    "apps/dashboard/package.json",
+    "apps/api/package.json",
+    "package.json",
+    "tsconfig.json",
+    "jest.config.js",
+    "playwright.config.ts"
+  ],
+  "instructions": {
+    "setup": "To apply these branch protection rules:",
+    "steps": [
+      "1. Go to GitHub repository settings",
+      "2. Navigate to 'Branches' section",
+      "3. Add branch protection rule for each branch (main, release, production)",
+      "4. Apply the settings from this configuration file",
+      "5. Ensure required status checks match your CI/CD pipeline"
+    ],
+    "cli_setup": "Use GitHub CLI: gh api repos/:owner/:repo/branches/main/protection -X PUT --input branch-protection.json"
+  }
+} 

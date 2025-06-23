@@ -88,3 +88,28 @@ export interface TrendResult {
     growth: number;
   }>;
 }
+
+// Additional types for base-agent compatibility
+export interface AgentPayload {
+  task: string;
+  context: AgentContext;
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface AgentResult {
+  success: boolean;
+  data?: any;
+  error?: string | undefined;
+  metadata?: {
+    timestamp: string;
+    duration?: number;
+  };
+}
+
+export interface ContentContext {
+  type?: string;
+  platform?: string;
+  industry?: string;
+  tone?: string;
+  keywords?: string[];
+}

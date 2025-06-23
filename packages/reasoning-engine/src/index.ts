@@ -1,743 +1,455 @@
-/**
- * NeonHub Reasoning Engine
- *
- * Core orchestration and decision-making engine that:
- * - Coordinates AI agent activities
- * - Makes strategic marketing decisions
- * - Optimizes campaign performance
- * - Manages resource allocation
- */
+import { EventEmitter } from 'events';
+import Redis from 'redis';
 
-import { z } from 'zod';
-
-// Base interfaces for the reasoning engine
-export interface CampaignMetric {
+// Types for reasoning engine
+export interface ReasoningContext {
   id: string;
-  campaignId: string;
-  impressions: number;
-  ctr: number;
-  conversions: number;
+  sessionId: string;
+  userId?: string;
+  campaignId?: string;
+  history: ContextEntry[];
+  metadata: Record<string, any>;
+  createdAt: Date;
+  lastAccessed: Date;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+}
+
+export interface ContextEntry {
+  id: string;
+  type: 'user_input' | 'agent_output' | 'system_message' | 'tool_call' | 'tool_result';
+  content: any;
+  agentId?: string;
   timestamp: Date;
+  tokens?: number;
+  metadata?: Record<string, any>;
 }
 
-export interface OptimizationRule {
+export interface InferenceRequest {
+  contextId: string;
+  prompt: string;
+  agentType?: string;
+  temperature?: number;
+  maxTokens?: number;
+  stream?: boolean;
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  metadata?: Record<string, any>;
+}
+
+export interface InferenceResult {
   id: string;
-  name: string;
-  condition: (metrics: CampaignMetric[]) => boolean;
-  action: (campaignId: string) => Promise<void>;
+  contextId: string;
+  content: string;
+  agentId?: string;
+  tokensUsed: number;
+  responseTime: number;
+  cached: boolean;
+  confidence?: number;
+  metadata?: Record<string, any>;
 }
 
-export interface TrendDetectionParams {
-  timeWindow: number; // in hours
-  minimumDataPoints: number;
-  threshold: number;
+export interface AgentRoute {
+  agentType: string;
+  priority: number;
+  capabilities: string[];
+  load: number;
+  avgResponseTime: number;
+  successRate: number;
 }
 
-export interface ABTestConfig {
-  variants: string[];
-  trafficSplit: number[]; // percentages that should sum to 100
-  duration: number; // in hours
-  successMetric: 'ctr' | 'conversions' | 'impressions';
-}
+// Context cache with intelligent eviction
+export class ContextCache {
+  private cache = new Map<string, ReasoningContext>();
+  private accessOrder = new Map<string, number>();
+  private maxSize: number;
+  private redis?: Redis.RedisClientType;
+  private metrics = {
+    hits: 0,
+    misses: 0,
+    evictions: 0,
+    totalTokens: 0
+  };
 
-// Placeholder classes for future implementation
-export class OptimizationEngine {
-  /**
-   * Analyzes campaign performance and suggests optimizations
-   * TODO: Implement optimization logic
-   */
-  static async analyzeCampaign(campaignId: string): Promise<string[]> {
-    // Placeholder implementation
-    return [`Campaign ${campaignId} analysis pending`];
-  }
-}
-
-export class TrendDetector {
-  /**
-   * Detects trending patterns in campaign data
-   * TODO: Implement trend detection algorithms
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static async detectTrends(_params: TrendDetectionParams): Promise<unknown[]> {
-    // Placeholder implementation
-    return [];
-  }
-}
-
-export class ABTestEngine {
-  /**
-   * Manages A/B testing for campaigns
-   * TODO: Implement A/B testing logic
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static async createTest(_config: ABTestConfig): Promise<string> {
-    // Placeholder implementation
-    return 'test-id-placeholder';
-  }
-}
-
-// Utility functions for data analysis
-export const MetricsAnalyzer = {
-  /**
-   * Calculates conversion rate from metrics
-   */
-  calculateConversionRate: (impressions: number, conversions: number): number => {
-    return impressions > 0 ? conversions / impressions : 0;
-  },
-
-  /**
-   * Determines if metrics show significant improvement
-   */
-  isSignificantImprovement: (before: number, after: number, threshold = 0.05): boolean => {
-    return (after - before) / before > threshold;
-  },
-
-  /**
-   * Calculates statistical significance for A/B tests
-   * TODO: Implement proper statistical significance testing
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  calculateSignificance: (_controlMetrics: number[], _testMetrics: number[]): number => {
-    // Placeholder - should implement proper statistical test
-    return 0.95;
-  },
-};
-
-// Core Types and Schemas
-export const CampaignObjectiveSchema = z.object({
-  type: z.enum(['brand_awareness', 'lead_generation', 'sales_conversion', 'engagement']),
-  target: z.number(),
-  timeframe: z.string(),
-  priority: z.enum(['low', 'medium', 'high', 'critical']),
-});
-
-export const AgentTaskSchema = z.object({
-  agentId: z.string(),
-  task: z.string(),
-  priority: z.enum(['low', 'medium', 'high', 'critical']),
-  deadline: z.date(),
-  context: z.record(z.unknown()),
-  dependencies: z.array(z.string()).optional(),
-});
-
-export const DecisionContextSchema = z.object({
-  currentMetrics: z.record(z.number()),
-  targetMetrics: z.record(z.number()),
-  availableResources: z.record(z.number()),
-  timeConstraints: z.object({
-    deadline: z.date(),
-    timeRemaining: z.number(),
-  }),
-  externalFactors: z.record(z.unknown()).optional(),
-});
-
-export type CampaignObjective = z.infer<typeof CampaignObjectiveSchema>;
-export type AgentTask = z.infer<typeof AgentTaskSchema>;
-export type DecisionContext = z.infer<typeof DecisionContextSchema>;
-
-// Decision Engine
-export class ReasoningEngine {
-  // TODO: Implement usage of these properties in future iterations
-  // private activeObjectives: Map<string, CampaignObjective> = new Map();
-  // private taskQueue: AgentTask[] = [];
-  // private performanceHistory: Map<string, number[]> = new Map();
-
-  /**
-   * Strategic Decision Making
-   */
-  async makeStrategicDecision(
-    context: DecisionContext,
-    objectives: CampaignObjective[]
-  ): Promise<{
-    decision: string;
-    reasoning: string[];
-    actions: AgentTask[];
-    confidence: number;
-  }> {
-    // Analyze current performance vs targets
-    const performanceGaps = this.analyzePerformanceGaps(context);
-
-    // Prioritize objectives based on urgency and impact
-    const prioritizedObjectives = this.prioritizeObjectives(objectives, context);
-
-    // Generate action plan
-    const actions = await this.generateActionPlan(prioritizedObjectives, context);
-
-    // Calculate confidence based on historical performance
-    const confidence = this.calculateDecisionConfidence(actions, context);
-
-    return {
-      decision: this.formulateDecision(prioritizedObjectives, performanceGaps),
-      reasoning: this.generateReasoning(performanceGaps, prioritizedObjectives),
-      actions,
-      confidence,
-    };
+  constructor(maxSize: number = 1000, redisUrl?: string) {
+    this.maxSize = maxSize;
+    
+    if (redisUrl) {
+      this.redis = Redis.createClient({ url: redisUrl });
+      this.redis.connect().catch(console.error);
+    }
   }
 
-  /**
-   * Campaign Orchestration
-   */
-  async orchestrateCampaign(
-    _campaignId: string,
-    objectives: CampaignObjective[],
-    constraints: { budget: number; timeline: number }
-  ): Promise<{
-    phases: CampaignPhase[];
-    resourceAllocation: ResourceAllocation;
-    timeline: CampaignTimeline;
-    riskAssessment: RiskAssessment;
-  }> {
-    // Phase planning
-    const phases = this.planCampaignPhases(objectives, constraints);
+  async get(contextId: string): Promise<ReasoningContext | null> {
+    // Check memory cache first
+    const memoryContext = this.cache.get(contextId);
+    if (memoryContext) {
+      this.accessOrder.set(contextId, Date.now());
+      memoryContext.lastAccessed = new Date();
+      this.metrics.hits++;
+      return memoryContext;
+    }
 
-    // Resource allocation optimization
-    const resourceAllocation = this.optimizeResourceAllocation(objectives, constraints);
-
-    // Timeline generation
-    const timeline = this.generateCampaignTimeline(phases, constraints);
-
-    // Risk assessment
-    const riskAssessment = this.assessCampaignRisks(objectives, constraints);
-
-    return {
-      phases,
-      resourceAllocation,
-      timeline,
-      riskAssessment,
-    };
-  }
-
-  /**
-   * Agent Coordination
-   */
-  async coordinateAgents(
-    availableAgents: string[],
-    tasks: AgentTask[]
-  ): Promise<{
-    assignments: Map<string, AgentTask[]>;
-    executionOrder: string[];
-    parallelTasks: AgentTask[][];
-    estimatedCompletion: Date;
-  }> {
-    // Task dependency analysis
-    const dependencyGraph = this.buildTaskDependencyGraph(tasks);
-
-    // Agent capability matching
-    const assignments = this.assignTasksToAgents(availableAgents, tasks);
-
-    // Execution optimization
-    const executionPlan = this.optimizeExecutionPlan(assignments, dependencyGraph);
-
-    return {
-      assignments,
-      executionOrder: executionPlan.order,
-      parallelTasks: executionPlan.parallelGroups,
-      estimatedCompletion: executionPlan.estimatedCompletion,
-    };
-  }
-
-  /**
-   * Performance Optimization
-   */
-  async optimizePerformance(
-    currentMetrics: Record<string, number>,
-    targetMetrics: Record<string, number>
-  ): Promise<{
-    optimizations: Optimization[];
-    expectedImpact: Record<string, number>;
-    implementationPlan: AgentTask[];
-  }> {
-    // Identify optimization opportunities
-    const opportunities = this.identifyOptimizationOpportunities(currentMetrics, targetMetrics);
-
-    // Generate optimization strategies
-    const optimizations = await this.generateOptimizationStrategies(opportunities);
-
-    // Predict impact
-    const expectedImpact = this.predictOptimizationImpact(optimizations, currentMetrics);
-
-    // Create implementation plan
-    const implementationPlan = this.createImplementationPlan(optimizations);
-
-    return {
-      optimizations,
-      expectedImpact,
-      implementationPlan,
-    };
-  }
-
-  // Private helper methods
-  private analyzePerformanceGaps(context: DecisionContext): Record<string, number> {
-    const gaps: Record<string, number> = {};
-
-    for (const [metric, current] of Object.entries(context.currentMetrics)) {
-      const target = context.targetMetrics[metric];
-      if (target) {
-        gaps[metric] = (target - current) / target; // Gap percentage
+    // Check Redis cache
+    if (this.redis) {
+      try {
+        const cached = await this.redis.get(`context:${contextId}`);
+        if (cached) {
+          const context: ReasoningContext = JSON.parse(cached);
+          context.lastAccessed = new Date();
+          
+          // Store in memory cache
+          this.set(context);
+          this.metrics.hits++;
+          return context;
+        }
+      } catch (error) {
+        console.error('Redis cache error:', error);
       }
     }
 
-    return gaps;
+    this.metrics.misses++;
+    return null;
   }
 
-  private prioritizeObjectives(
-    objectives: CampaignObjective[],
-    context: DecisionContext
-  ): CampaignObjective[] {
-    return objectives.sort((a, b) => {
-      // Priority weight
-      const priorityWeight = { critical: 4, high: 3, medium: 2, low: 1 };
-      const priorityScore = priorityWeight[b.priority] - priorityWeight[a.priority];
+  async set(context: ReasoningContext): Promise<void> {
+    // Evict if at capacity
+    if (this.cache.size >= this.maxSize) {
+      await this.evictLRU();
+    }
 
-      // Time urgency weight
-      const timeWeight = context.timeConstraints.timeRemaining < 7 ? 2 : 1;
+    // Update memory cache
+    this.cache.set(context.id, context);
+    this.accessOrder.set(context.id, Date.now());
 
-      return priorityScore * timeWeight;
+    // Update token count
+    const tokens = context.history.reduce((sum, entry) => sum + (entry.tokens || 0), 0);
+    this.metrics.totalTokens += tokens;
+
+    // Store in Redis with TTL
+    if (this.redis) {
+      try {
+        const ttl = this.getTTL(context.priority);
+        await this.redis.setEx(`context:${context.id}`, ttl, JSON.stringify(context));
+      } catch (error) {
+        console.error('Redis cache error:', error);
+      }
+    }
+  }
+
+  private async evictLRU(): Promise<void> {
+    if (this.accessOrder.size === 0) return;
+
+    let oldestTime = Date.now();
+    let oldestKey = '';
+
+    for (const [key, time] of this.accessOrder.entries()) {
+      if (time < oldestTime) {
+        oldestTime = time;
+        oldestKey = key;
+      }
+    }
+
+    if (oldestKey) {
+      this.cache.delete(oldestKey);
+      this.accessOrder.delete(oldestKey);
+      this.metrics.evictions++;
+      
+      // Remove from Redis
+      if (this.redis) {
+        await this.redis.del(`context:${oldestKey}`);
+      }
+    }
+  }
+
+  private getTTL(priority: string): number {
+    switch (priority) {
+      case 'critical': return 7200; // 2 hours
+      case 'high': return 3600; // 1 hour
+      case 'medium': return 1800; // 30 minutes
+      case 'low': return 900; // 15 minutes
+      default: return 1800;
+    }
+  }
+
+  getMetrics() {
+    return {
+      ...this.metrics,
+      hitRate: this.metrics.hits / (this.metrics.hits + this.metrics.misses),
+      cacheSize: this.cache.size,
+      avgTokensPerContext: this.metrics.totalTokens / Math.max(this.cache.size, 1)
+    };
+  }
+}
+
+// Intelligent agent router
+export class AgentRouter {
+  private routes = new Map<string, AgentRoute>();
+  private loadBalancer = new Map<string, number>();
+
+  registerAgent(agentType: string, capabilities: string[]): void {
+    this.routes.set(agentType, {
+      agentType,
+      priority: 1,
+      capabilities,
+      load: 0,
+      avgResponseTime: 0,
+      successRate: 1.0
+    });
+    this.loadBalancer.set(agentType, 0);
+  }
+
+  findBestAgent(task: string, context: ReasoningContext): string | null {
+    const candidates: Array<{ agentType: string; score: number }> = [];
+
+    for (const [agentType, route] of this.routes.entries()) {
+      if (route.capabilities.includes(task)) {
+        const score = this.calculateAgentScore(route, context);
+        candidates.push({ agentType, score });
+      }
+    }
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    // Sort by score (higher is better)
+    candidates.sort((a, b) => b.score - a.score);
+    
+    // Update load balancing
+    const bestCandidate = candidates[0];
+    if (!bestCandidate) return null;
+    
+    const bestAgent = bestCandidate.agentType;
+    this.loadBalancer.set(bestAgent, (this.loadBalancer.get(bestAgent) || 0) + 1);
+    
+    return bestAgent;
+  }
+
+  private calculateAgentScore(route: AgentRoute, context: ReasoningContext): number {
+    let score = route.successRate * 100; // Base score from success rate
+    
+    // Penalty for high load
+    score -= route.load * 10;
+    
+    // Bonus for fast response times
+    score += Math.max(0, (1000 - route.avgResponseTime) / 100);
+    
+    // Priority boost for high-priority contexts
+    if (context.priority === 'critical') score += 50;
+    else if (context.priority === 'high') score += 25;
+    
+    return Math.max(0, score);
+  }
+
+  updateAgentMetrics(agentType: string, responseTime: number, success: boolean): void {
+    const route = this.routes.get(agentType);
+    if (!route) return;
+
+    // Update average response time (exponential moving average)
+    route.avgResponseTime = route.avgResponseTime * 0.8 + responseTime * 0.2;
+    
+    // Update success rate (exponential moving average)
+    route.successRate = route.successRate * 0.9 + (success ? 1 : 0) * 0.1;
+    
+    // Decrease load
+    route.load = Math.max(0, route.load - 1);
+    this.loadBalancer.set(agentType, Math.max(0, (this.loadBalancer.get(agentType) || 0) - 1));
+  }
+
+  getRouteStats(): Array<AgentRoute> {
+    return Array.from(this.routes.values());
+  }
+}
+
+// Main reasoning engine with streaming and caching
+export class ReasoningEngine extends EventEmitter {
+  private contextCache: ContextCache;
+  private agentRouter: AgentRouter;
+  private activeInferences = new Map<string, InferenceRequest>();
+  private metrics = {
+    totalInferences: 0,
+    avgResponseTime: 0,
+    streamingRequests: 0,
+    cachedResponses: 0
+  };
+
+  constructor(options: { 
+    maxCacheSize?: number; 
+    redisUrl?: string;
+  } = {}) {
+    super();
+    this.contextCache = new ContextCache(options.maxCacheSize, options.redisUrl);
+    this.agentRouter = new AgentRouter();
+  }
+
+  async createContext(sessionId: string, userId?: string, campaignId?: string): Promise<ReasoningContext> {
+    const context: ReasoningContext = {
+      id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      sessionId,
+      ...(userId && { userId }),
+      ...(campaignId && { campaignId }),
+      history: [],
+      metadata: {},
+      createdAt: new Date(),
+      lastAccessed: new Date(),
+      priority: 'medium'
+    };
+
+    await this.contextCache.set(context);
+    return context;
+  }
+
+  async addToContext(contextId: string, entry: Omit<ContextEntry, 'id' | 'timestamp'>): Promise<void> {
+    const context = await this.contextCache.get(contextId);
+    if (!context) {
+      throw new Error(`Context not found: ${contextId}`);
+    }
+
+    const contextEntry: ContextEntry = {
+      ...entry,
+      id: `entry_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date()
+    };
+
+    context.history.push(contextEntry);
+    context.lastAccessed = new Date();
+    
+    // Limit context window size (keep last 50 entries)
+    if (context.history.length > 50) {
+      context.history = context.history.slice(-50);
+    }
+
+    await this.contextCache.set(context);
+  }
+
+  async processInference(request: InferenceRequest): Promise<InferenceResult | AsyncIterable<string>> {
+    const startTime = Date.now();
+    const inferenceId = `inf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    this.activeInferences.set(inferenceId, request);
+    this.metrics.totalInferences++;
+
+    try {
+      const context = await this.contextCache.get(request.contextId);
+      if (!context) {
+        throw new Error(`Context not found: ${request.contextId}`);
+      }
+
+      // Check for cached response
+      const cacheKey = this.generateCacheKey(request, context);
+      const cachedResult = await this.getCachedResponse(cacheKey);
+      
+      if (cachedResult) {
+        this.metrics.cachedResponses++;
+        return cachedResult;
+      }
+
+      // Find best agent for the task
+      const bestAgent = this.agentRouter.findBestAgent(request.agentType || 'general', context);
+      
+      if (request.stream) {
+        this.metrics.streamingRequests++;
+        return this.processStreamingInference(request, context, bestAgent);
+      } else {
+        return await this.processBatchInference(request, context, bestAgent);
+      }
+
+    } finally {
+      this.activeInferences.delete(inferenceId);
+      const responseTime = Date.now() - startTime;
+      this.metrics.avgResponseTime = this.metrics.avgResponseTime * 0.9 + responseTime * 0.1;
+    }
+  }
+
+  private async processBatchInference(
+    request: InferenceRequest, 
+    _context: ReasoningContext, 
+    agentId: string | null
+  ): Promise<InferenceResult> {
+    const startTime = Date.now();
+
+    // Mock inference - in production this would call actual AI models
+    // Add realistic delay for testing
+    await new Promise(resolve => setTimeout(resolve, 10));
+    const mockResponse = `AI response for: ${request.prompt.substring(0, 50)}...`;
+    const responseTime = Date.now() - startTime;
+
+    const result: InferenceResult = {
+      id: `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      contextId: request.contextId,
+      content: mockResponse,
+      ...(agentId && { agentId }),
+      tokensUsed: Math.floor(mockResponse.length / 4), // Rough token estimate
+      responseTime,
+      cached: false,
+      confidence: 0.95
+    };
+
+    // Update agent metrics
+    if (agentId) {
+      this.agentRouter.updateAgentMetrics(agentId, responseTime, true);
+    }
+
+    // Add to context
+    await this.addToContext(request.contextId, {
+      type: 'agent_output',
+      content: result.content,
+      ...(agentId && { agentId }),
+      tokens: result.tokensUsed
+    });
+
+    return result;
+  }
+
+  private async *processStreamingInference(
+    request: InferenceRequest, 
+    _context: ReasoningContext, 
+    agentId: string | null
+  ): AsyncIterable<string> {
+    // Mock streaming response - in production this would stream from AI models
+    const fullResponse = `Streaming AI response for: ${request.prompt}`;
+    const words = fullResponse.split(' ');
+
+    for (const word of words) {
+      yield word + ' ';
+      await new Promise(resolve => setTimeout(resolve, 50)); // Simulate streaming delay
+    }
+
+    // Update context with full response
+    await this.addToContext(request.contextId, {
+      type: 'agent_output',
+      content: fullResponse,
+      ...(agentId && { agentId }),
+      tokens: Math.floor(fullResponse.length / 4)
     });
   }
 
-  private async generateActionPlan(
-    objectives: CampaignObjective[],
-    context: DecisionContext
-  ): Promise<AgentTask[]> {
-    const actions: AgentTask[] = [];
-
-    for (const objective of objectives) {
-      switch (objective.type) {
-        case 'brand_awareness':
-          actions.push(...(await this.generateBrandAwarenessActions(objective, context)));
-          break;
-        case 'lead_generation':
-          actions.push(...(await this.generateLeadGenerationActions(objective, context)));
-          break;
-        case 'sales_conversion':
-          actions.push(...(await this.generateSalesConversionActions(objective, context)));
-          break;
-        case 'engagement':
-          actions.push(...(await this.generateEngagementActions(objective, context)));
-          break;
-      }
-    }
-
-    return actions;
+  private generateCacheKey(request: InferenceRequest, context: ReasoningContext): string {
+    const contextHash = context.history.slice(-5).map(h => h.content).join('|');
+    return `cache:${request.prompt}:${contextHash}:${request.agentType}`;
   }
 
-  private async generateBrandAwarenessActions(
-    objective: CampaignObjective,
-    context: DecisionContext
-  ): Promise<AgentTask[]> {
-    return [
-      {
-        agentId: 'content-agent',
-        task: 'generate_brand_content',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-        context: { objective, metrics: context.currentMetrics },
-      },
-      {
-        agentId: 'trend-agent',
-        task: 'analyze_brand_trends',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 hours
-        context: { objective },
-      },
-    ];
+  private async getCachedResponse(_cacheKey: string): Promise<InferenceResult | null> {
+    // Simple in-memory cache for now - in production use Redis with proper TTL
+    return null;
   }
 
-  private async generateLeadGenerationActions(
-    objective: CampaignObjective,
-    context: DecisionContext
-  ): Promise<AgentTask[]> {
-    return [
-      {
-        agentId: 'outreach-agent',
-        task: 'generate_leads',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48 hours
-        context: { objective, availableResources: context.availableResources },
-      },
-      {
-        agentId: 'content-agent',
-        task: 'create_lead_magnets',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 36 * 60 * 60 * 1000), // 36 hours
-        context: { objective },
-      },
-    ];
+  registerAgentType(agentType: string, capabilities: string[]): void {
+    this.agentRouter.registerAgent(agentType, capabilities);
   }
 
-  private async generateSalesConversionActions(
-    objective: CampaignObjective,
-    context: DecisionContext
-  ): Promise<AgentTask[]> {
-    return [
-      {
-        agentId: 'ad-agent',
-        task: 'optimize_conversion_ads',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        context: { objective, currentMetrics: context.currentMetrics },
-      },
-      {
-        agentId: 'insight-agent',
-        task: 'analyze_conversion_funnel',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 12 * 60 * 60 * 1000),
-        context: { objective },
-      },
-    ];
-  }
-
-  private async generateEngagementActions(
-    objective: CampaignObjective,
-    _context: DecisionContext
-  ): Promise<AgentTask[]> {
-    return [
-      {
-        agentId: 'content-agent',
-        task: 'create_engaging_content',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        context: { objective },
-      },
-      {
-        agentId: 'design-agent',
-        task: 'create_engaging_visuals',
-        priority: objective.priority,
-        deadline: new Date(Date.now() + 36 * 60 * 60 * 1000),
-        context: { objective },
-      },
-    ];
-  }
-
-  private calculateDecisionConfidence(actions: AgentTask[], context: DecisionContext): number {
-    // Base confidence on historical performance and resource availability
-    let confidence = 0.7; // Base confidence
-
-    // Adjust based on resource availability
-    const resourceRatio =
-      Object.values(context.availableResources).reduce((a, b) => a + b, 0) / actions.length;
-    confidence += Math.min(resourceRatio * 0.1, 0.2);
-
-    // Adjust based on time constraints
-    if (context.timeConstraints.timeRemaining > 7) {
-      confidence += 0.1;
-    }
-
-    return Math.min(confidence, 1.0);
-  }
-
-  private formulateDecision(objectives: CampaignObjective[], gaps: Record<string, number>): string {
-    const primaryObjective = objectives[0];
-    const largestGap = Object.entries(gaps).sort(([, a], [, b]) => b - a)[0];
-
-    if (!primaryObjective || !largestGap) {
-      return 'No clear objectives or performance gaps identified';
-    }
-
-    return `Focus on ${primaryObjective.type} with immediate attention to ${largestGap[0]} improvement`;
-  }
-
-  private generateReasoning(
-    gaps: Record<string, number>,
-    objectives: CampaignObjective[]
-  ): string[] {
-    const reasoning = [];
-
-    reasoning.push(
-      `Current performance gaps: ${Object.entries(gaps)
-        .map(([k, v]) => `${k}: ${(v * 100).toFixed(1)}%`)
-        .join(', ')}`
-    );
-    reasoning.push(
-      `Priority objectives: ${objectives
-        .slice(0, 3)
-        .map(o => o.type)
-        .join(', ')}`
-    );
-    reasoning.push('Action plan optimized for maximum impact within available resources');
-
-    return reasoning;
-  }
-
-  private planCampaignPhases(
-    objectives: CampaignObjective[],
-    constraints: { budget: number; timeline: number }
-  ): CampaignPhase[] {
-    // Implementation for campaign phase planning
-    return [
-      {
-        name: 'Discovery & Setup',
-        duration: Math.ceil(constraints.timeline * 0.2),
-        objectives: objectives.filter(o => o.priority === 'critical'),
-        budget: constraints.budget * 0.15,
-      },
-      {
-        name: 'Execution',
-        duration: Math.ceil(constraints.timeline * 0.6),
-        objectives,
-        budget: constraints.budget * 0.7,
-      },
-      {
-        name: 'Optimization & Scale',
-        duration: Math.ceil(constraints.timeline * 0.2),
-        objectives: objectives.filter(o => o.type === 'sales_conversion'),
-        budget: constraints.budget * 0.15,
-      },
-    ];
-  }
-
-  private optimizeResourceAllocation(
-    _objectives: CampaignObjective[],
-    constraints: { budget: number; timeline: number }
-  ): ResourceAllocation {
-    // Resource allocation optimization logic
+  getMetrics() {
     return {
-      budget: {
-        content: constraints.budget * 0.3,
-        ads: constraints.budget * 0.4,
-        outreach: constraints.budget * 0.2,
-        analytics: constraints.budget * 0.1,
-      },
-      time: {
-        planning: constraints.timeline * 0.2,
-        execution: constraints.timeline * 0.6,
-        optimization: constraints.timeline * 0.2,
-      },
+      ...this.metrics,
+      cache: this.contextCache.getMetrics(),
+      agents: this.agentRouter.getRouteStats(),
+      activeInferences: this.activeInferences.size
     };
   }
 
-  private generateCampaignTimeline(
-    phases: CampaignPhase[],
-    constraints: { budget: number; timeline: number }
-  ): CampaignTimeline {
-    const startDate = new Date();
-    const milestones = [];
-    const currentDate = new Date(startDate);
-
-    for (const phase of phases) {
-      milestones.push({
-        name: phase.name,
-        date: new Date(currentDate),
-        deliverables: [`Complete ${phase.name} objectives`],
-      });
-      currentDate.setDate(currentDate.getDate() + phase.duration);
-    }
-
-    return {
-      startDate,
-      endDate: currentDate,
-      milestones,
-      totalDuration: constraints.timeline,
-    };
-  }
-
-  private assessCampaignRisks(
-    objectives: CampaignObjective[],
-    constraints: { budget: number; timeline: number }
-  ): RiskAssessment {
-    return {
-      budgetRisk: constraints.budget < 10000 ? 'high' : 'low',
-      timelineRisk: constraints.timeline < 30 ? 'medium' : 'low',
-      complexityRisk: objectives.length > 5 ? 'high' : 'medium',
-      mitigationStrategies: [
-        'Regular performance monitoring',
-        'Agile adjustment of objectives',
-        'Resource reallocation protocols',
-      ],
-    };
-  }
-
-  private buildTaskDependencyGraph(tasks: AgentTask[]): Map<string, string[]> {
-    const graph = new Map<string, string[]>();
-
-    for (const task of tasks) {
-      graph.set(`${task.agentId}:${task.task}`, task.dependencies || []);
-    }
-
-    return graph;
-  }
-
-  private assignTasksToAgents(
-    availableAgents: string[],
-    tasks: AgentTask[]
-  ): Map<string, AgentTask[]> {
-    const assignments = new Map<string, AgentTask[]>();
-
-    // Initialize assignments
-    for (const agent of availableAgents) {
-      assignments.set(agent, []);
-    }
-
-    // Assign tasks based on agent capabilities
-    for (const task of tasks) {
-      if (availableAgents.includes(task.agentId)) {
-        assignments.get(task.agentId)?.push(task);
-      }
-    }
-
-    return assignments;
-  }
-
-  private optimizeExecutionPlan(
-    assignments: Map<string, AgentTask[]>,
-    _dependencyGraph: Map<string, string[]>
-  ): {
-    order: string[];
-    parallelGroups: AgentTask[][];
-    estimatedCompletion: Date;
-  } {
-    // Simplified execution optimization
-    const order = Array.from(assignments.keys());
-    const parallelGroups: AgentTask[][] = [];
-
-    // Group tasks that can run in parallel
-    for (const [_agent, tasks] of assignments) {
-      if (tasks.length > 0) {
-        parallelGroups.push(tasks);
-      }
-    }
-
-    // Calculate estimated completion
-    const estimatedCompletion = new Date();
-    estimatedCompletion.setDate(estimatedCompletion.getDate() + 7); // Default 7 days
-
-    return {
-      order,
-      parallelGroups,
-      estimatedCompletion,
-    };
-  }
-
-  private identifyOptimizationOpportunities(
-    current: Record<string, number>,
-    target: Record<string, number>
-  ): OptimizationOpportunity[] {
-    const opportunities: OptimizationOpportunity[] = [];
-
-    for (const [metric, currentValue] of Object.entries(current)) {
-      const targetValue = target[metric];
-      if (targetValue && currentValue < targetValue) {
-        opportunities.push({
-          metric,
-          currentValue,
-          targetValue,
-          gap: targetValue - currentValue,
-          priority: targetValue / currentValue > 2 ? 'high' : 'medium',
-        });
-      }
-    }
-
-    return opportunities.sort((a, b) => b.gap - a.gap);
-  }
-
-  private async generateOptimizationStrategies(
-    opportunities: OptimizationOpportunity[]
-  ): Promise<Optimization[]> {
-    return opportunities.map(opp => ({
-      metric: opp.metric,
-      strategy: this.getOptimizationStrategy(opp.metric),
-      expectedImprovement: opp.gap * 0.7, // Conservative estimate
-      effort: opp.priority === 'high' ? 'medium' : 'low',
-      timeline: opp.priority === 'high' ? 7 : 14, // days
-    }));
-  }
-
-  private getOptimizationStrategy(metric: string): string {
-    const strategies: Record<string, string> = {
-      conversion_rate: 'A/B testing and funnel optimization',
-      click_through_rate: 'Ad creative and targeting improvements',
-      engagement_rate: 'Content quality and timing optimization',
-      cost_per_acquisition: 'Budget reallocation and bid optimization',
-    };
-
-    return strategies[metric] || 'Data-driven optimization approach';
-  }
-
-  private predictOptimizationImpact(
-    optimizations: Optimization[],
-    currentMetrics: Record<string, number>
-  ): Record<string, number> {
-    const impact: Record<string, number> = {};
-
-    for (const opt of optimizations) {
-      const current = currentMetrics[opt.metric] || 0;
-      impact[opt.metric] = current + opt.expectedImprovement;
-    }
-
-    return impact;
-  }
-
-  private createImplementationPlan(optimizations: Optimization[]): AgentTask[] {
-    return optimizations.map(opt => ({
-      agentId: this.getResponsibleAgent(opt.metric),
-      task: `optimize_${opt.metric}`,
-      priority: opt.effort === 'low' ? 'medium' : 'high',
-      deadline: new Date(Date.now() + opt.timeline * 24 * 60 * 60 * 1000),
-      context: { optimization: opt },
-    }));
-  }
-
-  private getResponsibleAgent(metric: string): string {
-    const agentMapping: Record<string, string> = {
-      conversion_rate: 'ad-agent',
-      click_through_rate: 'ad-agent',
-      engagement_rate: 'content-agent',
-      cost_per_acquisition: 'ad-agent',
-      brand_awareness: 'content-agent',
-      lead_quality: 'outreach-agent',
-    };
-
-    return agentMapping[metric] || 'insight-agent';
+  async cleanup(): Promise<void> {
+    this.removeAllListeners();
+    // Additional cleanup if needed
   }
 }
 
-// Supporting interfaces
-interface CampaignPhase {
-  name: string;
-  duration: number;
-  objectives: CampaignObjective[];
-  budget: number;
-}
-
-interface ResourceAllocation {
-  budget: Record<string, number>;
-  time: Record<string, number>;
-}
-
-interface CampaignTimeline {
-  startDate: Date;
-  endDate: Date;
-  milestones: Array<{
-    name: string;
-    date: Date;
-    deliverables: string[];
-  }>;
-  totalDuration: number;
-}
-
-interface RiskAssessment {
-  budgetRisk: 'low' | 'medium' | 'high';
-  timelineRisk: 'low' | 'medium' | 'high';
-  complexityRisk: 'low' | 'medium' | 'high';
-  mitigationStrategies: string[];
-}
-
-interface OptimizationOpportunity {
-  metric: string;
-  currentValue: number;
-  targetValue: number;
-  gap: number;
-  priority: 'low' | 'medium' | 'high';
-}
-
-interface Optimization {
-  metric: string;
-  strategy: string;
-  expectedImprovement: number;
-  effort: 'low' | 'medium' | 'high';
-  timeline: number;
-}
-
-// Export the main reasoning engine
-export const reasoningEngine = new ReasoningEngine();
+// Main interfaces and classes are exported inline above
