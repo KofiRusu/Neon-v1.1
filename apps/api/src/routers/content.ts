@@ -171,19 +171,19 @@ export const contentRouter = router({
         platform,
         metrics: {
           totalPosts: Math.floor(Math.random() * 50) + 20,
-          avgEngagement: (Math.random() * 5 + 2).toFixed(2) + '%',
+          avgEngagement: `${(Math.random() * 5 + 2).toFixed(2)}%`,
           totalReach: Math.floor(Math.random() * 50000) + 10000,
           topPerformingPost: {
             id: `post_${platform}_top`,
             content: `Top performing ${platform} post about neon signs...`,
-            engagementRate: (Math.random() * 3 + 5).toFixed(2) + '%',
+            engagementRate: `${(Math.random() * 3 + 5).toFixed(2)}%`,
             reach: Math.floor(Math.random() * 10000) + 5000
           }
         },
         trends: {
           engagement: Math.random() > 0.5 ? 'up' : 'down',
           reach: Math.random() > 0.5 ? 'up' : 'down',
-          change: (Math.random() * 20 + 5).toFixed(1) + '%'
+          change: `${(Math.random() * 20 + 5).toFixed(1)}%`
         }
       }));
 
@@ -191,7 +191,7 @@ export const contentRouter = router({
         analytics,
         summary: {
           totalContent: analytics.reduce((sum, p) => sum + p.metrics.totalPosts, 0),
-          avgEngagementAcrossPlatforms: (analytics.reduce((sum, p) => sum + parseFloat(p.metrics.avgEngagement), 0) / analytics.length).toFixed(2) + '%',
+          avgEngagementAcrossPlatforms: `${(analytics.reduce((sum, p) => sum + parseFloat(p.metrics.avgEngagement), 0) / analytics.length).toFixed(2)}%`,
           totalReachAcrossPlatforms: analytics.reduce((sum, p) => sum + p.metrics.totalReach, 0),
           timeRange: input.timeRange
         },
@@ -215,7 +215,7 @@ export const contentRouter = router({
         uptime: '99.8%',
         totalExecutions: Math.floor(Math.random() * 1000) + 500,
         successRate: '96.2%',
-        avgResponseTime: Math.floor(Math.random() * 500) + 200 + 'ms',
+        avgResponseTime: `${Math.floor(Math.random() * 500) + 200}ms`,
         lastActivity: new Date().toISOString()
       };
     }),

@@ -10,7 +10,7 @@ const handler = (req: NextRequest): Promise<Response> =>
     endpoint: '/api/trpc',
     req,
     router: appRouter,
-    createContext: () => createTRPCContext({ req: req as any, res: {} as any }),
+    createContext: () => createTRPCContext({ req: req as NextRequest, res: {} as Response }),
     onError: ({ path, error }): void => {
       if (process.env.NODE_ENV === 'development') {
         logger.error(`❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`);

@@ -18,7 +18,14 @@ export interface ContentGenerationResult {
   seoScore?: number;
 }
 
-export const useContentGenerator = () => {
+export const useContentGenerator = (): {
+  generateContent: (params: ContentGenerationParams) => Promise<void>;
+  clearContent: () => void;
+  editContent: (newContent: string) => void;
+  isGenerating: boolean;
+  generatedContent: ContentGenerationResult | null;
+  error: string | null;
+} => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<ContentGenerationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +67,7 @@ export const useContentGenerator = () => {
     },
   });
 
-  const generateContent = async (params: ContentGenerationParams) => {
+  const generateContent = async (params: ContentGenerationParams): Promise<void> => {
     setIsGenerating(true);
     setError(null);
 
@@ -82,12 +89,12 @@ export const useContentGenerator = () => {
     }
   };
 
-  const clearContent = () => {
+  const clearContent = (): void => {
     setGeneratedContent(null);
     setError(null);
   };
 
-  const editContent = (newContent: string) => {
+  const editContent = (newContent: string): void => {
     if (generatedContent) {
       setGeneratedContent({
         ...generatedContent,

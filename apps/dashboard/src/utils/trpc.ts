@@ -3,7 +3,7 @@ import { httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 import type { AppRouter } from '../../../api/src/server/root';
 
-const getBaseUrl = () => {
+const getBaseUrl = (): string => {
   if (typeof window !== 'undefined') return ''; // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.API_PORT || 3001}`; // dev SSR should use localhost

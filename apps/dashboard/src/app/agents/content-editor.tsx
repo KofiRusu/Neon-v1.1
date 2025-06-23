@@ -34,7 +34,7 @@ const platforms = [
   { value: 'email', label: 'Email' },
 ];
 
-export default function ContentEditor() {
+export default function ContentEditor(): JSX.Element {
   const [formData, setFormData] = useState<ContentGenerationParams>({
     type: 'blog',
     topic: '',
@@ -55,29 +55,29 @@ export default function ContentEditor() {
     error,
   } = useContentGenerator();
 
-  const handleInputChange = (field: keyof ContentGenerationParams, value: string | string[]) => {
+  const handleInputChange = (field: keyof ContentGenerationParams, value: string | string[]): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleAddKeyword = () => {
+  const handleAddKeyword = (): void => {
     if (keywordInput.trim() && !formData.keywords?.includes(keywordInput.trim())) {
       handleInputChange('keywords', [...(formData.keywords || []), keywordInput.trim()]);
       setKeywordInput('');
     }
   };
 
-  const handleRemoveKeyword = (keyword: string) => {
+  const handleRemoveKeyword = (keyword: string): void => {
     handleInputChange('keywords', formData.keywords?.filter(k => k !== keyword) || []);
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (): Promise<void> => {
     if (!formData.topic || !formData.audience) {
       return;
     }
     await generateContent(formData);
   };
 
-  const handleContentEdit = (newContent: string) => {
+  const handleContentEdit = (newContent: string): void => {
     setEditedContent(newContent);
     editContent(newContent);
   };

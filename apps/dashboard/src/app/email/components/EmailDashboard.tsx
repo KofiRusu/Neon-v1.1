@@ -16,8 +16,8 @@ interface EmailDashboardProps {
   showCampaigns?: boolean;
 }
 
-export default function EmailDashboard({ showCampaigns = false }: EmailDashboardProps) {
-  const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
+export default function EmailDashboard({ showCampaigns = false }: EmailDashboardProps): JSX.Element {
+  const [_selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
 
   // Mock data - in real app, this would come from tRPC
   const stats = {
@@ -63,7 +63,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
     },
   ];
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
       case 'sent': return 'bg-green-100 text-green-800';
       case 'sending': return 'bg-yellow-100 text-yellow-800';
@@ -73,7 +73,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
     }
   };
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -130,7 +130,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
                       <div className="text-sm text-gray-900">{campaign.recipients.toLocaleString()}</div>
                       <div className="text-xs text-gray-500">
                         {campaign.status === 'scheduled' 
-                          ? `Scheduled ${formatDate(campaign.scheduledAt!)}`
+                          ? `Scheduled ${formatDate(campaign.scheduledAt || campaign.sentAt)}`
                           : `Sent ${formatDate(campaign.sentAt)}`
                         }
                       </div>

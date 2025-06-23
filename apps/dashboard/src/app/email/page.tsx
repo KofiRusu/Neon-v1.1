@@ -18,7 +18,7 @@ const tabs = [
   { id: 'audiences', name: 'Audiences', icon: UserGroupIcon },
 ];
 
-export default function EmailPage() {
+export default function EmailPage(): JSX.Element {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showComposer, setShowComposer] = useState(false);
 

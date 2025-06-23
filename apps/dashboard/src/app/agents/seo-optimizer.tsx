@@ -33,7 +33,7 @@ const suggestionIcons = {
   url: ExclamationTriangleIcon,
 };
 
-export default function SEOOptimizer() {
+export default function SEOOptimizer(): JSX.Element {
   const [formData, setFormData] = useState<SEOOptimizationParams>({
     content: '',
     targetKeywords: [],
@@ -54,29 +54,29 @@ export default function SEOOptimizer() {
     error,
   } = useSEOOptimizer();
 
-  const handleInputChange = (field: keyof SEOOptimizationParams, value: string | string[]) => {
+  const handleInputChange = (field: keyof SEOOptimizationParams, value: string | string[]): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleAddKeyword = () => {
+  const handleAddKeyword = (): void => {
     if (keywordInput.trim() && !formData.targetKeywords.includes(keywordInput.trim())) {
       handleInputChange('targetKeywords', [...formData.targetKeywords, keywordInput.trim()]);
       setKeywordInput('');
     }
   };
 
-  const handleRemoveKeyword = (keyword: string) => {
+  const handleRemoveKeyword = (keyword: string): void => {
     handleInputChange('targetKeywords', formData.targetKeywords.filter(k => k !== keyword));
   };
 
-  const handleOptimize = async () => {
+  const handleOptimize = async (): Promise<void> => {
     if (!formData.content || formData.targetKeywords.length === 0) {
       return;
     }
     await optimizeContent(formData);
   };
 
-  const handleGenerateMetaTags = async () => {
+  const handleGenerateMetaTags = async (): Promise<void> => {
     if (!formData.content || formData.targetKeywords.length === 0) {
       return;
     }
@@ -85,13 +85,13 @@ export default function SEOOptimizer() {
 
   const isFormValid = formData.content.length > 0 && formData.targetKeywords.length > 0;
 
-  const getSEOScoreColor = (score: number) => {
+  const getSEOScoreColor = (score: number): string => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     return 'text-red-600';
   };
 
-  const getSEOScoreLabel = (score: number) => {
+  const getSEOScoreLabel = (score: number): string => {
     if (score >= 80) return 'Excellent';
     if (score >= 60) return 'Good';
     if (score >= 40) return 'Needs Improvement';

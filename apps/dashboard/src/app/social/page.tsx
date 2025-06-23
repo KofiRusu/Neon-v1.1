@@ -98,25 +98,25 @@ export default function SocialPage(): JSX.Element {
 
       {/* Quick Actions */}
       <div className="mt-8">
-        <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
-          <h3 className="text-lg font-medium text-slate-100 mb-4">
+        <div className="bg-dark-900 rounded-2xl p-6 border border-dark-800">
+          <h3 className="text-lg font-medium text-dark-100 mb-4">
             Quick Actions
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
-              <img src="/icons/analytics.svg" alt="Analytics" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-100 p-4 rounded-lg transition-colors">
+              <img src="/icons/analytics.svg" alt="Analytics dashboard" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Analytics</span>
             </button>
-            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
-              <img src="/icons/schedule.svg" alt="Schedule" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-100 p-4 rounded-lg transition-colors">
+              <img src="/icons/schedule.svg" alt="Schedule posts" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Schedule</span>
             </button>
-            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
-              <img src="/icons/content.svg" alt="Content Library" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-100 p-4 rounded-lg transition-colors">
+              <img src="/icons/content.svg" alt="Content library" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Content Library</span>
             </button>
-            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
-              <img src="/icons/settings.svg" alt="Settings" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-100 p-4 rounded-lg transition-colors">
+              <img src="/icons/settings.svg" alt="Settings panel" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Settings</span>
             </button>
           </div>

@@ -17,7 +17,7 @@ export default function CampaignConfigDrawer({
   onClose, 
   emailData: _emailData, 
   onUpdate: _onUpdate 
-}: CampaignConfigDrawerProps) {
+}: CampaignConfigDrawerProps): JSX.Element | null {
   if (!isOpen) return null;
 
   return (

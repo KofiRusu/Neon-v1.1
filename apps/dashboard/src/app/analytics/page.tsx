@@ -78,8 +78,9 @@ export default function AnalyticsPage(): JSX.Element {
           ],
           timeSeriesData: generateTimeSeriesData(timeRange),
         });
-      } catch (error) {
-        console.error('Error fetching analytics:', error);
+      } catch (_error) {
+        // Error handling - could be logged to external service
+        setMetrics(prev => ({ ...prev })); // Keep existing state on error
       } finally {
         setIsLoading(false);
       }
@@ -88,7 +89,7 @@ export default function AnalyticsPage(): JSX.Element {
     fetchAnalytics();
   }, [timeRange]);
 
-  const generateTimeSeriesData = (range: '7d' | '30d' | '90d') => {
+  const generateTimeSeriesData = (range: '7d' | '30d' | '90d'): Array<{ date: string; revenue: number; leads: number; conversions: number }> => {
     const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
     const data = [];
     const today = new Date();

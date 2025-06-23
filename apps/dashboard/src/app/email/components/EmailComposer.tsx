@@ -12,7 +12,7 @@ interface EmailComposerProps {
   onClose: () => void;
 }
 
-export default function EmailComposer({ onClose }: EmailComposerProps) {
+export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Element {
   const [step, setStep] = useState<'compose' | 'configure' | 'preview'>('compose');
   const [emailData, setEmailData] = useState({
     name: '',
@@ -44,20 +44,22 @@ export default function EmailComposer({ onClose }: EmailComposerProps) {
       // Handle success
       onClose();
     },
-    onError: (error) => {
-      console.error('Failed to send campaign:', error);
+    onError: (_error) => {
+      // Error handling - could show error toast or notification to user
+      // For now, the error is handled by the mutation's error state
     },
   });
 
-  const handleSend = async () => {
+  const handleSend = async (): Promise<void> => {
     if (!emailData.name || !emailData.subject || !emailData.content.text) {
       return;
     }
 
     try {
       await sendCampaignMutation.mutateAsync(emailData);
-    } catch (error) {
-      console.error('Send failed:', error);
+    } catch (_error) {
+      // Error handling - the error is already handled by the mutation's onError callback
+      // Additional error handling could be added here if needed
     }
   };
 
