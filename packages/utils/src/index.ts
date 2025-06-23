@@ -4,6 +4,9 @@
 
 import type { Result } from '@/types';
 
+// Export logger
+export { logger, type Logger } from './logger';
+
 /**
  * Delay execution for specified milliseconds
  */
