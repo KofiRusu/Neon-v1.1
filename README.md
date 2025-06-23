@@ -1,375 +1,262 @@
 <!-- AUTO-GENERATED DOCS: 2025-06-20T23:48:34.742Z -->
 
-# NeonHub AI Marketing Ecosystem
+# 🚀 NeonHub v0.3 - AI Marketing Automation Platform
 
-> A self-operating, AI-driven marketing and sales platform that creates, tests,
-> and optimizes content across platforms autonomously.
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/KofiRusu/Neon-v0.3)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2-black.svg)](https://nextjs.org/)
 
-## 🧠 Core Mission
+> **The most advanced AI-powered marketing automation platform built with modern web technologies**
 
-Build a self-operating, AI-driven marketing and sales platform for NeonHub that:
-
-- ✅ Creates, tests, and posts content across platforms
-- ✅ Optimizes ads and outreach autonomously
-- ✅ Predicts trends and reacts in real time
-- ✅ Converts both B2C and B2B leads at scale
-- ✅ Requires zero manual marketing input
-
-## 🏗️ Architecture Overview
-
-### System Components
-
-1. **AI Command Dashboard** (`apps/dashboard/`) - Next.js + Tailwind + tRPC
-
-   - Real-time control center for all marketing operations
-   - Agent control panel and performance monitoring
-   - Campaign management and analytics visualization
-
-2. **Autonomous AI Agents** (`packages/core-agents/`) - LangChain + OpenAI
-
-   - **ContentAgent**: Generates posts, captions, emails, product copy
-   - **AdAgent**: Runs A/B tests, reallocates budgets, optimizes creative
-   - **OutreachAgent**: Sends personalized B2B emails, manages follow-up chains
-   - **TrendAgent**: Detects viral content, trending sounds, global style shifts
-   - **InsightAgent**: Monitors analytics to propose strategy shifts
-   - **DesignAgent**: Creates and tests new sign designs based on trends
-
-3. **Campaign Engine** (`packages/reasoning-engine/`)
-
-   - Campaign scheduler and planner
-   - Auto-responders, retargeting rules, cold email flows
-   - Real-time performance tracking and auto-optimization
-
-4. **Data & Analytics Core** (`packages/data-model/`)
-
-   - Centralized PostgreSQL database via Prisma
-   - Campaign stats, behavioral data, AI decisions
-   - Machine learning feedback loop
-
-5. **Global Outreach Engine**
-
-   - Lead scraper & enrichment tool
-   - Auto-email sequencer
-   - Language/localization module
-
-6. **Product Innovation Lab**
-   - "Request-a-sign" user funnel
-   - AI-generated visual prototypes
-   - A/B tested previews and sales predictions
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+
-- Docker & Docker Compose
-- PostgreSQL 14+
-- Redis 6+
-- OpenAI API key
-
-#
-
-## 📚 API Documentation
-
-- **tRPC API**: [docs/trpc-api.md](./docs/trpc-api.md)
-- **OpenAPI Spec**: [docs/api-overview.json](./docs/api-overview.json)
-- **Architecture**: [docs/architecture.md](./docs/architecture.md)
-
-_Documentation auto-updated by NeonHub Documentation Agent_
-
-## Installation
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd neonhub-ai-ecosystem
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your configuration
-
-# Start development environment
-npm run docker:up
-
-# Generate Prisma client
-npm run db:generate
-
-# Run database migrations
-npm run db:migrate
-
-# Start development servers
-npm run dev
-```
-
-### Environment Variables
-
-Create `.env.local` with the following:
-
-```bash
-# Database
-DATABASE_URL="postgresql://neonhub:neonhub_password@localhost:5432/neonhub_dev"
-
-# Redis
-REDIS_URL="redis://localhost:6379"
-
-# OpenAI
-OPENAI_API_KEY="your-openai-api-key"
-
-# Authentication
-NEXTAUTH_SECRET="your-nextauth-secret"
-NEXTAUTH_URL="http://localhost:3000"
-
-# API
-NEXT_PUBLIC_API_URL="http://localhost:3001"
-```
-
-## 📊 Available Services
-
-After starting the development environment:
-
-- **Dashboard**: http://localhost:3000
-- **API**: http://localhost:3001
-- **Prisma Studio**: http://localhost:5555
-- **Grafana** (monitoring): http://localhost:3002
-- **MailHog** (email testing): http://localhost:8025
-
-## 🧠 AI Agents
-
-### ContentAgent
-
-```typescript
-import { ContentAgent } from '@neonhub/core-agents';
-
-const agent = new ContentAgent('content-1', 'Content Generator');
-const result = await agent.execute({
-  task: 'generate_posts',
-  context: { platform: 'instagram', topic: 'neon signs' },
-});
-```
-
-### AdAgent
-
-```typescript
-import { AdAgent } from '@neonhub/core-agents';
-
-const agent = new AdAgent('ad-1', 'Ad Optimizer');
-const result = await agent.execute({
-  task: 'optimize_ads',
-  context: { campaignId: 'campaign-123' },
-});
-```
-
-### TrendAgent
-
-```typescript
-import { TrendAgent } from '@neonhub/core-agents';
-
-const agent = new TrendAgent('trend-1', 'Trend Detector');
-const result = await agent.execute({
-  task: 'detect_trends',
-  context: { platform: 'tiktok', category: 'design' },
-});
-```
-
-## 🔄 Development Workflow
-
-### Running Tests
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:coverage
-```
-
-### Database Operations
-
-```bash
-# Generate Prisma client
-npm run db:generate
-
-# Run migrations
-npm run db:migrate
-
-# Open Prisma Studio
-npm run db:studio
-
-# Reset database
-npm run db:reset
-```
-
-### Docker Commands
-
-```bash
-# Start all services
-npm run docker:up
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-npm run docker:down
-
-# Start with monitoring
-docker-compose --profile monitoring up -d
-```
-
-## 📁 Project Structure
-
-```
-neonhub-ai-ecosystem/
-├── apps/
-│   ├── dashboard/          # Next.js command dashboard
-│   └── api/               # tRPC API server
-├── packages/
-│   ├── core-agents/       # AI agents (LangChain/OpenAI)
-│   ├── data-model/        # Prisma schema & database
-│   ├── reasoning-engine/  # Campaign orchestration
-│   ├── types/            # Shared TypeScript types
-│   └── utils/            # Common utilities
-├── docker/
-│   ├── docker-compose.yml # Development environment
-│   ├── Dockerfile.dashboard
-│   └── Dockerfile.api
-├── docs/
-│   ├── architecture.md   # System architecture
-│   ├── todo.md          # Development roadmap
-│   └── deploy.md        # Deployment guide
-└── scripts/             # Build & deployment scripts
-```
-
-## 🎯 Key Features
-
-### Autonomous Marketing
-
-- **Zero Manual Input**: AI agents handle all marketing tasks
-- **Real-time Optimization**: Continuous performance improvement
-- **Cross-platform Integration**: Facebook, Instagram, TikTok, LinkedIn, Email
-
-### AI-Powered Content
-
-- **Dynamic Content Generation**: Context-aware posts and captions
-- **A/B Testing Automation**: Statistical testing and optimization
-- **Trend Integration**: Viral content detection and adaptation
-
-### Lead Generation & Nurturing
-
-- **Automated Outreach**: Personalized B2B email sequences
-- **Lead Scoring**: AI-powered qualification and prioritization
-- **Multi-language Support**: Global market reach
-
-### Performance Analytics
-
-- **Real-time Metrics**: Live campaign performance monitoring
-- **Predictive Analytics**: Revenue and trend forecasting
-- **ROI Optimization**: Automated budget allocation
-
-## 🔐 Security & Compliance
-
-- **JWT Authentication**: Secure user sessions
-- **Role-based Access**: Granular permissions
-- **GDPR Compliance**: Data protection and privacy
-- **API Rate Limiting**: DDoS protection
-- **Encrypted Storage**: End-to-end data security
-
-## 📈 Performance Metrics
-
-### Technical KPIs
-
-- **99.9% Uptime**: High availability infrastructure
-- **< 200ms API Response**: Optimized performance
-- **80%+ Test Coverage**: Comprehensive testing
-- **Zero Critical Vulnerabilities**: Security-first approach
-
-### Business KPIs
-
-- **50% Reduction** in manual marketing tasks
-- **30% Increase** in conversion rates
-- **40% Improvement** in campaign ROI
-- **60% Faster** content creation
-
-### AI Performance
-
-- **90%+ Agent Task Completion** rate
-- **< 5% False Positive** trend detection
-- **85%+ Content Engagement** rate
-- **70%+ Lead Qualification** accuracy
-
-## 🚀 Deployment
-
-### Production Deployment
-
-```bash
-# Deploy to production
-git checkout main
-git merge staging
-git push origin main
-
-# Vercel will auto-deploy the dashboard
-# Railway/Render will deploy the API
-```
-
-### Environment Setup
-
-- **Frontend**: Vercel (automatic deployment)
-- **Backend**: Railway or Render
-- **Database**: PlanetScale (managed PostgreSQL)
-- **Cache**: Upstash Redis
-- **Monitoring**: Sentry, Grafana
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow TypeScript strict mode
-- Maintain 80%+ test coverage
-- Use ESLint + Prettier for code formatting
-- Write comprehensive documentation
-- Follow conventional commits
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
-for details.
-
-## 🆘 Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/neonhub/ai-ecosystem/issues)
-- **Discussions**:
-  [GitHub Discussions](https://github.com/neonhub/ai-ecosystem/discussions)
-
-## 🔮 Roadmap
-
-### Phase 2 (Q2 2024)
-
-- Advanced ML model training pipeline
-- Real-time video content generation
-- Voice-based interaction systems
-- Advanced predictive analytics
-
-### Phase 3 (Q3 2024)
-
-- Multi-tenant architecture
-- Advanced AI agent collaboration
-- Blockchain integration for transparency
-- Advanced AR/VR experiences
+![NeonHub Dashboard](https://via.placeholder.com/800x400/1e293b/00d4aa?text=NeonHub+v0.3+Dashboard)
 
 ---
 
-**Built with ❤️ by the NeonHub Team**
+## 🎯 **What is NeonHub?**
 
-_Empowering businesses with autonomous AI marketing that drives real results._
+NeonHub v0.3 is a comprehensive marketing automation platform that leverages AI agents to handle every aspect of your marketing operations:
+
+- **🤖 9 Specialized AI Agents** for content, SEO, email, social media, and support
+- **📊 Real-time Analytics** with comprehensive performance tracking
+- **🔄 Automated Workflows** for campaign management and optimization
+- **🎨 Modern Dashboard** with intuitive agent management
+- **⚡ Production-Ready** architecture with enterprise-grade reliability
+
+---
+
+## ✨ **Key Features**
+
+### 🧠 **AI Agent Ecosystem**
+| Agent | Purpose | Status |
+|-------|---------|--------|
+| **ContentAgent** | Blog posts, social content, email copy | ✅ Production |
+| **SEOAgent** | Meta tags, keyword optimization, rankings | ✅ Production |
+| **EmailAgent** | Campaign automation, drip sequences | ✅ Production |
+| **SocialAgent** | Multi-platform posting, scheduling | ✅ Production |
+| **SupportAgent** | WhatsApp automation, ticket management | ✅ Production |
+| **CampaignAgent** | End-to-end campaign orchestration | ✅ Production |
+| **MetricsAgent** | Performance analytics, reporting | ✅ Production |
+| **UserAgent** | User management, authentication | ✅ Production |
+| **CoordinatorAgent** | Inter-agent communication | ✅ Production |
+
+### 🏗️ **Technical Architecture**
+- **Frontend**: Next.js 14 + React 18 + Tailwind CSS
+- **Backend**: tRPC + Next.js API routes + Prisma ORM
+- **Database**: PostgreSQL with 19+ optimized tables
+- **Type Safety**: End-to-end TypeScript with Zod validation
+- **State Management**: React Query + tRPC for seamless data flow
+
+### 📱 **Dashboard Features**
+- **Agent Management** - Monitor and control all AI agents
+- **Campaign Builder** - Visual campaign creation and management
+- **Analytics Hub** - Real-time performance metrics and insights
+- **Content Studio** - AI-powered content generation tools
+- **Communication Center** - Unified inbox for all channels
+
+---
+
+## 🚀 **Quick Start**
+
+### Prerequisites
+```bash
+Node.js 18.17+ • PostgreSQL 15+ • Git
+```
+
+### Installation
+```bash
+# 1. Clone the repository
+git clone https://github.com/KofiRusu/Neon-v0.3.git
+cd Neon-v0.3
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment variables
+cp .env.example .env
+# Edit .env with your database URL and API keys
+
+# 4. Initialize database
+npm run db:push
+npm run db:generate
+
+# 5. Start development servers
+npm run dev
+```
+
+### Access Points
+- **Dashboard**: http://localhost:3000
+- **API**: http://localhost:3001
+- **Health Check**: http://localhost:3001/api/health
+
+---
+
+## 📁 **Project Structure**
+
+```
+neon-v0.3/
+├── 📱 apps/
+│   ├── api/              # Next.js API server
+│   │   ├── src/app/api/  # API routes
+│   │   └── src/server/   # tRPC routers
+│   └── dashboard/        # React dashboard
+│       ├── src/app/      # Next.js pages
+│       └── src/components/ # React components
+├── 📦 packages/
+│   ├── core-agents/      # AI agent implementations
+│   ├── data-model/       # Prisma schema & client
+│   ├── types/           # Shared TypeScript types
+│   ├── utils/           # Utility functions
+│   └── reasoning-engine/ # AI reasoning logic
+├── 🧪 tests/
+│   ├── e2e/             # End-to-end tests
+│   └── integration/     # Integration tests
+└── 📚 docs/             # Documentation
+```
+
+---
+
+## 🛠️ **Development**
+
+### Available Scripts
+```bash
+npm run dev          # Start development servers
+npm run build        # Build for production
+npm run start        # Start production servers
+npm run test         # Run all tests
+npm run test:e2e     # Run E2E tests
+npm run lint         # Lint all workspaces
+npm run type-check   # TypeScript type checking
+npm run db:studio    # Open Prisma Studio
+```
+
+### Development Workflow
+1. **Backend Changes**: Edit files in `apps/api/src/`
+2. **Frontend Changes**: Edit files in `apps/dashboard/src/`
+3. **Agent Logic**: Modify `packages/core-agents/src/`
+4. **Database Schema**: Update `packages/data-model/prisma/schema.prisma`
+
+---
+
+## 🚀 **Deployment**
+
+### Option 1: Vercel (Recommended)
+```bash
+npm install -g vercel
+vercel --prod
+```
+
+### Option 2: Docker
+```bash
+docker-compose up -d --build
+```
+
+### Option 3: Traditional Server
+```bash
+npm run build
+npm run start
+```
+
+### Environment Variables
+```bash
+# Required
+DATABASE_URL="postgresql://user:pass@host:5432/dbname"
+NEXT_PUBLIC_API_URL="https://your-api-domain.com/api/trpc"
+
+# Optional
+OPENAI_API_KEY="your_openai_key"
+STRIPE_SECRET_KEY="your_stripe_key"
+```
+
+---
+
+## 📊 **API Documentation**
+
+### tRPC Routers
+- **`user.*`** - User management and authentication
+- **`campaign.*`** - Campaign CRUD operations
+- **`metrics.*`** - Analytics and performance data
+- **`agent.*`** - AI agent management
+- **`content.*`** - Content generation endpoints
+- **`seo.*`** - SEO optimization tools
+- **`email.*`** - Email marketing automation
+- **`social.*`** - Social media management
+- **`support.*`** - Customer support features
+
+### Example Usage
+```typescript
+// Frontend tRPC client usage
+const { data: campaigns } = trpc.campaign.getAll.useQuery();
+const createCampaign = trpc.campaign.create.useMutation();
+
+// Create new campaign
+await createCampaign.mutateAsync({
+  name: "Summer 2024 Campaign",
+  type: "SOCIAL_MEDIA",
+  budget: 5000
+});
+```
+
+---
+
+## 🧪 **Testing**
+
+### Test Coverage
+- **Unit Tests**: Individual component and function testing
+- **Integration Tests**: API endpoint and database testing
+- **E2E Tests**: Full user workflow testing with Playwright
+
+### Running Tests
+```bash
+npm run test              # All tests
+npm run test:e2e          # End-to-end tests only
+npm run test --workspace=apps/api  # API tests only
+```
+
+---
+
+## 🤝 **Contributing**
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🆘 **Support**
+
+- **Documentation**: [Full docs](./docs/)
+- **Issues**: [GitHub Issues](https://github.com/KofiRusu/Neon-v0.3/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/KofiRusu/Neon-v0.3/discussions)
+
+---
+
+## 🙏 **Acknowledgments**
+
+Built with amazing open-source technologies:
+- [Next.js](https://nextjs.org/) - The React Framework
+- [tRPC](https://trpc.io/) - End-to-end typesafe APIs
+- [Prisma](https://prisma.io/) - Next-generation ORM
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+- [TypeScript](https://www.typescriptlang.org/) - JavaScript with types
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you find it helpful!**
+
+[Live Demo](https://neonhub-v3-demo.vercel.app) • [Documentation](./docs/) • [Contributing](CONTRIBUTING.md)
+
+</div>

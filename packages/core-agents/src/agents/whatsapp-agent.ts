@@ -731,53 +731,5 @@ export class WhatsAppAgent extends AbstractAgent {
     };
   }
 
-  // Utility methods for context handling (keeping for future implementation)
-  private _analyzeMessageContext(_intent: any, _kbResults: any, _ticketHistory: any): any {
-    return {
-      contextual: true,
-      confidence: 0.85
-    };
-  }
 
-  private _searchKnowledgeBase(_intent: any, _kbResults: any, _response: any): any {
-    return {
-      results: [],
-      confidence: 0.8
-    };
-  }
-
-  private _escalateToHuman(_context: any): any {
-    return {
-      escalated: true,
-      reason: 'Complex query requiring human intervention'
-    };
-  }
-
-  private _handleGeneralInquiry(_messages: any): any {
-    return {
-      response: 'Thank you for your inquiry. How can I help you today?'
-    };
-  }
-
-  private _trackCustomerJourney(_ticketData: any): any {
-    return {
-      stage: 'inquiry',
-      touchpoints: 1
-    };
-  }
-
-  private _generateInsights(_data: any): any {
-    return {
-      insights: ['Customer engagement is high', 'Response time is optimal']
-    };
-  }
-
-  private _runAnalytics(_data: any): any {
-    return {
-      metrics: {
-        responseTime: '2.5 minutes',
-        satisfaction: '4.2/5'
-      }
-    };
-  }
 } 

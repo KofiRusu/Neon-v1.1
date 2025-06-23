@@ -26,6 +26,9 @@ export * from './agents/trend-agent';
 export * from './agents/insight-agent';
 export * from './agents/design-agent';
 
+// Export WhatsAppAgent as CustomerSupportAgent for compatibility
+export { WhatsAppAgent as CustomerSupportAgent } from './agents/whatsapp-agent';
+
 // Agent Manager and Factory
 export { AgentManager, AgentFactory } from './base-agent';
 

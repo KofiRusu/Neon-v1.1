@@ -17,16 +17,69 @@ import {
   BellIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-  FunnelIcon,
+  EnvelopeIcon,
+  ChatBubbleLeftIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch real data from our API
   const { data: campaignStats } = trpc.campaign.getStats.useQuery();
   const { data: recentAgentActivity } = trpc.agent.getRecentActions.useQuery({ limit: 5 });
+
+  const navigationItems = [
+    {
+      id: 'dashboard',
+      name: 'Dashboard',
+      href: '/',
+      icon: ChartBarIcon,
+      current: true,
+    },
+    {
+      id: 'agents',
+      name: 'AI Agents',
+      href: '/agents',
+      icon: SparklesIcon,
+      current: false,
+    },
+    {
+      id: 'campaigns',
+      name: 'Campaigns',
+      href: '/campaigns',
+      icon: MegaphoneIcon,
+      current: false,
+    },
+    {
+      id: 'email',
+      name: 'Email Marketing',
+      href: '/email',
+      icon: EnvelopeIcon,
+      current: false,
+    },
+    {
+      id: 'social',
+      name: 'Social Media',
+      href: '/social',
+      icon: GlobeAltIcon,
+      current: false,
+    },
+    {
+      id: 'support',
+      name: 'Customer Support',
+      href: '/support',
+      icon: ChatBubbleLeftIcon,
+      current: false,
+    },
+    {
+      id: 'analytics',
+      name: 'Analytics',
+      href: '/analytics',
+      icon: ArrowTrendingUpIcon,
+      current: false,
+    },
+  ];
 
   const agents = [
     {
@@ -34,48 +87,60 @@ export default function Dashboard() {
       name: 'Content Agent',
       status: 'active',
       icon: DocumentTextIcon,
-      color: 'text-blue-400',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-100',
       description: 'AI-powered content generation',
+      href: '/agents',
     },
     {
-      id: 'ad',
-      name: 'Ad Agent',
+      id: 'seo',
+      name: 'SEO Agent', 
       status: 'active',
-      icon: MegaphoneIcon,
-      color: 'text-green-400',
-      description: 'Automated ad optimization',
+      icon: MagnifyingGlassIcon,
+      color: 'text-green-600',
+      bgColor: 'bg-green-100',
+      description: 'Search engine optimization',
+      href: '/agents',
     },
     {
-      id: 'outreach',
-      name: 'Outreach Agent',
-      status: 'idle',
-      icon: UserGroupIcon,
-      color: 'text-purple-400',
-      description: 'Lead nurturing & engagement',
-    },
-    {
-      id: 'trend',
-      name: 'Trend Agent',
+      id: 'email',
+      name: 'Email Agent',
       status: 'active',
-      icon: ArrowTrendingUpIcon,
-      color: 'text-orange-400',
-      description: 'Market trend analysis',
+      icon: EnvelopeIcon,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-100',
+      description: 'Email campaign automation',
+      href: '/email',
     },
     {
-      id: 'insight',
-      name: 'Insight Agent',
+      id: 'social',
+      name: 'Social Agent',
+      status: 'active',
+      icon: GlobeAltIcon,
+      color: 'text-pink-600',
+      bgColor: 'bg-pink-100',
+      description: 'Social media management',
+      href: '/social',
+    },
+    {
+      id: 'support',
+      name: 'Support Agent',
+      status: 'active',
+      icon: ChatBubbleLeftIcon,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-100',
+      description: 'Customer support automation',
+      href: '/support',
+    },
+    {
+      id: 'analytics',
+      name: 'Analytics Agent',
       status: 'active',
       icon: ChartBarIcon,
-      color: 'text-cyan-400',
+      color: 'text-cyan-600',
+      bgColor: 'bg-cyan-100',
       description: 'Performance analytics',
-    },
-    {
-      id: 'design',
-      name: 'Design Agent',
-      status: 'idle',
-      icon: PaintBrushIcon,
-      color: 'text-pink-400',
-      description: 'Visual asset creation',
+      href: '/analytics',
     },
   ];
 
@@ -86,7 +151,6 @@ export default function Dashboard() {
       change: '+2',
       changeType: 'positive',
       icon: MegaphoneIcon,
-      color: 'text-blue-400',
     },
     {
       name: 'Active Campaigns',
@@ -94,23 +158,20 @@ export default function Dashboard() {
       change: '+1',
       changeType: 'positive',
       icon: SparklesIcon,
-      color: 'text-green-400',
     },
     {
       name: 'Completed',
       value: campaignStats?.completed?.toString() || '0',
-      change: '+0.3x',
+      change: '+3',
       changeType: 'positive',
       icon: ChartBarIcon,
-      color: 'text-cyan-400',
     },
     {
-      name: 'Draft Campaigns',
-      value: campaignStats?.draft?.toString() || '0',
-      change: '+156',
+      name: 'Total Revenue',
+      value: '$0',
+      change: '+0%',
       changeType: 'positive',
-      icon: UserGroupIcon,
-      color: 'text-purple-400',
+      icon: ArrowTrendingUpIcon,
     },
   ];
 
@@ -121,260 +182,239 @@ export default function Dashboard() {
     action: activity.action,
     time: new Date(activity.createdAt).toLocaleTimeString(),
     status: 'completed',
-    type: 'agent',
   })) || [
     {
       id: 1,
-      agent: 'Content Agent',
-      action: 'System initialized',
+      agent: 'ContentAgent',
+      action: 'Generated blog post',
       time: 'Just now',
       status: 'completed',
-      type: 'content',
     },
     {
       id: 2,
-      agent: 'Ad Agent',
-      action: 'Monitoring setup',
-      time: 'Just now',
+      agent: 'SEOAgent',
+      action: 'Optimized meta tags',
+      time: '2 min ago',
       status: 'completed',
-      type: 'ads',
     },
     {
       id: 3,
-      agent: 'Trend Agent',
-      action: 'Data collection started',
-      time: 'Just now',
+      agent: 'EmailAgent',
+      action: 'Sent campaign email',
+      time: '5 min ago',
       status: 'completed',
-      type: 'trends',
     },
     {
       id: 4,
-      agent: 'Insight Agent',
-      action: 'Analytics ready',
-      time: 'Just now',
+      agent: 'SocialAgent',
+      action: 'Posted to Instagram',
+      time: '10 min ago',
       status: 'completed',
-      type: 'analytics',
     },
   ];
 
-  const filteredAgents = agents.filter(agent =>
-    agent.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
-    <div className="min-h-screen bg-dark-900">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-dark-800/80 backdrop-blur-md border-b border-dark-700/50 sticky top-0 z-50">
+      <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <SparklesIcon className="h-8 w-8 text-neon-400 animate-glow" />
-                  <div className="absolute inset-0 bg-neon-400 rounded-full blur-sm opacity-30 animate-pulse"></div>
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <SparklesIcon className="h-5 w-5 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-gradient neon-text">NeonHub AI</h1>
+                <h1 className="text-2xl font-bold text-gray-900">NeonHub</h1>
               </div>
-              <span className="text-dark-400 hidden md:block">Marketing Ecosystem</span>
+              <span className="text-gray-500 hidden md:block">AI Marketing Platform</span>
             </div>
+            
             <div className="flex items-center space-x-4">
               {/* Search Bar */}
               <div className="relative hidden md:block">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-dark-400" />
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search agents, campaigns..."
-                  className="input pl-10 pr-4 w-64"
+                  placeholder="Search..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
 
               {/* Notifications */}
-              <button className="btn-secondary relative">
-                <BellIcon className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-neon-400 rounded-full animate-pulse"></span>
+              <button className="p-2 text-gray-400 hover:text-gray-600 relative">
+                <BellIcon className="h-6 w-6" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
 
               {/* Settings */}
-              <button className="btn-secondary">
-                <CogIcon className="h-5 w-5" />
+              <button className="p-2 text-gray-400 hover:text-gray-600">
+                <CogIcon className="h-6 w-6" />
               </button>
-
-              {/* User Avatar */}
-              <div className="w-10 h-10 bg-gradient-to-r from-neon-400 to-neon-500 rounded-full flex items-center justify-center neon-glow">
-                <span className="text-white font-medium">N</span>
-              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 sidebar min-h-screen sticky top-20">
-          <nav className="p-4 space-y-2">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`nav-item w-full ${activeTab === 'overview' ? 'active' : ''}`}
-            >
-              <ChartBarIcon className="h-5 w-5 mr-3" />
-              Overview
-            </button>
-            <Link href="/agents" className="nav-item w-full">
-              <SparklesIcon className="h-5 w-5 mr-3" />
-              AI Agents
-            </Link>
-            <Link href="/campaigns" className="nav-item w-full">
-              <MegaphoneIcon className="h-5 w-5 mr-3" />
-              Campaigns
-            </Link>
-            <Link href="/analytics" className="nav-item w-full">
-              <ArrowTrendingUpIcon className="h-5 w-5 mr-3" />
-              Analytics
-            </Link>
-          </nav>
-        </aside>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back!</h1>
+          <p className="text-gray-600">
+            Your AI agents are working hard to optimize your marketing campaigns.
+          </p>
+        </div>
 
-        {/* Main Content */}
-        <main className="flex-1 p-8">
-          {activeTab === 'overview' && (
-            <div className="space-y-8">
-              {/* Welcome Section */}
-              <div className="card-glow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-3xl font-bold text-gradient mb-2">Welcome back, User!</h1>
-                    <p className="text-dark-400">
-                      Your AI agents are working hard to optimize your marketing campaigns.
-                    </p>
+        {/* Navigation Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {navigationItems.slice(1).map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link key={item.id} href={item.href} className="group">
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                      <Icon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   </div>
-                  <button className="btn-primary flex items-center space-x-2">
-                    <PlusIcon className="h-5 w-5" />
-                    <span>New Campaign</span>
-                  </button>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{item.name}</h3>
+                  <p className="text-gray-600 text-sm">
+                    {item.id === 'agents' && 'Manage AI agents'}
+                    {item.id === 'campaigns' && 'Create and manage campaigns'}
+                    {item.id === 'email' && 'Email marketing automation'}
+                    {item.id === 'social' && 'Social media management'}
+                    {item.id === 'support' && 'Customer support tools'}
+                    {item.id === 'analytics' && 'Performance insights'}
+                  </p>
                 </div>
-              </div>
+              </Link>
+            );
+          })}
+        </div>
 
-              {/* Metrics Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {metrics.map(metric => (
-                  <div key={metric.name} className="metric-card">
-                    <div className="flex items-center justify-between mb-4">
-                      <metric.icon className={`h-8 w-8 ${metric.color}`} />
-                      <div
-                        className={`text-sm font-medium px-2 py-1 rounded-full ${
-                          metric.changeType === 'positive'
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-red-500/20 text-red-400'
-                        }`}
-                      >
-                        {metric.change}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-dark-400 text-sm font-medium">{metric.name}</p>
-                      <p className="text-3xl font-bold text-white neon-text">{metric.value}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* AI Agents Status */}
-              <div className="card-glow">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">AI Agents Status</h2>
-                  <div className="flex items-center space-x-2">
-                    <FunnelIcon className="h-4 w-4 text-dark-400" />
-                    <span className="text-dark-400 text-sm">Filter</span>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {metrics.map((metric) => {
+            const Icon = metric.icon;
+            return (
+              <div key={metric.name} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <Icon className="h-8 w-8 text-gray-600" />
+                  <div className={`text-sm font-medium px-2 py-1 rounded-full ${
+                    metric.changeType === 'positive'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {metric.change}
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredAgents.map(agent => (
-                    <div key={agent.id} className="agent-card">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <agent.icon className={`h-8 w-8 ${agent.color}`} />
-                          <div>
-                            <h3 className="text-white font-medium">{agent.name}</h3>
-                            <p className="text-dark-400 text-xs">{agent.description}</p>
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">{metric.name}</p>
+                  <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* AI Agents Status */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">AI Agents Status</h2>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {agents.map((agent) => {
+                    const Icon = agent.icon;
+                    return (
+                      <Link key={agent.id} href={agent.href} className="group">
+                        <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-10 h-10 ${agent.bgColor} rounded-lg flex items-center justify-center`}>
+                                <Icon className={`h-5 w-5 ${agent.color}`} />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-gray-900">{agent.name}</h3>
+                                <p className="text-sm text-gray-600">{agent.description}</p>
+                              </div>
+                            </div>
+                            <div className={`w-2 h-2 rounded-full ${
+                              agent.status === 'active' ? 'bg-green-500' : 'bg-gray-300'
+                            }`}></div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-500 capitalize">{agent.status}</span>
+                            <button className="p-1 text-gray-400 hover:text-gray-600">
+                              {agent.status === 'active' ? (
+                                <PauseIcon className="h-4 w-4" />
+                              ) : (
+                                <PlayIcon className="h-4 w-4" />
+                              )}
+                            </button>
                           </div>
                         </div>
-                        <div className={`status-indicator ${agent.status}`}></div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-dark-400 text-sm capitalize">{agent.status}</span>
-                        <button className="btn-pill">
-                          {agent.status === 'active' ? (
-                            <PauseIcon className="h-4 w-4" />
-                          ) : (
-                            <PlayIcon className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* Recent Activity */}
-              <div className="card-glow">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
-                  <button className="text-neon-400 hover:text-neon-300 text-sm font-medium">
+          {/* Recent Activity */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
                     View All
                   </button>
                 </div>
-                <div className="space-y-3">
-                  {recentActivity.map(activity => (
-                    <div key={activity.id} className="activity-item">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-2 h-2 bg-neon-400 rounded-full animate-pulse"></div>
-                          <div>
-                            <p className="text-white font-medium">{activity.agent}</p>
-                            <p className="text-dark-400 text-sm">{activity.action}</p>
-                          </div>
-                        </div>
-                        <span className="text-dark-400 text-sm">{activity.time}</span>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {recentActivity.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900">{activity.agent}</p>
+                        <p className="text-sm text-gray-600">{activity.action}</p>
+                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        </div>
 
-          {activeTab === 'agents' && (
-            <div className="card-glow">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-white">AI Agent Control Center</h2>
-                <button className="btn-primary">Deploy New Agent</button>
-              </div>
-              <p className="text-dark-400">Advanced agent management interface coming soon...</p>
+        {/* Quick Actions */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/campaigns" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <PlusIcon className="h-4 w-4 mr-2" />
+                New Campaign
+              </Link>
+              <Link href="/agents" className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                <SparklesIcon className="h-4 w-4 mr-2" />
+                Manage Agents
+              </Link>
+              <Link href="/analytics" className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                <ChartBarIcon className="h-4 w-4 mr-2" />
+                View Analytics
+              </Link>
             </div>
-          )}
-
-          {activeTab === 'campaigns' && (
-            <div className="card-glow">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-white">Campaign Management</h2>
-                <button className="btn-primary">Create Campaign</button>
-              </div>
-              <p className="text-dark-400">Campaign orchestration interface coming soon...</p>
-            </div>
-          )}
-
-          {activeTab === 'analytics' && (
-            <div className="card-glow">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-white">Analytics Dashboard</h2>
-                <button className="btn-secondary">Export Report</button>
-              </div>
-              <p className="text-dark-400">Advanced analytics and reporting coming soon...</p>
-            </div>
-          )}
-        </main>
+          </div>
+        </div>
       </div>
     </div>
   );

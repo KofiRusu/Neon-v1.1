@@ -1,70 +1,66 @@
 {
-  "name": "neonhub-ai-ecosystem",
-  "version": "0.2.0",
+  "name": "@neonhub/platform",
+  "version": "0.3.0",
+  "description": "AI-powered marketing automation platform with comprehensive agent-based architecture",
+  "main": "index.js",
   "private": true,
-  "description": "NeonHub AI Marketing Ecosystem - Self-operating, AI-driven marketing and sales platform",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/dashboard\"",
     "build": "npm run build --workspaces --if-present",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "start": "concurrently \"npm run start --workspace=apps/api\" \"npm run start --workspace=apps/dashboard\"",
+    "test": "npm run test --workspaces --if-present",
     "test:e2e": "playwright test",
-    "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist coverage .nyc_output && npm run clean --workspaces --if-present",
-    "dev": "concurrently \"npm run dev:dashboard\" \"npm run dev:api\"",
-    "dev:dashboard": "cd apps/dashboard && npm run dev",
-    "dev:api": "cd apps/api && npm run dev",
-    "db:generate": "npm run db:generate --workspace=@neon/data-model",
-    "db:push": "npm run db:push --workspace=@neon/data-model",
-    "db:migrate": "npm run db:migrate --workspace=@neon/data-model",
-    "db:studio": "cd packages/data-model && npx prisma studio",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "ci": "npm run lint && npm run type-check && npm run test && npm run test:e2e",
-    "type-coverage": "type-coverage",
-    "test:ci": "npm test -- --ci --coverage --watchAll=false",
-    "lint:ci": "npm run lint -- --max-warnings 0"
+    "lint": "npm run lint --workspaces --if-present",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules .next dist coverage",
+    "db:generate": "npm run db:generate --workspace=packages/data-model",
+    "db:push": "npm run db:push --workspace=packages/data-model",
+    "db:migrate": "npm run db:migrate --workspace=packages/data-model",
+    "db:studio": "npm run db:studio --workspace=packages/data-model",
+    "deploy:vercel": "vercel --prod",
+    "deploy:docker": "docker-compose up -d --build",
+    "health-check": "curl -f http://localhost:3001/api/health && curl -f http://localhost:3000",
+    "postinstall": "npm run db:generate"
   },
   "keywords": [
     "ai",
     "marketing",
     "automation",
-    "neonhub",
-    "production-ready",
-    "ai-marketing",
-    "ecosystem",
-    "langchain",
-    "openai",
+    "agents",
     "nextjs",
-    "trpc"
+    "trpc",
+    "prisma",
+    "typescript",
+    "neon",
+    "platform"
   ],
-  "author": "NeonHub Team",
+  "author": "KofiRusu",
   "license": "MIT",
-  "devDependencies": {
-    "@eslint/js": "^9.29.0",
-    "@playwright/test": "^1.53.1",
-    "@types/jest": "^30.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.34.1",
-    "@typescript-eslint/parser": "^8.34.1",
-    "concurrently": "^8.2.2",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.1.5",
-    "jest": "^30.0.2",
-    "playwright": "^1.53.1",
-    "prettier": "^3.5.3",
-    "ts-jest": "^29.4.0",
-    "typescript": "^5.8.3"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KofiRusu/Neon-v0.3.git"
   },
-  "dependencies": {
-    "js-yaml": "^4.1.0",
-    "stripe": "^18.2.1"
+  "bugs": {
+    "url": "https://github.com/KofiRusu/Neon-v0.3/issues"
+  },
+  "homepage": "https://github.com/KofiRusu/Neon-v0.3#readme",
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
