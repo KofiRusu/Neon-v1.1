@@ -7,7 +7,7 @@ interface PostEditorModalProps {
   onClose: () => void;
 }
 
-export function PostEditorModal({ isOpen, onClose }: PostEditorModalProps) {
+export function PostEditorModal({ isOpen, onClose }: PostEditorModalProps): JSX.Element | null {
   const [content, setContent] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram']);
   const [scheduledTime, setScheduledTime] = useState('');
@@ -19,7 +19,7 @@ export function PostEditorModal({ isOpen, onClose }: PostEditorModalProps) {
     { id: 'facebook', name: 'Facebook', color: 'bg-blue-600' },
   ];
 
-  const togglePlatform = (platformId: string) => {
+  const togglePlatform = (platformId: string): void => {
     setSelectedPlatforms(prev => 
       prev.includes(platformId)
         ? prev.filter(p => p !== platformId)
@@ -27,10 +27,13 @@ export function PostEditorModal({ isOpen, onClose }: PostEditorModalProps) {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     // Handle post creation/scheduling
-    console.log('Creating post:', { content, selectedPlatforms, scheduledTime });
+    // TODO: Implement actual post creation/scheduling logic
+    const postData = { content, selectedPlatforms, scheduledTime };
+    // In a real app, this would call an API
+    void postData; // Acknowledge usage to avoid unused variable warning
     onClose();
   };
 

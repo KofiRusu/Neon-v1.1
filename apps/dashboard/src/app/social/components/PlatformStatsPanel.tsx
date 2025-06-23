@@ -13,7 +13,7 @@ interface PlatformStats {
   color: string;
 }
 
-export function PlatformStatsPanel({ selectedPlatform }: PlatformStatsPanelProps) {
+export function PlatformStatsPanel({ selectedPlatform }: PlatformStatsPanelProps): JSX.Element {
   // Mock data - in a real app, this would come from your APIs
   const platformStats: PlatformStats[] = [
     {
@@ -50,24 +50,24 @@ export function PlatformStatsPanel({ selectedPlatform }: PlatformStatsPanelProps
     }
   ];
 
-  const getFilteredStats = () => {
+  const getFilteredStats = (): PlatformStats[] => {
     if (selectedPlatform === 'all') {
       return platformStats;
     }
     return platformStats.filter(stat => stat.platform === selectedPlatform);
   };
 
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number): string => {
     if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
+      return `${(num / 1000000).toFixed(1)}M`;
     }
     if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
+      return `${(num / 1000).toFixed(1)}K`;
     }
     return num.toString();
   };
 
-  const getTotalStats = () => {
+  const getTotalStats = (): { followers: number; engagement: number; posts: number; reach: number } => {
     return platformStats.reduce((acc, stat) => ({
       followers: acc.followers + stat.followers,
       engagement: acc.engagement + stat.engagement,

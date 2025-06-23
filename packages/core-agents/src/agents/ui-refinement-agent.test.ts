@@ -1,6 +1,5 @@
 import { UIRefinementAgent } from './ui-refinement-agent';
 import { promises as fs } from 'fs';
-import path from 'path';
 
 // Mock fs operations for testing
 jest.mock('fs', () => ({
@@ -14,6 +13,18 @@ jest.mock('fs', () => ({
 }));
 
 const mockFs = fs as jest.Mocked<typeof fs>;
+
+interface MockDirent {
+  name: string;
+  isFile: () => boolean;
+  isDirectory: () => boolean;
+}
+
+interface MockUIIssue {
+  type: string;
+  description: string;
+  severity: string;
+}
 
 describe('UIRefinementAgent', () => {
   let agent: UIRefinementAgent;
@@ -42,8 +53,8 @@ describe('UIRefinementAgent', () => {
     it('should detect contrast issues', async () => {
       // Mock file system
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700">
@@ -67,8 +78,8 @@ describe('UIRefinementAgent', () => {
     it('should fix contrast issues automatically', async () => {
       // Mock file system
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700">
@@ -92,8 +103,8 @@ describe('UIRefinementAgent', () => {
   describe('Accessibility validation', () => {
     it('should detect missing alt attributes', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <img src="image.jpg" />
@@ -109,7 +120,7 @@ describe('UIRefinementAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(result.data.issues.some((issue: any) => 
+      expect(result.data.issues.some((issue: MockUIIssue) => 
         issue.description.includes('alt attribute')
       )).toBe(true);
     });
@@ -118,8 +129,8 @@ describe('UIRefinementAgent', () => {
   describe('Theme consistency', () => {
     it('should fix theme inconsistencies', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-gray-900 text-gray-300">
@@ -142,8 +153,8 @@ describe('UIRefinementAgent', () => {
   describe('Responsive layout checking', () => {
     it('should detect responsive issues', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <div className="w-[500px] overflow-hidden">
@@ -159,7 +170,7 @@ describe('UIRefinementAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(result.data.issues.some((issue: any) => 
+      expect(result.data.issues.some((issue: MockUIIssue) => 
         issue.type === 'responsive'
       )).toBe(true);
     });
@@ -168,8 +179,8 @@ describe('UIRefinementAgent', () => {
   describe('UI pattern auditing', () => {
     it('should detect UI pattern inconsistencies', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-white rounded-lg p-4">
@@ -191,8 +202,8 @@ describe('UIRefinementAgent', () => {
   describe('Auto-fix all issues', () => {
     it('should run all checks and fixes comprehensively', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
-      ]);
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
+      ] as MockDirent[]);
       
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700 bg-gray-800">

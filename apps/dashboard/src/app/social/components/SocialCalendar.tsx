@@ -10,7 +10,7 @@ interface CalendarEvent {
   status: 'scheduled' | 'published' | 'draft';
 }
 
-export function SocialCalendar() {
+export function SocialCalendar(): JSX.Element {
   const [currentDate, setCurrentDate] = useState(new Date());
   
   // Mock events - in a real app, this would come from your data source
@@ -38,11 +38,11 @@ export function SocialCalendar() {
     }
   ];
 
-  const getDaysInMonth = (date: Date) => {
+  const getDaysInMonth = (date: Date): number => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (date: Date) => {
+  const getFirstDayOfMonth = (date: Date): number => {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
@@ -94,7 +94,7 @@ export function SocialCalendar() {
         
         {/* Month days */}
         {days.map((day) => {
-          const dayEvents = events.filter(event => 
+          const dayEvents = events.filter(_event => 
             // Mock filter - in real app, you'd filter by actual date
             day === 15 || day === 20 || day === 25
           );

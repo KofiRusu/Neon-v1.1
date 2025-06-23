@@ -6,7 +6,7 @@ import { PostEditorModal } from './components/PostEditorModal';
 import { PlatformStatsPanel } from './components/PlatformStatsPanel';
 import { CredentialStatusBar } from './components/CredentialStatusBar';
 
-export default function SocialPage() {
+export default function SocialPage(): JSX.Element {
   const [showPostEditor, setShowPostEditor] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
 
@@ -14,10 +14,10 @@ export default function SocialPage() {
     <div className="min-h-screen bg-dark-900 p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-700 mb-2">
+        <h1 className="text-3xl font-bold text-neutral-100 mb-2">
           Social Media Management
         </h1>
-        <p className="text-neutral-600">
+        <p className="text-neutral-200">
           Manage your social media presence across all platforms
         </p>
       </div>
@@ -31,7 +31,7 @@ export default function SocialPage() {
         <div className="lg:col-span-2">
           <div className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-neutral-700">
+              <h2 className="text-xl font-semibold text-neutral-100">
                 Content Calendar
               </h2>
               <button
@@ -49,7 +49,7 @@ export default function SocialPage() {
         <div className="space-y-6">
           {/* Platform Filter */}
           <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
-            <h3 className="text-lg font-medium text-neutral-600 mb-3">
+            <h3 className="text-lg font-medium text-neutral-200 mb-3">
               Platform Filter
             </h3>
             <div className="space-y-2">
@@ -60,7 +60,7 @@ export default function SocialPage() {
                   className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                     selectedPlatform === platform
                       ? 'bg-blue-600 text-white'
-                      : 'text-neutral-500 hover:bg-neutral-800'
+                      : 'text-neutral-200 hover:bg-neutral-800'
                   }`}
                 >
                   {platform.charAt(0).toUpperCase() + platform.slice(1)}
@@ -74,7 +74,7 @@ export default function SocialPage() {
 
           {/* Recent Activity */}
           <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
-            <h3 className="text-lg font-medium text-neutral-600 mb-3">
+            <h3 className="text-lg font-medium text-neutral-200 mb-3">
               Recent Activity
             </h3>
             <div className="space-y-3">
@@ -85,10 +85,10 @@ export default function SocialPage() {
               ].map((activity, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div>
-                    <p className="text-neutral-500 text-sm">{activity.action}</p>
-                    <p className="text-neutral-700 text-xs">{activity.platform}</p>
+                    <p className="text-neutral-200 text-sm">{activity.action}</p>
+                    <p className="text-neutral-100 text-xs">{activity.platform}</p>
                   </div>
-                  <span className="text-neutral-600 text-xs">{activity.time}</span>
+                  <span className="text-neutral-200 text-xs">{activity.time}</span>
                 </div>
               ))}
             </div>
@@ -99,24 +99,24 @@ export default function SocialPage() {
       {/* Quick Actions */}
       <div className="mt-8">
         <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
-          <h3 className="text-lg font-medium text-slate-700 mb-4">
+          <h3 className="text-lg font-medium text-slate-100 mb-4">
             Quick Actions
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
-              <img src="/icons/analytics.svg" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
+              <img src="/icons/analytics.svg" alt="Analytics" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Analytics</span>
             </button>
-            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
-              <img src="/icons/schedule.svg" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
+              <img src="/icons/schedule.svg" alt="Schedule" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Schedule</span>
             </button>
-            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
-              <img src="/icons/content.svg" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
+              <img src="/icons/content.svg" alt="Content Library" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Content Library</span>
             </button>
-            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
-              <img src="/icons/settings.svg" className="w-8 h-8 mx-auto mb-2" />
+            <button className="bg-dark-800 hover:bg-dark-700 text-dark-200 p-4 rounded-lg transition-colors">
+              <img src="/icons/settings.svg" alt="Settings" className="w-8 h-8 mx-auto mb-2" />
               <span className="text-sm">Settings</span>
             </button>
           </div>

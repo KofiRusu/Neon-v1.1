@@ -11,7 +11,7 @@ interface PlatformCredential {
   color: string;
 }
 
-export function CredentialStatusBar() {
+export function CredentialStatusBar(): JSX.Element {
   const [credentials, setCredentials] = useState<PlatformCredential[]>([
     {
       id: 'instagram',
@@ -45,9 +45,9 @@ export function CredentialStatusBar() {
     }
   ]);
 
-  const handleConnect = (platformId: string) => {
+  const handleConnect = (platformId: string): void => {
     // In a real app, this would trigger OAuth flow
-    console.log(`Connecting to ${platformId}...`);
+    // TODO: Implement OAuth flow for platform connection
     
     // Mock connection
     setCredentials(prev => prev.map(cred => 
@@ -57,7 +57,7 @@ export function CredentialStatusBar() {
     ));
   };
 
-  const handleDisconnect = (platformId: string) => {
+  const handleDisconnect = (platformId: string): void => {
     setCredentials(prev => prev.map(cred => 
       cred.id === platformId
         ? { ...cred, connected: false, accountName: undefined, lastSync: undefined }

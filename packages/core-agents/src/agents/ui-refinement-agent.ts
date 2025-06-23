@@ -1,6 +1,6 @@
 import { AbstractAgent, AgentPayload, AgentResult } from '../base-agent';
 import { promises as fs } from 'fs';
-import path from 'path';
+import * as path from 'path';
 
 export interface ContrastIssue {
   file: string;
@@ -31,17 +31,14 @@ export interface UIRefinementResult {
   filesModified: string[];
 }
 
+export interface UIRefinementContext {
+  targetDir?: string;
+  autoFix?: boolean;
+}
+
 export class UIRefinementAgent extends AbstractAgent {
   private readonly logPath = path.join(process.cwd(), 'logs', 'ui-refinements.log');
   
-  // WCAG contrast ratio thresholds
-  private readonly CONTRAST_THRESHOLDS = {
-    AA_NORMAL: 4.5,
-    AA_LARGE: 3.0,
-    AAA_NORMAL: 7.0,
-    AAA_LARGE: 4.5
-  };
-
   // Common contrast-safe color mappings
   private readonly CONTRAST_FIXES = {
     'bg-neutral-900': {
@@ -81,26 +78,26 @@ export class UIRefinementAgent extends AbstractAgent {
       
       switch (task) {
         case 'check_contrast':
-          return await this.checkContrast(context);
+          return await this.checkContrast(context as UIRefinementContext);
         case 'fix_contrast_issues':
-          return await this.fixContrastIssues(context);
+          return await this.fixContrastIssues(context as UIRefinementContext);
         case 'validate_accessibility':
-          return await this.validateAccessibility(context);
+          return await this.validateAccessibility(context as UIRefinementContext);
         case 'check_responsive_layout':
-          return await this.checkResponsiveLayout(context);
+          return await this.checkResponsiveLayout(context as UIRefinementContext);
         case 'fix_theme_consistency':
-          return await this.fixThemeConsistency(context);
+          return await this.fixThemeConsistency(context as UIRefinementContext);
         case 'audit_ui_patterns':
-          return await this.auditUIPatterns(context);
+          return await this.auditUIPatterns(context as UIRefinementContext);
         case 'auto_fix_ui_issues':
-          return await this.autoFixUIIssues(context);
+          return await this.autoFixUIIssues(context as UIRefinementContext);
         default:
           throw new Error(`Unknown task: ${task}`);
       }
     });
   }
 
-  private async checkContrast(context: any): Promise<UIRefinementResult> {
+  private async checkContrast(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
     
@@ -126,7 +123,7 @@ export class UIRefinementAgent extends AbstractAgent {
     };
   }
 
-  private async fixContrastIssues(context: any): Promise<UIRefinementResult> {
+  private async fixContrastIssues(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src', autoFix = true } = context;
     const issues: UIIssue[] = [];
     const fixedIssues: UIIssue[] = [];
@@ -135,7 +132,7 @@ export class UIRefinementAgent extends AbstractAgent {
     const tsxFiles = await this.findTSXFiles(targetDir);
     
     for (const filePath of tsxFiles) {
-      let content = await fs.readFile(filePath, 'utf-8');
+      const content = await fs.readFile(filePath, 'utf-8');
       const originalContent = content;
       const lines = content.split('\n');
       
@@ -177,7 +174,7 @@ export class UIRefinementAgent extends AbstractAgent {
     };
   }
 
-  private async validateAccessibility(context: any): Promise<UIRefinementResult> {
+  private async validateAccessibility(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
     
@@ -239,7 +236,7 @@ export class UIRefinementAgent extends AbstractAgent {
     };
   }
 
-  private async checkResponsiveLayout(context: any): Promise<UIRefinementResult> {
+  private async checkResponsiveLayout(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
     
@@ -288,7 +285,7 @@ export class UIRefinementAgent extends AbstractAgent {
     };
   }
 
-  private async fixThemeConsistency(context: any): Promise<UIRefinementResult> {
+  private async fixThemeConsistency(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
     const fixedIssues: UIIssue[] = [];
@@ -357,7 +354,7 @@ export class UIRefinementAgent extends AbstractAgent {
     };
   }
 
-  private async auditUIPatterns(context: any): Promise<UIRefinementResult> {
+  private async auditUIPatterns(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
     
@@ -408,9 +405,7 @@ export class UIRefinementAgent extends AbstractAgent {
     };
   }
 
-  private async autoFixUIIssues(context: any): Promise<UIRefinementResult> {
-    const { targetDir = 'apps/dashboard/src' } = context;
-    
+  private async autoFixUIIssues(context: UIRefinementContext): Promise<UIRefinementResult> {
     // Run all checks and fixes
     const contrastResult = await this.fixContrastIssues({ ...context, autoFix: true });
     const themeResult = await this.fixThemeConsistency(context);
@@ -429,12 +424,11 @@ export class UIRefinementAgent extends AbstractAgent {
       ...themeResult.fixedIssues
     ];
     
-    const allFilesModified = [
-      ...new Set([
-        ...contrastResult.filesModified,
-        ...themeResult.filesModified
-      ])
-    ];
+    // Combine and deduplicate modified files
+    const allFilesModified = Array.from(new Set([
+      ...contrastResult.filesModified,
+      ...themeResult.filesModified
+    ]));
 
     await this.logActivity(`Auto-fix completed. Fixed ${allFixedIssues.length} issues across ${allFilesModified.length} files.`);
     
@@ -499,12 +493,14 @@ export class UIRefinementAgent extends AbstractAgent {
         if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
           const subFiles = await this.findTSXFiles(fullPath);
           files.push(...subFiles);
-        } else if (entry.isFile() && (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
+        } else if (entry.isFile() && 
+                   (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
           files.push(fullPath);
         }
       }
-    } catch (error) {
-      // Directory might not exist, skip
+    } catch (_error) {
+      // Directory might not exist, skip silently
+      void _error; // Acknowledge error is intentionally unused
     }
     
     return files;
@@ -515,10 +511,12 @@ export class UIRefinementAgent extends AbstractAgent {
     const logEntry = `[${timestamp}] UIRefinementAgent: ${message}\n`;
     
     try {
+      // Ensure logs directory exists
       await fs.mkdir(path.dirname(this.logPath), { recursive: true });
       await fs.appendFile(this.logPath, logEntry);
-    } catch (error) {
-      console.error('Failed to write to log file:', error);
+    } catch (_error) {
+      // Log to stderr if file logging fails
+      process.stderr.write(`Failed to write to log file: ${_error}\n`);
     }
   }
 }
