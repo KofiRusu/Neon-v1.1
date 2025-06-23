@@ -1,73 +1,154 @@
 'use client';
 
-import { CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
 
-const platforms = [
-  { id: 'facebook', name: 'Facebook', status: 'connected', color: 'bg-blue-500' },
-  { id: 'instagram', name: 'Instagram', status: 'connected', color: 'bg-pink-500' },
-  { id: 'twitter', name: 'Twitter', status: 'warning', color: 'bg-sky-500' },
-  { id: 'linkedin', name: 'LinkedIn', status: 'disconnected', color: 'bg-blue-700' },
-  { id: 'tiktok', name: 'TikTok', status: 'disconnected', color: 'bg-black' },
-];
+interface PlatformCredential {
+  id: string;
+  name: string;
+  connected: boolean;
+  accountName?: string;
+  lastSync?: string;
+  color: string;
+}
 
-export default function CredentialStatusBar() {
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'connected':
-        return <CheckCircleIcon className="h-4 w-4 text-green-600" />;
-      case 'warning':
-        return <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600" />;
-      case 'disconnected':
-        return <XCircleIcon className="h-4 w-4 text-red-600" />;
-      default:
-        return <XCircleIcon className="h-4 w-4 text-gray-400" />;
+export function CredentialStatusBar() {
+  const [credentials, setCredentials] = useState<PlatformCredential[]>([
+    {
+      id: 'instagram',
+      name: 'Instagram',
+      connected: true,
+      accountName: '@neonhub_official',
+      lastSync: '2 hours ago',
+      color: 'pink'
+    },
+    {
+      id: 'twitter',
+      name: 'Twitter',
+      connected: true,
+      accountName: '@neonhub',
+      lastSync: '1 hour ago',
+      color: 'blue'
+    },
+    {
+      id: 'linkedin',
+      name: 'LinkedIn',
+      connected: false,
+      color: 'blue'
+    },
+    {
+      id: 'facebook',
+      name: 'Facebook',
+      connected: true,
+      accountName: 'NeonHub',
+      lastSync: '3 hours ago',
+      color: 'blue'
     }
+  ]);
+
+  const handleConnect = (platformId: string) => {
+    // In a real app, this would trigger OAuth flow
+    console.log(`Connecting to ${platformId}...`);
+    
+    // Mock connection
+    setCredentials(prev => prev.map(cred => 
+      cred.id === platformId
+        ? { ...cred, connected: true, accountName: `Mock Account`, lastSync: 'Just now' }
+        : cred
+    ));
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'connected':
-        return 'Connected';
-      case 'warning':
-        return 'Token expiring';
-      case 'disconnected':
-        return 'Not connected';
-      default:
-        return 'Unknown';
-    }
+  const handleDisconnect = (platformId: string) => {
+    setCredentials(prev => prev.map(cred => 
+      cred.id === platformId
+        ? { ...cred, connected: false, accountName: undefined, lastSync: undefined }
+        : cred
+    ));
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'connected':
-        return 'bg-green-50 border-green-200';
-      case 'warning':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'disconnected':
-        return 'bg-red-50 border-red-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
+  const connectedCount = credentials.filter(c => c.connected).length;
 
   return (
-    <div className="mt-4">
-      <div className="flex items-center gap-4 text-sm">
-        <span className="text-gray-600">Platform Status:</span>
-        <div className="flex items-center gap-3">
-          {platforms.map(platform => (
-            <div
-              key={platform.id}
-              className={`flex items-center gap-2 px-3 py-1 rounded-lg border ${getStatusColor(platform.status)}`}
-            >
-              <div className={`w-2 h-2 rounded ${platform.color}`}></div>
-              {getStatusIcon(platform.status)}
-              <span className="font-medium">{platform.name}</span>
-              <span className="text-xs text-gray-600">{getStatusText(platform.status)}</span>
+    <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium text-neutral-200">
+          Platform Connections
+        </h3>
+        <div className="text-sm text-neutral-400">
+          {connectedCount}/{credentials.length} connected
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {credentials.map((credential) => (
+          <div
+            key={credential.id}
+            className={`p-3 rounded-lg border transition-all ${
+              credential.connected
+                ? 'bg-green-900/20 border-green-600/30'
+                : 'bg-neutral-800 border-neutral-700'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-medium text-white text-sm">
+                {credential.name}
+              </span>
+              <div className={`w-2 h-2 rounded-full ${
+                credential.connected ? 'bg-green-400' : 'bg-red-400'
+              }`} />
             </div>
-          ))}
+
+            {credential.connected ? (
+              <div className="space-y-1">
+                <p className="text-xs text-neutral-300">
+                  {credential.accountName}
+                </p>
+                <p className="text-xs text-neutral-500">
+                  Last sync: {credential.lastSync}
+                </p>
+                <button
+                  onClick={() => handleDisconnect(credential.id)}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                >
+                  Disconnect
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-neutral-500">
+                  Not connected
+                </p>
+                <button
+                  onClick={() => handleConnect(credential.id)}
+                  className={`text-xs px-2 py-1 rounded transition-colors ${
+                    credential.color === 'pink'
+                      ? 'bg-pink-600 hover:bg-pink-700 text-white'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  Connect
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-4 pt-4 border-t border-neutral-800">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-neutral-400">
+            Quick Actions
+          </div>
+          <div className="flex space-x-2">
+            <button className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
+              Sync All
+            </button>
+            <button className="text-xs px-3 py-1 bg-neutral-700 hover:bg-neutral-600 text-white rounded transition-colors">
+              Settings
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
-} 
+}

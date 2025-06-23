@@ -1,0 +1,288 @@
+{
+  "campaigns": [
+    {
+      "id": "camp-1",
+      "name": "Summer Neon Collection 2024",
+      "type": "social_media",
+      "status": "active",
+      "budget": 15000,
+      "spent": 8750,
+      "roi": 4.2,
+      "impressions": 2450000,
+      "clicks": 83300,
+      "conversions": 2830,
+      "revenue": 36750,
+      "ctr": 3.4,
+      "conversionRate": 3.4,
+      "cpc": 0.11,
+      "cpm": 3.57,
+      "startDate": "2024-06-01T00:00:00Z",
+      "endDate": "2024-08-31T23:59:59Z",
+      "targetAudience": "Young Adults 18-35",
+      "platforms": ["instagram", "facebook", "tiktok"],
+      "agentsAssigned": ["content", "design", "trend"],
+      "performance": {
+        "weeklyMetrics": [
+          {
+            "week": "2024-W25",
+            "impressions": 98000,
+            "clicks": 3330,
+            "conversions": 113,
+            "spent": 350,
+            "revenue": 1470
+          },
+          {
+            "week": "2024-W26",
+            "impressions": 124000,
+            "clicks": 4216,
+            "conversions": 143,
+            "spent": 440,
+            "revenue": 1858
+          },
+          {
+            "week": "2024-W27",
+            "impressions": 135000,
+            "clicks": 4590,
+            "conversions": 156,
+            "spent": 480,
+            "revenue": 2028
+          }
+        ],
+        "topContent": [
+          {
+            "id": "post-neon-process-video",
+            "type": "video",
+            "platform": "instagram",
+            "impressions": 245000,
+            "engagement": 12.8,
+            "shares": 1240,
+            "saves": 3200
+          },
+          {
+            "id": "custom-business-sign-showcase",
+            "type": "carousel",
+            "platform": "facebook",
+            "impressions": 189000,
+            "engagement": 8.4,
+            "shares": 890,
+            "saves": 2100
+          }
+        ]
+      },
+      "createdAt": "2024-05-15T10:30:00Z",
+      "lastModified": "2024-12-19T14:22:00Z"
+    },
+    {
+      "id": "camp-2",
+      "name": "B2B Outreach Q4 2024",
+      "type": "email",
+      "status": "active",
+      "budget": 8000,
+      "spent": 6200,
+      "roi": 3.8,
+      "impressions": 890000,
+      "clicks": 34200,
+      "conversions": 1150,
+      "revenue": 23560,
+      "ctr": 3.8,
+      "conversionRate": 3.4,
+      "cpc": 0.18,
+      "cpm": 6.97,
+      "startDate": "2024-10-01T00:00:00Z",
+      "endDate": "2024-12-31T23:59:59Z",
+      "targetAudience": "Business Decision Makers",
+      "platforms": ["email", "linkedin"],
+      "agentsAssigned": ["outreach", "content"],
+      "performance": {
+        "weeklyMetrics": [
+          {
+            "week": "2024-W40",
+            "impressions": 45000,
+            "clicks": 1710,
+            "conversions": 58,
+            "spent": 310,
+            "revenue": 1178
+          },
+          {
+            "week": "2024-W41",
+            "impressions": 52000,
+            "clicks": 1976,
+            "conversions": 67,
+            "spent": 356,
+            "revenue": 1361
+          }
+        ],
+        "emailMetrics": {
+          "openRate": 24.5,
+          "clickRate": 3.8,
+          "bounceRate": 2.1,
+          "unsubscribeRate": 0.3,
+          "deliveryRate": 97.9
+        }
+      },
+      "createdAt": "2024-09-15T09:15:00Z",
+      "lastModified": "2024-12-18T16:45:00Z"
+    },
+    {
+      "id": "camp-3",
+      "name": "Black Friday Special 2024",
+      "type": "display",
+      "status": "completed",
+      "budget": 25000,
+      "spent": 24800,
+      "roi": 5.1,
+      "impressions": 1850000,
+      "clicks": 67800,
+      "conversions": 3420,
+      "revenue": 126480,
+      "ctr": 3.7,
+      "conversionRate": 5.0,
+      "cpc": 0.37,
+      "cpm": 13.41,
+      "startDate": "2024-11-20T00:00:00Z",
+      "endDate": "2024-11-30T23:59:59Z",
+      "targetAudience": "Holiday Shoppers",
+      "platforms": ["google_ads", "meta_ads"],
+      "agentsAssigned": ["ad", "design", "insight"],
+      "performance": {
+        "dailyMetrics": [
+          {
+            "date": "2024-11-24",
+            "impressions": 234000,
+            "clicks": 8658,
+            "conversions": 437,
+            "spent": 3200,
+            "revenue": 16352
+          },
+          {
+            "date": "2024-11-25",
+            "impressions": 198000,
+            "clicks": 7326,
+            "conversions": 369,
+            "spent": 2710,
+            "revenue": 13824
+          }
+        ],
+        "hourlyPeaks": [
+          { "hour": 10, "conversions": 142 },
+          { "hour": 14, "conversions": 189 },
+          { "hour": 20, "conversions": 167 }
+        ]
+      },
+      "createdAt": "2024-11-01T08:00:00Z",
+      "lastModified": "2024-12-01T12:00:00Z"
+    },
+    {
+      "id": "camp-4",
+      "name": "New Year Resolution Fitness",
+      "type": "video",
+      "status": "draft",
+      "budget": 12000,
+      "spent": 0,
+      "roi": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "revenue": 0,
+      "ctr": 0,
+      "conversionRate": 0,
+      "cpc": 0,
+      "cpm": 0,
+      "startDate": "2025-01-01T00:00:00Z",
+      "endDate": "2025-01-31T23:59:59Z",
+      "targetAudience": "Fitness Enthusiasts",
+      "platforms": ["youtube", "tiktok", "instagram"],
+      "agentsAssigned": ["content", "design"],
+      "performance": {
+        "projectedMetrics": {
+          "expectedImpressions": 980000,
+          "expectedClicks": 39200,
+          "expectedConversions": 1372,
+          "expectedRevenue": 45876,
+          "projectedROI": 3.8
+        }
+      },
+      "createdAt": "2024-12-10T11:30:00Z",
+      "lastModified": "2024-12-15T09:45:00Z"
+    },
+    {
+      "id": "camp-5",
+      "name": "Spring Launch Campaign",
+      "type": "search",
+      "status": "paused",
+      "budget": 18000,
+      "spent": 4500,
+      "roi": 2.1,
+      "impressions": 456000,
+      "clicks": 12400,
+      "conversions": 340,
+      "revenue": 9450,
+      "ctr": 2.7,
+      "conversionRate": 2.7,
+      "cpc": 0.36,
+      "cpm": 9.87,
+      "startDate": "2024-03-01T00:00:00Z",
+      "endDate": "2024-05-31T23:59:59Z",
+      "targetAudience": "Fashion Forward Consumers",
+      "platforms": ["google_ads"],
+      "agentsAssigned": ["ad", "trend"],
+      "pauseReason": "Seasonal budget reallocation",
+      "performance": {
+        "keywords": [
+          {
+            "keyword": "custom neon signs",
+            "impressions": 89000,
+            "clicks": 2403,
+            "conversions": 67,
+            "cpc": 0.42,
+            "position": 2.3
+          },
+          {
+            "keyword": "led business signs",
+            "impressions": 134000,
+            "clicks": 3618,
+            "conversions": 102,
+            "cpc": 0.38,
+            "position": 1.8
+          }
+        ]
+      },
+      "createdAt": "2024-02-15T14:20:00Z",
+      "lastModified": "2024-04-20T16:30:00Z"
+    }
+  ],
+  "summary": {
+    "totalCampaigns": 5,
+    "activeCampaigns": 2,
+    "completedCampaigns": 1,
+    "draftCampaigns": 1,
+    "pausedCampaigns": 1,
+    "totalBudget": 78000,
+    "totalSpent": 44250,
+    "totalRevenue": 196766,
+    "overallROI": 4.4,
+    "totalImpressions": 5636000,
+    "totalClicks": 197700,
+    "totalConversions": 7740,
+    "averageCTR": 3.5,
+    "averageConversionRate": 3.9,
+    "budgetUtilization": 56.7
+  },
+  "benchmarks": {
+    "industry": {
+      "averageROI": 3.2,
+      "averageCTR": 2.8,
+      "averageConversionRate": 2.4,
+      "averageCPC": 0.45
+    },
+    "goals": {
+      "targetROI": 4.0,
+      "targetCTR": 3.5,
+      "targetConversionRate": 3.5,
+      "maxCPC": 0.50
+    }
+  },
+  "lastUpdated": "2024-12-23T19:30:00Z",
+  "dataSource": "integrated_analytics_platform",
+  "version": "1.2.0"
+} 

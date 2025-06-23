@@ -1,0 +1,414 @@
+{
+  "agents": [
+    {
+      "id": "content-agent-01",
+      "name": "Content Agent",
+      "type": "content",
+      "status": "active",
+      "version": "2.3.1",
+      "uptime": "99.8%",
+      "performance": {
+        "score": 94,
+        "trend": 5.2,
+        "successRate": 96.2,
+        "avgResponseTime": 245,
+        "totalExecutions": 1247,
+        "failedExecutions": 47,
+        "averageQualityScore": 8.7
+      },
+      "metrics": {
+        "contentGenerated": {
+          "total": 892,
+          "thisMonth": 156,
+          "byType": {
+            "social_posts": 534,
+            "blog_articles": 124,
+            "email_content": 178,
+            "ad_copy": 56
+          }
+        },
+        "engagement": {
+          "averageEngagementRate": 7.8,
+          "topPerformingContent": {
+            "id": "post-neon-process-video",
+            "engagementRate": 12.8,
+            "platform": "instagram"
+          }
+        },
+        "efficiency": {
+          "avgTimePerContent": 2.3,
+          "contentApprovalRate": 87.4,
+          "revisionRequests": 12.6
+        }
+      },
+      "capabilities": [
+        "social_media_posts",
+        "blog_writing",
+        "email_campaigns",
+        "ad_copywriting",
+        "seo_optimization",
+        "brand_voice_adaptation"
+      ],
+      "lastActivity": "2024-12-23T18:45:00Z",
+      "recentTasks": [
+        {
+          "taskId": "task-content-892",
+          "type": "instagram_post",
+          "status": "completed",
+          "duration": 180,
+          "qualityScore": 9.2,
+          "timestamp": "2024-12-23T18:45:00Z"
+        },
+        {
+          "taskId": "task-content-891",
+          "type": "email_subject_line",
+          "status": "completed",
+          "duration": 65,
+          "qualityScore": 8.8,
+          "timestamp": "2024-12-23T16:20:00Z"
+        }
+      ]
+    },
+    {
+      "id": "seo-agent-01",
+      "name": "SEO Agent",
+      "type": "seo",
+      "status": "active",
+      "version": "1.8.2",
+      "uptime": "99.6%",
+      "performance": {
+        "score": 91,
+        "trend": 2.8,
+        "successRate": 94.1,
+        "avgResponseTime": 320,
+        "totalExecutions": 634,
+        "failedExecutions": 37,
+        "averageQualityScore": 8.4
+      },
+      "metrics": {
+        "keywordAnalysis": {
+          "keywordsTracked": 1248,
+          "rankingImprovements": 342,
+          "averageRankingBoost": 3.2,
+          "topRankingKeywords": 67
+        },
+        "contentOptimization": {
+          "pagesOptimized": 89,
+          "averageScoreImprovement": 24.6,
+          "technicalIssuesFixed": 156,
+          "siteSpeedImprovements": 18.3
+        },
+        "competitorAnalysis": {
+          "competitorsTracked": 12,
+          "gapOpportunities": 45,
+          "contentRecommendations": 234
+        }
+      },
+      "capabilities": [
+        "keyword_research",
+        "content_optimization",
+        "technical_seo",
+        "competitor_analysis",
+        "rank_tracking",
+        "site_audit"
+      ],
+      "lastActivity": "2024-12-23T17:30:00Z",
+      "recentTasks": [
+        {
+          "taskId": "task-seo-234",
+          "type": "keyword_research",
+          "status": "completed",
+          "duration": 450,
+          "qualityScore": 8.9,
+          "timestamp": "2024-12-23T17:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "social-agent-01",
+      "name": "Social Agent",
+      "type": "social_posting",
+      "status": "active",
+      "version": "3.1.0",
+      "uptime": "99.9%",
+      "performance": {
+        "score": 88,
+        "trend": -1.2,
+        "successRate": 97.8,
+        "avgResponseTime": 189,
+        "totalExecutions": 2134,
+        "failedExecutions": 47,
+        "averageQualityScore": 8.2
+      },
+      "metrics": {
+        "postsScheduled": {
+          "total": 1847,
+          "thisMonth": 287,
+          "byPlatform": {
+            "instagram": 623,
+            "facebook": 498,
+            "tiktok": 356,
+            "linkedin": 234,
+            "twitter": 136
+          }
+        },
+        "engagement": {
+          "averageEngagementRate": 6.4,
+          "totalReach": 2890000,
+          "followerGrowth": 1247,
+          "bestPerformingTime": "14:00-16:00"
+        },
+        "automation": {
+          "schedulingAccuracy": 99.3,
+          "hashtagOptimization": 92.7,
+          "contentCuration": 345
+        }
+      },
+      "capabilities": [
+        "content_scheduling",
+        "hashtag_optimization",
+        "audience_engagement",
+        "trend_analysis",
+        "cross_platform_posting",
+        "analytics_tracking"
+      ],
+      "lastActivity": "2024-12-23T19:15:00Z",
+      "recentTasks": [
+        {
+          "taskId": "task-social-1847",
+          "type": "instagram_story",
+          "status": "scheduled",
+          "duration": 120,
+          "qualityScore": 8.5,
+          "timestamp": "2024-12-23T19:15:00Z"
+        }
+      ]
+    },
+    {
+      "id": "email-agent-01",
+      "name": "Email Agent",
+      "type": "email_marketing",
+      "status": "active",
+      "version": "2.0.5",
+      "uptime": "99.4%",
+      "performance": {
+        "score": 92,
+        "trend": 3.5,
+        "successRate": 95.8,
+        "avgResponseTime": 278,
+        "totalExecutions": 456,
+        "failedExecutions": 19,
+        "averageQualityScore": 8.6
+      },
+      "metrics": {
+        "emailsSent": {
+          "total": 34567,
+          "thisMonth": 6234,
+          "byType": {
+            "newsletters": 12456,
+            "promotional": 8923,
+            "transactional": 7834,
+            "drip_campaigns": 5354
+          }
+        },
+        "performance": {
+          "averageOpenRate": 24.5,
+          "averageClickRate": 3.8,
+          "averageBounceRate": 2.1,
+          "unsubscribeRate": 0.3,
+          "deliveryRate": 97.9
+        },
+        "optimization": {
+          "subjectLineTests": 67,
+          "sendTimeOptimization": 89.2,
+          "segmentationAccuracy": 92.4
+        }
+      },
+      "capabilities": [
+        "campaign_creation",
+        "list_segmentation",
+        "a_b_testing",
+        "automation_flows",
+        "performance_optimization",
+        "deliverability_management"
+      ],
+      "lastActivity": "2024-12-23T16:45:00Z",
+      "recentTasks": [
+        {
+          "taskId": "task-email-234",
+          "type": "newsletter_campaign",
+          "status": "completed",
+          "duration": 420,
+          "qualityScore": 9.1,
+          "timestamp": "2024-12-23T16:45:00Z"
+        }
+      ]
+    },
+    {
+      "id": "support-agent-01",
+      "name": "Support Agent",
+      "type": "customer_support",
+      "status": "active",
+      "version": "1.9.3",
+      "uptime": "99.7%",
+      "performance": {
+        "score": 89,
+        "trend": 4.2,
+        "successRate": 93.7,
+        "avgResponseTime": 145,
+        "totalExecutions": 2847,
+        "failedExecutions": 179,
+        "averageQualityScore": 8.3
+      },
+      "metrics": {
+        "ticketsHandled": {
+          "total": 2456,
+          "thisMonth": 432,
+          "resolved": 2298,
+          "escalated": 158,
+          "averageResolutionTime": 4.2
+        },
+        "satisfaction": {
+          "averageRating": 4.6,
+          "responseTime": 2.3,
+          "resolutionRate": 93.6,
+          "firstContactResolution": 78.9
+        },
+        "channels": {
+          "whatsapp": 1234,
+          "email": 789,
+          "chat": 345,
+          "phone": 88
+        }
+      },
+      "capabilities": [
+        "natural_language_processing",
+        "sentiment_analysis",
+        "knowledge_base_search",
+        "escalation_management",
+        "multi_language_support",
+        "integration_management"
+      ],
+      "lastActivity": "2024-12-23T19:20:00Z",
+      "recentTasks": [
+        {
+          "taskId": "task-support-2456",
+          "type": "whatsapp_inquiry",
+          "status": "resolved",
+          "duration": 240,
+          "qualityScore": 8.8,
+          "timestamp": "2024-12-23T19:20:00Z"
+        }
+      ]
+    },
+    {
+      "id": "trend-agent-01",
+      "name": "Trend Agent",
+      "type": "trend",
+      "status": "active",
+      "version": "1.4.1",
+      "uptime": "99.5%",
+      "performance": {
+        "score": 96,
+        "trend": 8.1,
+        "successRate": 98.3,
+        "avgResponseTime": 567,
+        "totalExecutions": 234,
+        "failedExecutions": 4,
+        "averageQualityScore": 9.1
+      },
+      "metrics": {
+        "trendsIdentified": {
+          "total": 456,
+          "thisMonth": 78,
+          "accurate": 422,
+          "earlyDetection": 234,
+          "averageAccuracy": 92.5
+        },
+        "insights": {
+          "marketOpportunities": 89,
+          "competitorMoves": 156,
+          "contentRecommendations": 234,
+          "seasonalTrends": 67
+        },
+        "prediction": {
+          "accuracyRate": 87.3,
+          "leadTime": 14.2,
+          "impactAssessment": 8.7
+        }
+      },
+      "capabilities": [
+        "trend_detection",
+        "market_analysis",
+        "competitor_monitoring",
+        "sentiment_tracking",
+        "predictive_analytics",
+        "content_recommendation"
+      ],
+      "lastActivity": "2024-12-23T15:30:00Z",
+      "recentTasks": [
+        {
+          "taskId": "task-trend-456",
+          "type": "trend_analysis",
+          "status": "completed",
+          "duration": 890,
+          "qualityScore": 9.3,
+          "timestamp": "2024-12-23T15:30:00Z"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalAgents": 6,
+    "activeAgents": 6,
+    "averagePerformanceScore": 91.7,
+    "overallUptime": 99.6,
+    "totalExecutions": 7552,
+    "totalFailedExecutions": 333,
+    "overallSuccessRate": 95.6,
+    "averageResponseTime": 287,
+    "systemHealth": "excellent"
+  },
+  "teamMetrics": {
+    "collaboration": {
+      "crossAgentTasks": 234,
+      "workflowEfficiency": 89.4,
+      "resourceUtilization": 78.6
+    },
+    "learning": {
+      "modelUpdates": 23,
+      "performanceImprovements": 12.3,
+      "knowledgeBaseGrowth": 45.7
+    },
+    "alerts": [
+      {
+        "type": "performance",
+        "agent": "social-agent-01",
+        "message": "Performance trend slightly declining over last 7 days",
+        "severity": "low",
+        "timestamp": "2024-12-23T10:00:00Z"
+      },
+      {
+        "type": "success",
+        "agent": "trend-agent-01",
+        "message": "Exceeded performance targets for Q4",
+        "severity": "info",
+        "timestamp": "2024-12-22T14:30:00Z"
+      }
+    ]
+  },
+  "benchmarks": {
+    "industry": {
+      "averageUptime": 95.2,
+      "averageSuccessRate": 89.4,
+      "averageResponseTime": 450
+    },
+    "goals": {
+      "targetUptime": 99.5,
+      "targetSuccessRate": 95.0,
+      "maxResponseTime": 300
+    }
+  },
+  "lastUpdated": "2024-12-23T19:30:00Z",
+  "version": "2.1.0"
+} 

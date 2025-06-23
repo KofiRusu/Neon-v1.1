@@ -1,91 +1,135 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  PlusIcon,
-  CalendarIcon,
-  ChartBarIcon,
-  Cog6ToothIcon
-} from '@heroicons/react/24/outline';
-import SocialCalendar from './components/SocialCalendar';
-import PlatformStatsPanel from './components/PlatformStatsPanel';
-import PostEditorModal from './components/PostEditorModal';
-import CredentialStatusBar from './components/CredentialStatusBar';
-
-const tabs = [
-  { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
-  { id: 'analytics', name: 'Analytics', icon: ChartBarIcon },
-  { id: 'settings', name: 'Settings', icon: Cog6ToothIcon },
-];
+import { SocialCalendar } from './components/SocialCalendar';
+import { PostEditorModal } from './components/PostEditorModal';
+import { PlatformStatsPanel } from './components/PlatformStatsPanel';
+import { CredentialStatusBar } from './components/CredentialStatusBar';
 
 export default function SocialPage() {
-  const [activeTab, setActiveTab] = useState('calendar');
   const [showPostEditor, setShowPostEditor] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-dark-900 p-6">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Social Media</h1>
-            <p className="text-gray-600">Schedule and manage your social media presence</p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-neutral-700 mb-2">
+          Social Media Management
+        </h1>
+        <p className="text-neutral-600">
+          Manage your social media presence across all platforms
+        </p>
+      </div>
+
+      {/* Credential Status */}
+      <CredentialStatusBar />
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        {/* Left Column: Calendar */}
+        <div className="lg:col-span-2">
+          <div className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-neutral-700">
+                Content Calendar
+              </h2>
+              <button
+                onClick={() => setShowPostEditor(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Create Post
+              </button>
+            </div>
+            <SocialCalendar />
           </div>
-          <button
-            onClick={() => setShowPostEditor(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <PlusIcon className="h-5 w-5" />
-            Create Post
-          </button>
         </div>
 
-        {/* Platform Status */}
-        <CredentialStatusBar />
-
-        {/* Tabs */}
-        <div className="mt-6">
-          <nav className="flex space-x-8">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
+        {/* Right Column: Stats */}
+        <div className="space-y-6">
+          {/* Platform Filter */}
+          <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <h3 className="text-lg font-medium text-neutral-600 mb-3">
+              Platform Filter
+            </h3>
+            <div className="space-y-2">
+              {['all', 'instagram', 'twitter', 'linkedin', 'facebook'].map((platform) => (
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  key={platform}
+                  onClick={() => setSelectedPlatform(platform)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                    selectedPlatform === platform
+                      ? 'bg-blue-600 text-white'
+                      : 'text-neutral-500 hover:bg-neutral-800'
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {tab.name}
+                  {platform.charAt(0).toUpperCase() + platform.slice(1)}
                 </button>
-              );
-            })}
-          </nav>
+              ))}
+            </div>
+          </div>
+
+          {/* Platform Stats */}
+          <PlatformStatsPanel selectedPlatform={selectedPlatform} />
+
+          {/* Recent Activity */}
+          <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <h3 className="text-lg font-medium text-neutral-600 mb-3">
+              Recent Activity
+            </h3>
+            <div className="space-y-3">
+              {[
+                { action: 'Post published', platform: 'Instagram', time: '2 hours ago' },
+                { action: 'Story uploaded', platform: 'Twitter', time: '4 hours ago' },
+                { action: 'Video scheduled', platform: 'LinkedIn', time: '1 day ago' },
+              ].map((activity, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-neutral-500 text-sm">{activity.action}</p>
+                    <p className="text-neutral-700 text-xs">{activity.platform}</p>
+                  </div>
+                  <span className="text-neutral-600 text-xs">{activity.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
-        {activeTab === 'calendar' && <SocialCalendar />}
-        {activeTab === 'analytics' && <PlatformStatsPanel />}
-        {activeTab === 'settings' && (
-          <div className="p-6">
-            <div className="text-center py-12">
-              <Cog6ToothIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Platform Settings</h3>
-              <p className="text-gray-600">Coming soon - Platform connection settings</p>
-            </div>
+      {/* Quick Actions */}
+      <div className="mt-8">
+        <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+          <h3 className="text-lg font-medium text-slate-700 mb-4">
+            Quick Actions
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
+              <img src="/icons/analytics.svg" className="w-8 h-8 mx-auto mb-2" />
+              <span className="text-sm">Analytics</span>
+            </button>
+            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
+              <img src="/icons/schedule.svg" className="w-8 h-8 mx-auto mb-2" />
+              <span className="text-sm">Schedule</span>
+            </button>
+            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
+              <img src="/icons/content.svg" className="w-8 h-8 mx-auto mb-2" />
+              <span className="text-sm">Content Library</span>
+            </button>
+            <button className="bg-gray-800 hover:bg-gray-700 text-gray-500 p-4 rounded-lg transition-colors">
+              <img src="/icons/settings.svg" className="w-8 h-8 mx-auto mb-2" />
+              <span className="text-sm">Settings</span>
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Post Editor Modal */}
       {showPostEditor && (
-        <PostEditorModal onClose={() => setShowPostEditor(false)} />
+        <PostEditorModal 
+          isOpen={showPostEditor}
+          onClose={() => setShowPostEditor(false)}
+        />
       )}
     </div>
   );
-} 
+}
