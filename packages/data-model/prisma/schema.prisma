@@ -111,6 +111,79 @@ model AIEventLog {
   @@map("ai_event_logs")
 }
 
+model TrendSignal {
+  id          String   @id @default(cuid())
+  source      String   // 'tiktok', 'instagram', 'twitter'
+  keyword     String
+  signalType  String   // 'hashtag', 'sound', 'topic'
+  score       Float
+  metadata    Json?
+  detectedAt  DateTime @default(now())
+  region      String?
+  createdAt   DateTime @default(now())
+
+  @@index([keyword])
+  @@map("trend_signals")
+}
+
+model RegionScore {
+  id        String   @id @default(cuid())
+  region    String
+  platform  String
+  score     Float
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([region, platform])
+  @@map("region_scores")
+}
+
+model B2BLead {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  firstName       String?
+  lastName        String?
+  company         String?
+  position        String?
+  linkedinUrl     String?
+  phone           String?
+  website         String?
+  industry        String?
+  companySize     String?
+  location        String?
+  source          String   // 'linkedin', 'directory', 'manual'
+  status          String   @default("new") // 'new', 'contacted', 'qualified', 'converted'
+  score           Float?   // Lead scoring
+  lastContactAt   DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  campaigns       Campaign[]
+  outreachHistory OutreachHistory[]
+
+  @@map("b2b_leads")
+}
+
+model OutreachHistory {
+  id          String   @id @default(cuid())
+  leadId      String
+  campaignId  String?
+  type        String   // 'email', 'linkedin', 'call'
+  subject     String?
+  content     String?
+  status      String   // 'sent', 'opened', 'replied', 'bounced'
+  sentAt      DateTime @default(now())
+  openedAt    DateTime?
+  repliedAt   DateTime?
+
+  // Relations
+  lead        B2BLead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+
+  @@map("outreach_history")
+}
+
 model Agent {
   id           String           @id @default(cuid())
   name         String

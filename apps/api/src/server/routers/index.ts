@@ -9,6 +9,8 @@ import { socialRouter } from './social';
 import { supportRouter } from './support';
 import { userRouter } from './user';
 import { brandVoiceRouter } from './brand-voice';
+import { trendsRouter } from './trends';
+import { outreachRouter } from './outreach';
 
 /**
  * This is the primary router for your server.
@@ -26,6 +28,8 @@ export const appRouter = createTRPCRouter({
   social: socialRouter,
   support: supportRouter,
   user: userRouter,
+  trends: trendsRouter,
+  outreach: outreachRouter,
 });
 
 // export type definition of API
