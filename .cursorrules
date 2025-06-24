@@ -1,0 +1,89 @@
+{
+  "projectName": "NeonHub",
+  "rules": [
+    {
+      "id": "STYLE-001",
+      "scope": "frontend",
+      "description": "Enforce futuristic neon-glass UI: Deep Space Gray base, neon blue/purple accents, glassmorphism, Inter/Poppins font.",
+      "enforce": true,
+      "tools": ["TailwindCSS", "shadcn/ui", "CSS variables"]
+    },
+    {
+      "id": "STYLE-002",
+      "scope": "components",
+      "description": "All buttons must follow pill-shape, glowing hover states, and use gradient fills for CTAs.",
+      "enforce": true,
+      "tools": ["React", "TailwindCSS", "component library"]
+    },
+    {
+      "id": "UX-001",
+      "scope": "ui/ux",
+      "description": "Every major UI must include an action-first CTA: Generate, Launch, Run, or Analyze.",
+      "enforce": true,
+      "tools": ["UX schema", "Component library"]
+    },
+    {
+      "id": "UX-002",
+      "scope": "user flows",
+      "description": "Onboarding must include animated walkthrough, progressive setup, and agent introduction.",
+      "enforce": true,
+      "tools": ["Framer Motion", "React", "state machine"]
+    },
+    {
+      "id": "AGENT-001",
+      "scope": "backend",
+      "description": "All AI agents must be modular, have autonomous fallback behavior, and log actions to the AIEventLog model.",
+      "enforce": true,
+      "tools": ["OpenAI API", "LangChain", "tRPC", "Prisma"]
+    },
+    {
+      "id": "AGENT-002",
+      "scope": "agents",
+      "description": "Every agent must support: autonomous execution, learning from metrics, and customizable parameters.",
+      "enforce": true,
+      "tools": ["tRPC", "agent SDK", "Redis/pubsub"]
+    },
+    {
+      "id": "DATA-001",
+      "scope": "database",
+      "description": "All user, campaign, agent, and metric data must be normalized in Prisma with strict type safety.",
+      "enforce": true,
+      "tools": ["Prisma", "PostgreSQL"]
+    },
+    {
+      "id": "PERF-001",
+      "scope": "system",
+      "description": "Run all frontend and backend code through lint, type-check, and test before commit.",
+      "enforce": true,
+      "tools": ["Husky", "CI/CD", "Git hooks", "ESLint", "Jest"]
+    },
+    {
+      "id": "INTELLIGENCE-001",
+      "scope": "analytics",
+      "description": "TrendAgent and MetricAgent must generate predictive outputs and visual overlays in the dashboard.",
+      "enforce": true,
+      "tools": ["tRPC", "Chart.js", "Heatmaps"]
+    },
+    {
+      "id": "INTEGRATION-001",
+      "scope": "api",
+      "description": "System must integrate with: Instagram, TikTok, Meta Ads, Shopify, WhatsApp, and email providers.",
+      "enforce": false,
+      "tools": ["OAuth", "REST", "Webhooks", "Puppeteer (if needed)"]
+    },
+    {
+      "id": "AI-001",
+      "scope": "reasoning",
+      "description": "All AI-generated content, responses, or decisions must be explainable and optionally previewable.",
+      "enforce": true,
+      "tools": ["OpenAI", "Claude", "PersRM", "reasoning UI module"]
+    },
+    {
+      "id": "SECURITY-001",
+      "scope": "auth",
+      "description": "Use Clerk or custom RBAC system. Enforce role-based access at API, UI, and DB layers.",
+      "enforce": true,
+      "tools": ["Clerk", "RBAC middleware", "Prisma roles"]
+    }
+  ]
+}

@@ -316,7 +316,7 @@ export class WhatsAppAgent extends AbstractAgent {
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
       const batchResults = await Promise.all(
-        batch.map(async (recipient: string) => {
+        batch.map(async (recipient) => {
           try {
             const result = await this.sendMessage({
               to: recipient,

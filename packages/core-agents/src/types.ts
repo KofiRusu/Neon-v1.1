@@ -152,3 +152,106 @@ export interface ContentContext {
   tone?: string;
   keywords?: string[];
 }
+
+// Missing type definitions for design-agent
+export interface DesignAsset {
+  id: string;
+  type: 'image' | 'video' | 'graphic' | 'logo';
+  url: string;
+  metadata: {
+    dimensions: { width: number; height: number; };
+    format: string;
+    size: number;
+  };
+  brandCompliance: {
+    score: number;
+    violations: string[];
+  };
+}
+
+export interface BrandGuidelines {
+  colors: {
+    primary: string[];
+    secondary: string[];
+    accent: string[];
+  };
+  typography: {
+    primary: string;
+    secondary: string;
+    headings: string;
+  };
+  logo: {
+    usage: string[];
+    spacing: number;
+    variations: string[];
+  };
+  voice: {
+    tone: string;
+    personality: string[];
+    doNots: string[];
+  };
+}
+
+export interface CreativeSpecification {
+  dimensions: { width: number; height: number; };
+  format: string;
+  platform: string;
+  requirements: string[];
+}
+
+export interface DesignOptimization {
+  asset: DesignAsset;
+  suggestions: string[];
+  expectedImpact: number;
+  priority: 'low' | 'medium' | 'high';
+}
+
+// Missing type definitions for insight-agent
+export interface AnalyticsData {
+  timeRange: {
+    start: Date;
+    end: Date;
+  };
+  metrics: {
+    [key: string]: number;
+  };
+  dimensions: {
+    [key: string]: string | number;
+  };
+}
+
+export interface MarketingInsight {
+  type: 'trend' | 'opportunity' | 'risk' | 'performance';
+  confidence: number;
+  impact: 'low' | 'medium' | 'high';
+  description: string;
+  recommendations: string[];
+  data: any;
+}
+
+export interface TrendAnalysis {
+  keyword: string;
+  volume: number;
+  growth: number;
+  seasonality: {
+    peak: string;
+    low: string;
+  };
+  competition: number;
+  opportunities: string[];
+}
+
+export interface ROIAnalysis {
+  investment: number;
+  return: number;
+  roi: number;
+  breakdownBy: {
+    channel: Record<string, number>;
+    campaign: Record<string, number>;
+    timeframe: Record<string, number>;
+  };
+  projections: {
+    nextMonth: number;
+    nextQuarter: number;
+  };
+}

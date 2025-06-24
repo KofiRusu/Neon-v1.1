@@ -358,7 +358,7 @@ export class SocialAgent extends AbstractAgent {
       improvements.push('Add excitement with exclamation points or questions');
     }
     
-    if (platform === 'instagram' && !/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/u.test(content)) {
+    if (platform === 'instagram' && !/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/gu.test(content)) {
       improvements.push('Consider adding emojis for Instagram');
     }
     
@@ -1216,7 +1216,7 @@ export class SocialAgent extends AbstractAgent {
       word.length > 3 && 
       !['this', 'that', 'with', 'from', 'they', 'have', 'will', 'been', 'said'].includes(word)
     );
-    return [...new Set(keywords)].slice(0, 10);
+    return Array.from(new Set(keywords)).slice(0, 10);
   }
 
   private getTrendingHashtags(_platform: string, _industry: string): string[] {
