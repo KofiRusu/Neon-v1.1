@@ -1,91 +1,33 @@
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-      tsconfig: {
-        module: 'esnext'
-      }
-    }
-  },
-  moduleNameMapping: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
-  transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      useESM: true,
-      tsconfig: {
-        module: 'esnext',
-      },
-    }],
-  },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  bail: false,
+  maxWorkers: 1,
+  roots: ['<rootDir>/packages/', '<rootDir>/apps/', '<rootDir>/tests/'],
   testMatch: [
-    '**/__tests__/**/*.(ts|js)',
-    '**/*.(test|spec).(ts|js)'
+    '**/__tests__/**/*.ts',
+    '**/?(*.)+(spec|test).ts'
   ],
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.test.{ts,tsx}',
-    '!src/**/__tests__/**',
+    'packages/**/*.ts',
+    'apps/**/*.ts',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!**/*.test.ts',
+    '!**/*.spec.ts'
   ],
+  moduleNameMapping: {
+    '^@neon/(.*)$': '<rootDir>/packages/$1/src',
+    '^@/(.*)$': '<rootDir>/packages/$1/src'
+  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testTimeout: 30000,
-  maxWorkers: 1,
   verbose: true,
-  projects: [
-    {
-      displayName: 'core-agents',
-      testMatch: ['<rootDir>/packages/core-agents/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest/presets/default-esm',
-      testEnvironment: 'node',
-      extensionsToTreatAsEsm: ['.ts'],
-      globals: {
-        'ts-jest': {
-          useESM: true,
-          tsconfig: {
-            module: 'esnext'
-          }
-        }
-      },
-      moduleNameMapping: {
-        '^(\\.{1,2}/.*)\\.js$': '$1',
-      },
-      transform: {
-        '^.+\\.tsx?$': ['ts-jest', {
-          useESM: true,
-          tsconfig: {
-            module: 'esnext',
-          },
-        }],
-      },
-    },
-    {
-      displayName: 'reasoning-engine',
-      testMatch: ['<rootDir>/packages/reasoning-engine/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest/presets/default-esm',
-      testEnvironment: 'node',
-      extensionsToTreatAsEsm: ['.ts'],
-      globals: {
-        'ts-jest': {
-          useESM: true
-        }
-      }
-    },
-    {
-      displayName: 'utils',
-      testMatch: ['<rootDir>/packages/utils/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest/presets/default-esm',
-      testEnvironment: 'node',
-      extensionsToTreatAsEsm: ['.ts'],
-      globals: {
-        'ts-jest': {
-          useESM: true
-        }
-      }
-    },
-  ],
+  detectOpenHandles: true,
+  forceExit: true,
+  clearMocks: true,
+  restoreMocks: true
 };

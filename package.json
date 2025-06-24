@@ -4,36 +4,37 @@
   "description": "AI-powered marketing automation platform with comprehensive agent-based architecture",
   "main": "index.js",
   "private": true,
+  "packageManager": "pnpm@8.10.0",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/dashboard\"",
-    "build": "npm run build --workspaces --if-present",
-    "build:dashboard": "npm run build --workspace=apps/dashboard",
-    "build:api": "npm run build --workspace=apps/api",
-    "start": "concurrently \"npm run start --workspace=apps/api\" \"npm run start --workspace=apps/dashboard\"",
-    "test": "npm run test --workspaces --if-present",
-    "test:unit": "npm run test --workspaces --if-present",
-    "test:coverage": "npm run test:coverage --workspaces --if-present || echo '⚠️ Coverage not available for all workspaces'",
+    "dev": "concurrently \"pnpm run dev --filter=@neon/api\" \"pnpm run dev --filter=@neonhub/dashboard\"",
+    "build": "pnpm run build --recursive --filter=!@neonhub/platform",
+    "build:dashboard": "pnpm run build --filter=@neonhub/dashboard",
+    "build:api": "pnpm run build --filter=@neon/api",
+    "start": "concurrently \"pnpm run start --filter=@neon/api\" \"pnpm run start --filter=@neonhub/dashboard\"",
+    "test": "pnpm run test --recursive --filter=!@neonhub/platform",
+    "test:unit": "pnpm run test --recursive --filter=!@neonhub/platform",
+    "test:coverage": "pnpm run test:coverage --recursive --filter=!@neonhub/platform || echo '⚠️ Coverage not available for all workspaces'",
     "test:e2e": "playwright test",
-    "lint": "npm run lint --workspaces --if-present",
-    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "lint": "pnpm run lint --recursive --filter=!@neonhub/platform",
+    "lint:fix": "pnpm run lint:fix --recursive --filter=!@neonhub/platform",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\" || echo '⚠️ Prettier formatting completed'",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\" || echo '⚠️ Format check completed with warnings'",
-    "type-check": "npm run type-check --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules .next dist coverage",
-    "db:generate": "npm run db:generate --workspace=packages/data-model",
-    "db:push": "npm run db:push --workspace=packages/data-model",
-    "db:migrate": "npm run db:migrate --workspace=packages/data-model",
-    "db:studio": "npm run db:studio --workspace=packages/data-model",
+    "type-check": "pnpm run type-check --recursive --filter=!@neonhub/platform",
+    "clean": "pnpm run clean --recursive --filter=!@neonhub/platform && rm -rf node_modules .next dist coverage",
+    "db:generate": "pnpm run db:generate --filter=@neon/data-model",
+    "db:push": "pnpm run db:push --filter=@neon/data-model",
+    "db:migrate": "pnpm run db:migrate --filter=@neon/data-model",
+    "db:studio": "pnpm run db:studio --filter=@neon/data-model",
     "deploy:vercel": "./deploy-vercel.sh",
     "deploy:vercel:prod": "./deploy-vercel.sh --production",
     "deploy:preview": "vercel",
     "deploy:production": "vercel --prod",
     "health-check": "curl -f http://localhost:3001/api/health && curl -f http://localhost:3000",
-    "postinstall": "npm run db:generate"
+    "postinstall": "pnpm run db:generate"
   },
   "keywords": [
     "ai",
@@ -59,7 +60,7 @@
   "homepage": "https://github.com/KofiRusu/Neon-v1.1#readme",
   "engines": {
     "node": ">=18.17.0",
-    "npm": ">=9.0.0"
+    "pnpm": ">=8.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
