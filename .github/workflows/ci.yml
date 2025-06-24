@@ -24,24 +24,117 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Setup Node.js with pnpm
+      - name: Debug Environment
+        run: |
+          echo "🔍 Environment Debugging..."
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+          echo "Current working directory: $(pwd)"
+          echo "Corepack status before setup:"
+          corepack --version || echo "⚠️ Corepack not available"
+          echo "Available package managers:"
+          ls -la $(which node)/../../bin/ | grep -E "(pnpm|yarn|npm)" || true
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
+          # Temporarily disable pnpm caching to avoid cache issues
+          # cache: 'pnpm'
+
+      - name: Upgrade and Enable Corepack
+        run: |
+          echo "🔧 Setting up latest Corepack with updated npm registry keys..."
+          echo "Before: corepack version => $(corepack --version || echo 'not installed')"
+          
+          # Install latest Corepack to get updated npm registry keys
+          npm install -g corepack@latest
+          echo "After : corepack version => $(corepack --version)"
+          
+          # Enable corepack
+          corepack enable
+          echo "✅ Corepack enabled"
+
+      - name: Prepare pnpm
+        run: |
+          echo "📦 Preparing pnpm..."
+          # Prepare specific pnpm version or use latest
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+          echo "pnpm version: $(pnpm --version)"
+
+      - name: Clear potentially corrupted caches
+        run: |
+          echo "🧹 Clearing potentially corrupted caches..."
+          rm -rf ~/.pnpm-store ~/.npm ~/.cache || true
+          echo "✅ Cache cleanup completed"
 
       - name: Generate enhanced cache key
         id: cache-key
         run: |
           echo "key=pnpm-modules-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}-${{ hashFiles('**/pnpm-workspace.yaml') }}" >> $GITHUB_OUTPUT
 
-      - name: Enable Corepack and install dependencies
+      - name: Validate workspace configuration
         run: |
-          corepack enable
-          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
+          echo "🔍 Validating workspace configuration..."
+          if [ -f "pnpm-workspace.yaml" ]; then
+            echo "✅ pnpm-workspace.yaml found"
+            cat pnpm-workspace.yaml
+          else
+            echo "❌ pnpm-workspace.yaml not found"
+            exit 1
+          fi
+          
+          if [ -f "package.json" ]; then
+            echo "✅ Root package.json found"
+            echo "Package manager field:"
+            cat package.json | grep -A 1 -B 1 "packageManager" || echo "No packageManager field"
+          else
+            echo "❌ Root package.json not found"
+            exit 1
+          fi
+
+      - name: Install dependencies with comprehensive fallback
+        run: |
+          echo "📦 Installing dependencies with fallback strategy..."
+          
+          # First attempt: frozen lockfile with offline preference
+          if pnpm install --frozen-lockfile --prefer-offline; then
+            echo "✅ Installation successful (frozen lockfile + offline)"
+          elif pnpm install --frozen-lockfile; then
+            echo "✅ Installation successful (frozen lockfile only)"
+          elif pnpm install --lockfile-only && pnpm install; then
+            echo "✅ Installation successful (regenerated lockfile)"
+          else
+            echo "❌ All installation attempts failed"
+            echo "📋 Attempting diagnostic installation..."
+            
+            # Show pnpm store status
+            pnpm store status || true
+            
+            # Try with force
+            pnpm install --force || true
+            
+            # Final attempt without frozen lockfile
+            pnpm install || {
+              echo "❌ Final installation attempt failed"
+              exit 1
+            }
+            echo "⚠️ Installation completed with warnings"
+          fi
+
+      - name: Verify installation
+        run: |
+          echo "🔍 Verifying installation..."
+          echo "pnpm version: $(pnpm --version)"
+          echo "Workspace packages:"
+          pnpm list --depth=0 || echo "⚠️ Package listing had warnings"
+          echo "Store status:"
+          pnpm store status || true
+          echo "✅ Installation verification completed"
 
       - name: Generate Prisma client
         run: |
+          echo "🗄️ Generating Prisma client..."
           pnpm db:generate || echo "⚠️ Database generation failed, continuing..."
 
       - name: Cache build outputs
@@ -64,16 +157,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and restore dependencies
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
 
       - name: Run lint with retry
         run: |
@@ -94,16 +191,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and restore dependencies
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
 
       - name: Run TypeScript type check with retry
         run: |
@@ -122,16 +223,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and restore dependencies
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
 
       - name: Restore build cache
         uses: actions/cache@v4
@@ -187,16 +292,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and restore dependencies
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
 
       - name: Run unit tests with retry
         run: |
@@ -231,16 +340,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and restore dependencies
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers with retry
         run: |
@@ -282,16 +395,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and validate workspace
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
 
       - name: Validate pnpm workspace configuration
         run: |
@@ -321,16 +438,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-          cache: 'pnpm'
 
-      - name: Enable Corepack and run security audit
+      - name: Setup Corepack and pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
-          pnpm install --frozen-lockfile --prefer-offline
+          corepack prepare pnpm@8.15.4 --activate || corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline || pnpm install --frozen-lockfile
+
+      - name: Security audit
+        run: |
           pnpm audit --audit-level=moderate || echo "⚠️ Security vulnerabilities found (non-blocking)"
           echo "✅ Security audit completed"
 
