@@ -55,7 +55,7 @@ export const trendsRouter = createTRPCRouter({
           platform: input.platform,
           data: trends,
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           platform: input.platform,

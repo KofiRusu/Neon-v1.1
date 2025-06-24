@@ -40,7 +40,7 @@ export const outreachRouter = createTRPCRouter({
           count: leads.length,
           searchQuery: input.searchQuery,
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           data: [],
@@ -62,7 +62,7 @@ export const outreachRouter = createTRPCRouter({
           success: true,
           data: enrichedData,
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           data: null,
@@ -95,7 +95,7 @@ export const outreachRouter = createTRPCRouter({
           downloadUrl: `/api/proposals/${proposalId}`,
           size: pdfBuffer.length,
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           error: 'Failed to generate proposal',
@@ -124,7 +124,7 @@ export const outreachRouter = createTRPCRouter({
           downloadUrl: `/api/offers/${offerId}`,
           size: pdfBuffer.length,
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           error: 'Failed to generate offer sheet',
@@ -152,7 +152,7 @@ export const outreachRouter = createTRPCRouter({
           status: 'sent',
           sentAt: new Date().toISOString(),
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           error: 'Failed to send outreach email',
@@ -213,7 +213,7 @@ export const outreachRouter = createTRPCRouter({
             invalidEmails: invalidEmails.map(v => v.email),
           },
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           error: 'Failed to validate emails',

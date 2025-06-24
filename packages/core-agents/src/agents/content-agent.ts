@@ -20,6 +20,8 @@ export interface ContentGenerationResult extends AgentResult {
 }
 
 export class ContentAgent extends AbstractAgent {
+  private openai: OpenAI;
+
   constructor() {
     super('content-agent', 'ContentAgent', 'content', [
       'generate_content',
@@ -27,6 +29,14 @@ export class ContentAgent extends AbstractAgent {
       'generate_caption',
       'generate_post'
     ]);
+
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    if (!process.env.OPENAI_API_KEY) {
+      logger.warn('OPENAI_API_KEY not found. ContentAgent will run in limited mode.', {}, 'ContentAgent');
+    }
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
@@ -46,10 +56,15 @@ export class ContentAgent extends AbstractAgent {
   }
 
   private async generateContent(context: ContentGenerationContext): Promise<ContentGenerationResult> {
-    // In a real implementation, this would integrate with OpenAI, Claude, or another LLM
-    // For now, we'll create template-based content
+    // Try OpenAI first, fallback to template-based if unavailable
+    let content: string;
     
-    const content = await this.createContentTemplate(context);
+    if (this.openai && process.env.OPENAI_API_KEY) {
+      content = await this.generateAIContent(context);
+    } else {
+      content = await this.createContentTemplate(context);
+    }
+    
     const hashtags = context.type === 'social_post' ? this.generateHashtags(context) : undefined;
     const readingTime = this.calculateReadingTime(content);
     const seoScore = context.keywords ? this.calculateSEOScore(content, context.keywords) : undefined;
@@ -62,6 +77,84 @@ export class ContentAgent extends AbstractAgent {
       seoScore,
       success: true
     };
+  }
+
+  private async generateAIContent(context: ContentGenerationContext): Promise<string> {
+    try {
+      const prompt = this.buildContentPrompt(context);
+      
+      const response = await this.openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert content creator. Generate engaging, high-quality content that resonates with the target audience and achieves the specified goals."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: this.getMaxTokensForType(context.type),
+      });
+
+      const aiContent = response.choices[0]?.message?.content;
+      if (!aiContent) {
+        throw new Error('No response from OpenAI');
+      }
+
+      return aiContent;
+    } catch (error) {
+      logger.error('OpenAI content generation failed, using template fallback', { error }, 'ContentAgent');
+      return await this.createContentTemplate(context);
+    }
+  }
+
+  private buildContentPrompt(context: ContentGenerationContext): string {
+    const { type, topic, audience, tone, keywords = [], platform, length } = context;
+    
+    let prompt = `Generate ${length || 'appropriate'} ${type} content about "${topic}" for ${audience} with a ${tone} tone.`;
+    
+    if (keywords.length > 0) {
+      prompt += ` Include these keywords naturally: ${keywords.join(', ')}.`;
+    }
+    
+    if (platform) {
+      prompt += ` Optimize for ${platform} platform.`;
+    }
+    
+    switch (type) {
+      case 'blog':
+        prompt += ' Include an engaging introduction, structured main content with subheadings, and a compelling conclusion. Make it SEO-friendly and informative.';
+        break;
+      case 'social_post':
+        prompt += ' Make it engaging, shareable, and include appropriate emojis. End with a call-to-action or question to encourage engagement.';
+        break;
+      case 'email':
+        prompt += ' Create a compelling subject line and email body that drives action. Be personable and include a clear call-to-action.';
+        break;
+      case 'caption':
+        prompt += ' Keep it concise, engaging, and include relevant hashtags. Perfect for accompanying visual content.';
+        break;
+      case 'copy':
+        prompt += ' Focus on persuasive, conversion-oriented copy that clearly communicates value and drives action.';
+        break;
+    }
+    
+    return prompt;
+  }
+
+  private getMaxTokensForType(type: string): number {
+    const tokenLimits = {
+      blog: 2000,
+      social_post: 300,
+      email: 800,
+      caption: 150,
+      copy: 500
+    };
+    
+    return tokenLimits[type as keyof typeof tokenLimits] || 500;
   }
 
   private async createContentTemplate(context: ContentGenerationContext): Promise<string> {
