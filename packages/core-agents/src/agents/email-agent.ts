@@ -2,6 +2,8 @@ import { AbstractAgent } from '../base-agent';
 import type { AgentResult, AgentPayload } from '../base-agent';
 import OpenAI from 'openai';
 import { logger } from '@neon/utils';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 // Core interfaces for email marketing
 export interface EmailTemplate {
@@ -191,6 +193,33 @@ export interface ABTestResult {
   recommendations: string[];
 }
 
+// SendGrid integration
+interface SendGridClient {
+  send: (data: {
+    to: string;
+    from: string;
+    subject: string;
+    text?: string;
+    html?: string;
+  }) => Promise<[{
+    statusCode: number;
+    headers: Record<string, string>;
+  }, {}]>;
+}
+
+let sendGridClient: SendGridClient | null = null;
+
+// Initialize SendGrid client
+try {
+  if (process.env.SENDGRID_API_KEY) {
+    const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sendGridClient = sgMail;
+  }
+} catch (error) {
+  logger.warn('SendGrid not available, email will run in mock mode', { error }, 'EmailMarketingAgent');
+}
+
 export class EmailMarketingAgent extends AbstractAgent {
   private openai: OpenAI;
   private templates: Map<string, EmailTemplate> = new Map();
@@ -289,6 +318,7 @@ export class EmailMarketingAgent extends AbstractAgent {
 
       return this.parseSequenceOutput(aiOutput, input);
     } catch (error) {
+      await this.logAIFallback('email_sequence_generation', error);
       logger.error('OpenAI email sequence generation failed, using fallback', { error }, 'EmailMarketingAgent');
       return this.generateEmailSequenceFallback(input);
     }
@@ -330,6 +360,7 @@ export class EmailMarketingAgent extends AbstractAgent {
 
       return this.parsePersonalizationOutput(aiOutput, input);
     } catch (error) {
+      await this.logAIFallback('email_personalization', error);
       logger.error('OpenAI email personalization failed, using fallback', { error }, 'EmailMarketingAgent');
       return this.personalizeEmailFallback(input);
     }
@@ -371,6 +402,7 @@ export class EmailMarketingAgent extends AbstractAgent {
 
       return this.parsePerformanceAnalysis(aiOutput, data, metrics);
     } catch (error) {
+      await this.logAIFallback('performance_analysis', error);
       logger.error('OpenAI performance analysis failed, using fallback', { error }, 'EmailMarketingAgent');
       return this.analyzePerformanceFallback(data, metrics);
     }
@@ -842,9 +874,134 @@ Format as JSON with insights array and recommendations array.
   // Additional features for complete email marketing platform
 
   private async sendCampaign(context: any): Promise<any> {
-    // Implementation for sending email campaigns
-    // This would integrate with SendGrid or other email service
-    return { success: true, campaignId: `campaign_${Date.now()}` };
+    const { recipients, subject, content, htmlContent } = context;
+    const results = [];
+
+    for (const recipient of recipients) {
+      const result = await this.sendEmail({
+        to: recipient.email,
+        subject,
+        content,
+        htmlContent,
+        personalizations: recipient.personalizations || {}
+      });
+      results.push(result);
+    }
+
+    return {
+      success: true,
+      campaignId: `campaign_${Date.now()}`,
+      results,
+      message: 'Campaign sent successfully'
+    };
+  }
+
+  async sendEmail(data: { to: string; subject: string; content: string; htmlContent?: string; personalizations?: Record<string, any> }): Promise<any> {
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      recipient: data.to,
+      subject: data.subject,
+      status: 'pending',
+      service: 'sendgrid'
+    };
+
+    try {
+      if (sendGridClient && process.env.SENDGRID_FROM_EMAIL) {
+        const emailData = {
+          to: data.to,
+          from: process.env.SENDGRID_FROM_EMAIL,
+          subject: data.subject,
+          text: data.content,
+          html: data.htmlContent || data.content.replace(/\n/g, '<br>')
+        };
+
+        const [response] = await sendGridClient.send(emailData);
+        
+        logEntry.status = 'sent';
+        await this.logEmailEvent({
+          ...logEntry,
+          messageId: response.headers['x-message-id'] || 'unknown',
+          sendgridStatus: response.statusCode
+        });
+
+        return {
+          success: true,
+          messageId: response.headers['x-message-id'] || `sendgrid_${Date.now()}`,
+          status: 'sent',
+          recipient: data.to,
+          service: 'sendgrid',
+          deliveryStatus: response.statusCode === 202 ? 'accepted' : 'unknown'
+        };
+      } else {
+        // Fallback mock mode
+        logEntry.status = 'mock_sent';
+        logEntry.service = 'mock';
+        
+        await this.logEmailEvent({
+          ...logEntry,
+          messageId: `mock_${Date.now()}`,
+          note: 'SendGrid credentials not configured, using mock mode'
+        });
+
+        return {
+          success: true,
+          messageId: `mock_email_${Date.now()}`,
+          status: 'mock_sent',
+          recipient: data.to,
+          service: 'mock',
+          deliveryStatus: 'mock_delivered'
+        };
+      }
+    } catch (error) {
+      logEntry.status = 'failed';
+      await this.logEmailEvent({
+        ...logEntry,
+        error: error instanceof Error ? error.message : String(error)
+      });
+
+      return {
+        success: false,
+        messageId: null,
+        status: 'failed',
+        recipient: data.to,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        service: 'sendgrid'
+      };
+    }
+  }
+
+  private async logEmailEvent(event: any): Promise<void> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      await fs.mkdir(logsDir, { recursive: true });
+      
+      const logFile = path.join(logsDir, 'email-agent.log');
+      const logLine = JSON.stringify(event) + '\n';
+      
+      await fs.appendFile(logFile, logLine);
+    } catch (error) {
+      logger.error('Failed to write email log', { error }, 'EmailMarketingAgent');
+    }
+  }
+
+  private async logAIFallback(operation: string, error: unknown): Promise<void> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      await fs.mkdir(logsDir, { recursive: true });
+      
+      const logFile = path.join(logsDir, 'ai-fallback.log');
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        agent: 'EmailMarketingAgent',
+        operation,
+        error: error instanceof Error ? error.message : String(error),
+        fallbackUsed: true
+      };
+      
+      await fs.appendFile(logFile, JSON.stringify(logEntry) + '\n');
+    } catch (logError) {
+      logger.error('Failed to write AI fallback log', { logError }, 'EmailMarketingAgent');
+    }
   }
 
   private async manageTemplates(context: any): Promise<any> {

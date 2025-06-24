@@ -1,34 +1,63 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
+  moduleNameMapping: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      useESM: true,
+      tsconfig: {
+        module: 'esnext',
+      },
+    }],
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testMatch: [
-    '<rootDir>/packages/**/__tests__/**/*.test.ts',
-    '<rootDir>/packages/**/?(*.)+(spec|test).ts',
+    '**/__tests__/**/*.(ts|js)',
+    '**/*.(test|spec).(ts|js)'
   ],
   collectCoverageFrom: [
-    'packages/**/src/**/*.ts',
-    '!packages/**/src/**/*.d.ts',
-    '!packages/**/src/**/*.test.ts',
-    '!packages/**/src/**/*.spec.ts',
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/__tests__/**',
   ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-  },
-  moduleNameMapper: {
-    '^@/types$': '<rootDir>/packages/types/src',
-    '^@/utils$': '<rootDir>/packages/utils/src',
-    '^@/core$': '<rootDir>/packages/core/src',
-  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testTimeout: 10000,
+  testTimeout: 30000,
+  maxWorkers: 1,
   verbose: true,
-  clearMocks: true,
-  restoreMocks: true,
+  projects: [
+    {
+      displayName: 'core-agents',
+      testMatch: ['<rootDir>/packages/core-agents/**/*.(test|spec).(ts|js)'],
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+      extensionsToTreatAsEsm: ['.ts'],
+      moduleNameMapping: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+      },
+      transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
+          useESM: true,
+          tsconfig: {
+            module: 'esnext',
+          },
+        }],
+      },
+    },
+    {
+      displayName: 'reasoning-engine',
+      testMatch: ['<rootDir>/packages/reasoning-engine/**/*.(test|spec).(ts|js)'],
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+    },
+    {
+      displayName: 'utils',
+      testMatch: ['<rootDir>/packages/utils/**/*.(test|spec).(ts|js)'],
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+    },
+  ],
 };

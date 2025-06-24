@@ -2,6 +2,8 @@ import { AbstractAgent } from '../base-agent';
 import type { AgentResult, AgentPayload } from '../base-agent';
 import OpenAI from 'openai';
 import { logger } from '@neon/utils';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 // Core interfaces for customer support
 export interface MessageClassificationInput {
@@ -192,6 +194,34 @@ export interface KnowledgeBaseArticle {
   status: 'draft' | 'published' | 'archived';
 }
 
+// Add Twilio import
+interface TwilioClient {
+  messages: {
+    create: (options: {
+      from: string;
+      to: string;
+      body: string;
+    }) => Promise<{
+      sid: string;
+      status: string;
+      errorCode?: string;
+      errorMessage?: string;
+    }>;
+  };
+}
+
+let twilioClient: TwilioClient | null = null;
+
+// Initialize Twilio client
+try {
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+    const twilio = require('twilio');
+    twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  }
+} catch (error) {
+  logger.warn('Twilio not available, WhatsApp will run in mock mode', { error }, 'CustomerSupportAgent');
+}
+
 export class CustomerSupportAgent extends AbstractAgent {
   private openai: OpenAI;
   private tickets: Map<string, SupportTicket> = new Map();
@@ -295,6 +325,7 @@ export class CustomerSupportAgent extends AbstractAgent {
 
       return this.parseClassificationOutput(aiOutput, input);
     } catch (error) {
+      await this.logAIFallback('message_classification', error);
       logger.error('OpenAI message classification failed, using fallback', { error }, 'CustomerSupportAgent');
       return this.classifyMessageFallback(input);
     }
@@ -336,6 +367,7 @@ export class CustomerSupportAgent extends AbstractAgent {
 
       return this.parseReplyOutput(aiOutput, input);
     } catch (error) {
+      await this.logAIFallback('reply_generation', error);
       logger.error('OpenAI reply generation failed, using fallback', { error }, 'CustomerSupportAgent');
       return this.generateReplyFallback(input);
     }
@@ -377,6 +409,7 @@ export class CustomerSupportAgent extends AbstractAgent {
 
       return this.parseSentimentOutput(aiOutput, input);
     } catch (error) {
+      await this.logAIFallback('sentiment_analysis', error);
       logger.error('OpenAI sentiment analysis failed, using fallback', { error }, 'CustomerSupportAgent');
       return this.analyzeSentimentFallback(input);
     }
@@ -868,16 +901,114 @@ Consider:
   }
 
   async sendWhatsAppMessage(input: WhatsAppMessage): Promise<any> {
-    // Mock WhatsApp/Twilio integration
-    logger.info('Sending WhatsApp message', { recipient: input.recipient }, 'CustomerSupportAgent');
-    
-    return {
-      success: true,
-      messageId: `whatsapp_${Date.now()}`,
-      status: 'sent',
-      estimatedDelivery: new Date(Date.now() + 5000),
-      message: 'WhatsApp message sent successfully'
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      recipient: input.recipient,
+      messageType: input.message.type,
+      status: 'pending',
+      service: 'twilio'
     };
+
+    try {
+      // Use real Twilio if available
+      if (twilioClient && process.env.TWILIO_WHATSAPP_NUMBER) {
+        const message = await twilioClient.messages.create({
+          from: process.env.TWILIO_WHATSAPP_NUMBER,
+          to: input.recipient.startsWith('whatsapp:') ? input.recipient : `whatsapp:${input.recipient}`,
+          body: input.message.content
+        });
+
+        logEntry.status = 'sent';
+        await this.logWhatsAppEvent({
+          ...logEntry,
+          messageId: message.sid,
+          twilioStatus: message.status
+        });
+
+        return {
+          success: true,
+          messageId: message.sid,
+          status: 'sent',
+          recipient: input.recipient,
+          message: input.message.content,
+          timestamp: new Date(),
+          deliveryStatus: message.status,
+          service: 'twilio'
+        };
+      } else {
+        // Fallback mock mode
+        logEntry.status = 'mock_sent';
+        logEntry.service = 'mock';
+        
+        await this.logWhatsAppEvent({
+          ...logEntry,
+          messageId: `mock_${Date.now()}`,
+          note: 'Twilio credentials not configured, using mock mode'
+        });
+
+        return {
+          success: true,
+          messageId: `mock_msg_${Date.now()}`,
+          status: 'mock_sent',
+          recipient: input.recipient,
+          message: input.message.content,
+          timestamp: new Date(),
+          deliveryStatus: 'mock_delivered',
+          service: 'mock'
+        };
+      }
+    } catch (error) {
+      logEntry.status = 'failed';
+      await this.logWhatsAppEvent({
+        ...logEntry,
+        error: error instanceof Error ? error.message : String(error)
+      });
+
+      // Return error response but don't throw
+      return {
+        success: false,
+        messageId: null,
+        status: 'failed',
+        recipient: input.recipient,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date(),
+        service: 'twilio'
+      };
+    }
+  }
+
+  private async logWhatsAppEvent(event: any): Promise<void> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      await fs.mkdir(logsDir, { recursive: true });
+      
+      const logFile = path.join(logsDir, 'support-agent.log');
+      const logLine = JSON.stringify(event) + '\n';
+      
+      await fs.appendFile(logFile, logLine);
+    } catch (error) {
+      logger.error('Failed to write WhatsApp log', { error }, 'CustomerSupportAgent');
+    }
+  }
+
+  private async logAIFallback(operation: string, error: unknown): Promise<void> {
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      await fs.mkdir(logsDir, { recursive: true });
+      
+      const logFile = path.join(logsDir, 'ai-fallback.log');
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        agent: 'CustomerSupportAgent',
+        operation,
+        error: error instanceof Error ? error.message : String(error),
+        fallbackUsed: true
+      };
+      
+      await fs.appendFile(logFile, JSON.stringify(logEntry) + '\n');
+    } catch (logError) {
+      logger.error('Failed to write AI fallback log', { logError }, 'CustomerSupportAgent');
+    }
   }
 
   async sendMessage(input: WhatsAppMessage): Promise<any> {

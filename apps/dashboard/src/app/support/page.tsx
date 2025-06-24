@@ -197,7 +197,7 @@ export default function CustomerSupportInboxPage(): JSX.Element {
   const selectedTicketData = selectedTicket ? tickets.find(t => t.id === selectedTicket) : null;
 
   // tRPC hooks
-  const classifyMessageMutation = trpc.support.classifyMessage.useMutation();
+  const _classifyMessageMutation = trpc.support.classifyMessage.useMutation();
   const generateReplyMutation = trpc.support.generateReply.useMutation({
     onSuccess: (data) => {
       if (data.success && data.data) {
@@ -320,7 +320,7 @@ export default function CustomerSupportInboxPage(): JSX.Element {
 
     setTickets(prev => prev.map(ticket => 
       ticket.id === selectedTicket 
-        ? { ...ticket, status: newStatus as any }
+        ? { ...ticket, status: newStatus as SupportTicket['status'] }
         : ticket
     ));
   };
@@ -432,7 +432,7 @@ export default function CustomerSupportInboxPage(): JSX.Element {
 
       {/* Sidebar - Ticket List */}
       <div className="w-80 bg-slate-800/50 backdrop-blur-sm border-r border-slate-700">
-        {/* Header */}
+      {/* Header */}
         <div className="p-4 border-b border-slate-700">
           <h1 className="text-xl font-bold text-white mb-4">📞 Support Inbox</h1>
           
@@ -502,10 +502,10 @@ export default function CustomerSupportInboxPage(): JSX.Element {
                       </span>
                     </div>
                     <span className="text-xs text-slate-500">{formatTime(ticket.lastMessageTime)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          </div>
+          </div>
+          </div>
+          </div>
           ))}
         </div>
       </div>
@@ -563,7 +563,7 @@ export default function CustomerSupportInboxPage(): JSX.Element {
                     </select>
 
                     {/* Escalation */}
-                    <button
+                <button
                       onClick={handleEscalateTicket}
                       disabled={selectedTicketData.escalated || escalateTicketMutation.isLoading}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -581,10 +581,10 @@ export default function CustomerSupportInboxPage(): JSX.Element {
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                     >
                       👤 Profile
-                    </button>
+                </button>
                   </div>
-                </div>
-              </div>
+        </div>
+      </div>
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -638,8 +638,8 @@ export default function CustomerSupportInboxPage(): JSX.Element {
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm">
                       🤖
-                    </div>
-                    <div className="flex-1">
+            </div>
+            <div className="flex-1">
                       <h4 className="text-purple-400 font-medium mb-2">
                         AI Suggested Reply (Confidence: {Math.round(agentSuggestion.confidence * 100)}%)
                       </h4>
@@ -666,10 +666,10 @@ export default function CustomerSupportInboxPage(): JSX.Element {
                         )}
                       </div>
                     </div>
-                  </div>
-                </div>
-              )}
-
+            </div>
+          </div>
+        )}
+        
               {/* Message Composer */}
               <div className="bg-slate-800/50 backdrop-blur-sm border-t border-slate-700 p-6">
                 <div className="flex items-start gap-3">
@@ -740,7 +740,7 @@ export default function CustomerSupportInboxPage(): JSX.Element {
               <div>
                 <div className="w-16 h-16 bg-slate-600 rounded-full flex items-center justify-center text-white text-xl font-medium mb-4">
                   {selectedTicketData.customer.name.split(' ').map(n => n[0]).join('')}
-                </div>
+          </div>
                 <h4 className="text-white font-medium">{selectedTicketData.customer.name}</h4>
                 <p className="text-slate-400 text-sm">{selectedTicketData.customer.email}</p>
                 {selectedTicketData.customer.phone && (

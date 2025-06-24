@@ -20,9 +20,13 @@ import {
   EnvelopeIcon,
   ChatBubbleLeftIcon,
   GlobeAltIcon,
+  ArrowRightIcon,
+  CpuChipIcon,
+  BoltIcon,
+  RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 
-export default function Dashboard() {
+export default function Dashboard(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch real data from our API

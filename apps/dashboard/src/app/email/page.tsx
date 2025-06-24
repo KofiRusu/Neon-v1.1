@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { format } from 'date-fns';
 import { trpc } from '@/lib/trpc';
 
 // Types
@@ -216,7 +215,7 @@ export default function EmailCampaignManagerPage(): JSX.Element {
     );
   };
 
-  const TabButton = ({ id, label, active, onClick }: { id: string; label: string; active: boolean; onClick: () => void }): JSX.Element => (
+  const TabButton = ({ _id, label, active, onClick }: { _id: string; label: string; active: boolean; onClick: () => void }): JSX.Element => (
     <button
       onClick={onClick}
       className={`px-6 py-3 font-medium rounded-lg transition-all duration-200 ${
@@ -253,9 +252,9 @@ export default function EmailCampaignManagerPage(): JSX.Element {
       {/* Tab Navigation */}
       <div className="max-w-7xl mx-auto">
         <div className="flex gap-2 mb-6 bg-slate-800/30 p-2 rounded-xl backdrop-blur-sm">
-          <TabButton id="sequences" label="Campaign Sequences" active={activeTab === 'sequences'} onClick={() => setActiveTab('sequences')} />
-          <TabButton id="abtest" label="A/B Testing" active={activeTab === 'abtest'} onClick={() => setActiveTab('abtest')} />
-          <TabButton id="analytics" label="Performance Analytics" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
+          <TabButton _id="sequences" label="Campaign Sequences" active={activeTab === 'sequences'} onClick={() => setActiveTab('sequences')} />
+          <TabButton _id="abtest" label="A/B Testing" active={activeTab === 'abtest'} onClick={() => setActiveTab('abtest')} />
+          <TabButton _id="analytics" label="Performance Analytics" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
         </div>
 
         {/* Campaign Sequence Builder Tab */}
@@ -450,7 +449,7 @@ export default function EmailCampaignManagerPage(): JSX.Element {
                             </div>
                           </div>
                         ) : (
-                          <div>
+          <div>
                             <div className="text-white font-medium mb-2">📧 {email.subject}</div>
                             <div className="text-slate-300 text-sm whitespace-pre-wrap">{email.content.substring(0, 200)}...</div>
                           </div>
@@ -537,14 +536,14 @@ export default function EmailCampaignManagerPage(): JSX.Element {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-white text-sm font-medium">Variants</label>
-                    <button
+          <button
                       onClick={addVariant}
                       className="text-purple-400 hover:text-purple-300 text-sm"
-                    >
+          >
                       + Add Variant
-                    </button>
-                  </div>
-                  
+          </button>
+        </div>
+
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {variants.map((variant, index) => (
                       <div key={index} className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
@@ -631,8 +630,8 @@ export default function EmailCampaignManagerPage(): JSX.Element {
                       }`}>
                         {abTestResult.status}
                       </div>
-                    </div>
-                  </div>
+        </div>
+      </div>
 
                   {/* Variant Results */}
                   <div className="space-y-3">
@@ -701,7 +700,7 @@ export default function EmailCampaignManagerPage(): JSX.Element {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             {analyticsLoading ? (
-              <div className="text-center py-12">
+            <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
                 <p className="text-slate-300">Loading analytics...</p>
               </div>
@@ -864,7 +863,7 @@ export default function EmailCampaignManagerPage(): JSX.Element {
               <div className="text-center py-12 text-slate-400">
                 <div className="text-6xl mb-3 opacity-50">📊</div>
                 <p>No analytics data available</p>
-              </div>
+            </div>
             )}
           </div>
         )}
