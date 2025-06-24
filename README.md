@@ -1,10 +1,12 @@
 <!-- AUTO-GENERATED DOCS: 2025-06-20T23:48:34.742Z -->
 
-# 🚀 NeonHub v1.1 - AI-Powered Marketing Automation Platform
+# 🚀 NeonHub v0.2 - AI-Powered Marketing Automation Platform
 
-[![CI/CD Pipeline](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/ci.yml/badge.svg)](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/ci.yml)
-[![Deployment](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/deploy.yml/badge.svg)](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/deploy.yml)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v1.1.git)
+[![CI/CD Pipeline](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/ci.yml/badge.svg)](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/ci.yml)
+[![Build Status](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/ci.yml)
+[![Deployment](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/deploy.yml/badge.svg)](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/deploy.yml)
+[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v0.2.git)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -49,22 +51,22 @@
 ### Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/KofiRusu/Neon-v1.1.git
-cd Neon-v1.1
+git clone https://github.com/KofiRusu/Neon-v0.2.git
+cd Neon-v0.2
 
 # Install dependencies
-npm install
+pnpm install
 
 # Set up environment variables
 cp env.example .env.local
 # Edit .env.local with your configuration
 
 # Set up database
-npm run db:generate
-npm run db:push
+pnpm db:generate
+pnpm db:push
 
 # Start development server
-npm run dev
+pnpm dev
 ```
 
 Visit `http://localhost:3000` to see the application.
@@ -200,8 +202,8 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ## 📞 Support
 
 - **Documentation**: [View Deployment Guide](VERCEL_DEPLOYMENT_GUIDE.md)
-- **Issues**: [GitHub Issues](https://github.com/KofiRusu/Neon-v1.1/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/KofiRusu/Neon-v1.1/discussions)
+- **Issues**: [GitHub Issues](https://github.com/KofiRusu/Neon-v0.2/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/KofiRusu/Neon-v0.2/discussions)
 
 ## 📄 License
 
@@ -218,4 +220,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ by KofiRusu**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v1.1.git)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v0.2.git)

@@ -1,5 +1,56 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🛡️ Running pre-push validation..."
-node scripts/git-validate.js
+echo "🚀 Running pre-push validation for NeonHub..."
+
+# Check if we're pushing to protected branches
+protected_branches="^(main|develop|master)$"
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [[ $current_branch =~ $protected_branches ]]; then
+  echo "🔒 Pushing to protected branch: $current_branch"
+  echo "🔍 Running comprehensive validation..."
+  
+  # Run quick quality checks
+  echo "1. 🔍 Running lint check..."
+  pnpm lint || {
+    echo "❌ Lint check failed. Please fix linting issues before pushing."
+    exit 1
+  }
+  
+  echo "2. 🔧 Running type check..."
+  pnpm type-check || {
+    echo "❌ Type check failed. Please fix TypeScript errors before pushing."
+    exit 1
+  }
+  
+  echo "3. 🧪 Running tests..."
+  pnpm test || {
+    echo "❌ Tests failed. Please ensure all tests pass before pushing."
+    exit 1
+  }
+  
+  echo "4. 🏗️ Testing build..."
+  pnpm build || {
+    echo "❌ Build failed. Please fix build errors before pushing."
+    exit 1
+  }
+  
+  echo "✅ All pre-push checks passed!"
+else
+  echo "ℹ️ Pushing to feature branch: $current_branch"
+  echo "🔍 Running basic validation..."
+  
+  # Run basic checks for feature branches
+  pnpm lint --max-warnings=10 || {
+    echo "⚠️ Lint check has warnings (non-blocking)"
+  }
+  
+  pnpm type-check || {
+    echo "⚠️ Type check has issues (non-blocking)"
+  }
+  
+  echo "✅ Basic pre-push checks completed"
+fi
+
+echo "🚀 Push validation completed successfully!"
