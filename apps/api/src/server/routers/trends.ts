@@ -1,31 +1,32 @@
 /**
- * Trends Router - Market Pulse & Trend Analysis
- * Handles trend signals, region scores, and market intelligence
+ * Trends Router - Market Pulse Integration
+ * Handles social media trend analysis and regional scoring
  */
 
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { SocialApiClient } from '@neon/utils/social-api-client';
 
-const socialClient = new SocialApiClient();
+const socialApiClient = new SocialApiClient();
 
 export const trendsRouter = createTRPCRouter({
   // Get all trending data across platforms
   getAllTrends: publicProcedure
     .query(async () => {
       try {
-        const trends = await socialClient.getAllTrends();
+        const trends = await socialApiClient.getAllTrends();
+        
         return {
           success: true,
           data: trends,
-          updatedAt: new Date().toISOString(),
+          count: trends.length,
+          lastUpdated: new Date().toISOString(),
         };
-      } catch (error) {
-        console.error('Failed to fetch trends:', error);
+      } catch (_error) {
         return {
           success: false,
           data: [],
-          error: 'Failed to fetch trend data',
+          error: 'Failed to fetch trends',
         };
       }
     }),
@@ -34,139 +35,274 @@ export const trendsRouter = createTRPCRouter({
   getTrendsByPlatform: publicProcedure
     .input(z.object({
       platform: z.enum(['tiktok', 'instagram', 'twitter']),
+      limit: z.number().min(1).max(100).default(20),
     }))
     .query(async ({ input }) => {
       try {
         let trends;
+        
         switch (input.platform) {
           case 'tiktok':
-            trends = await socialClient.fetchTrendingTikTok();
+            trends = await socialApiClient.fetchTrendingTikTok();
             break;
           case 'instagram':
-            trends = await socialClient.fetchTrendingInstagram();
+            trends = await socialApiClient.fetchTrendingInstagram();
             break;
           case 'twitter':
-            trends = await socialClient.fetchTrendingTwitter();
+            trends = await socialApiClient.fetchTrendingTwitter();
             break;
+          default:
+            trends = [];
         }
-
+        
+        const limitedTrends = trends.slice(0, input.limit);
+        
         return {
           success: true,
+          data: limitedTrends,
           platform: input.platform,
-          data: trends,
+          count: limitedTrends.length,
         };
       } catch (_error) {
         return {
           success: false,
-          platform: input.platform,
           data: [],
           error: `Failed to fetch ${input.platform} trends`,
         };
       }
     }),
 
-  // Get region scores
-  getRegionScores: publicProcedure
+  // Get regional trend scores
+  getRegionalScores: publicProcedure
     .input(z.object({
       region: z.string(),
     }))
     .query(async ({ input }) => {
       try {
-        const scores = await socialClient.getRegionScores(input.region);
+        const regionScores = await socialApiClient.getRegionScores(input.region);
+        
         return {
           success: true,
-          data: scores,
+          data: regionScores,
+          region: input.region,
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           data: null,
-          error: 'Failed to fetch region scores',
+          error: 'Failed to fetch regional scores',
         };
       }
     }),
 
-  // Analyze market pulse for specific keyword
-  analyzeKeyword: publicProcedure
+  // Analyze trend predictions
+  analyzeTrendPredictions: publicProcedure
     .input(z.object({
-      keyword: z.string(),
-      platforms: z.array(z.enum(['tiktok', 'instagram', 'twitter'])).optional(),
+      keywords: z.array(z.string()).min(1).max(10),
+      timeframe: z.enum(['24h', '7d', '30d']).default('7d'),
     }))
-    .query(async ({ input }) => {
-      const { keyword, platforms = ['tiktok', 'instagram', 'twitter'] } = input;
-      
+    .mutation(async ({ input }) => {
       try {
-        const allTrends = await socialClient.getAllTrends();
-        const keywordTrends = allTrends.filter(trend => 
-          trend.keyword.toLowerCase().includes(keyword.toLowerCase()) &&
-          platforms.includes(trend.platform as any)
+        const allTrends = await socialApiClient.getAllTrends();
+        
+        // Filter trends by keywords
+        const relevantTrends = allTrends.filter(trend =>
+          input.keywords.some(keyword =>
+            trend.keyword.toLowerCase().includes(keyword.toLowerCase())
+          )
         );
-
-        const analysis = {
-          keyword,
-          totalSignals: keywordTrends.length,
-          averageScore: keywordTrends.reduce((sum, t) => sum + t.score, 0) / keywordTrends.length || 0,
-          platforms: keywordTrends.reduce((acc, trend) => {
-            acc[trend.platform] = (acc[trend.platform] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>),
-          topSignals: keywordTrends
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 5),
-        };
-
+        
+        // Calculate predictions based on score trends
+        const predictions = input.keywords.map(keyword => {
+          const keywordTrends = relevantTrends.filter(trend =>
+            trend.keyword.toLowerCase().includes(keyword.toLowerCase())
+          );
+          
+          const avgScore = keywordTrends.length > 0
+            ? keywordTrends.reduce((sum, trend) => sum + trend.score, 0) / keywordTrends.length
+            : 0;
+          
+          // Simple prediction model - in production use ML algorithms
+          const prediction = avgScore > 0.7 ? 'rising' : avgScore > 0.4 ? 'stable' : 'declining';
+          const confidence = Math.min(avgScore * 100, 95);
+          
+          return {
+            keyword,
+            prediction,
+            confidence,
+            avgScore,
+            platforms: keywordTrends.map(t => t.platform),
+            recommendation: getRecommendation(prediction, avgScore),
+          };
+        });
+        
         return {
           success: true,
-          data: analysis,
+          data: {
+            predictions,
+            timeframe: input.timeframe,
+            analyzedAt: new Date().toISOString(),
+          },
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           data: null,
-          error: 'Failed to analyze keyword trends',
+          error: 'Failed to analyze trend predictions',
         };
       }
     }),
 
-  // Get trend predictions
-  getPredictions: publicProcedure
+  // Get trend insights for content strategy
+  getTrendInsights: publicProcedure
     .input(z.object({
       industry: z.string().optional(),
-      timeframe: z.enum(['1d', '7d', '30d']).default('7d'),
+      contentType: z.enum(['video', 'image', 'text', 'story']).optional(),
     }))
     .query(async ({ input }) => {
-      // Mock prediction data - in production, this would use ML models
-      const predictions = [
-        {
-          keyword: 'neon signs',
-          currentScore: 0.85,
-          predictedScore: 0.92,
-          trend: 'rising',
-          confidence: 0.78,
-          timeframe: input.timeframe,
-        },
-        {
-          keyword: 'led lighting',
-          currentScore: 0.76,
-          predictedScore: 0.82,
-          trend: 'rising',
-          confidence: 0.65,
-          timeframe: input.timeframe,
-        },
-        {
-          keyword: 'custom signage',
-          currentScore: 0.68,
-          predictedScore: 0.71,
-          trend: 'stable',
-          confidence: 0.82,
-          timeframe: input.timeframe,
-        },
-      ];
-
-      return {
-        success: true,
-        data: predictions,
-        generatedAt: new Date().toISOString(),
-      };
+      try {
+        const allTrends = await socialApiClient.getAllTrends();
+        
+        // Filter by industry if provided
+        let filteredTrends = allTrends;
+        if (input.industry) {
+          filteredTrends = allTrends.filter(trend =>
+            trend.keyword.toLowerCase().includes(input.industry.toLowerCase()) ||
+            trend.metadata?.industry === input.industry
+          );
+        }
+        
+        // Sort by score and get top trends
+        const topTrends = filteredTrends
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10);
+        
+        // Generate insights
+        const insights = {
+          topKeywords: topTrends.map(t => t.keyword),
+          bestPlatforms: getBestPlatforms(topTrends),
+          contentRecommendations: getContentRecommendations(topTrends, input.contentType),
+          optimalTiming: getOptimalTiming(),
+          expectedReach: calculateExpectedReach(topTrends),
+        };
+        
+        return {
+          success: true,
+          data: insights,
+          industry: input.industry,
+          contentType: input.contentType,
+        };
+      } catch (_error) {
+        return {
+          success: false,
+          data: null,
+          error: 'Failed to generate trend insights',
+        };
+      }
     }),
-}); 
+
+  // Monitor specific trend keywords
+  monitorKeywords: publicProcedure
+    .input(z.object({
+      keywords: z.array(z.string()).min(1).max(20),
+      alertThreshold: z.number().min(0).max(1).default(0.8),
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        const allTrends = await socialApiClient.getAllTrends();
+        
+        const monitoredTrends = input.keywords.map(keyword => {
+          const relevantTrends = allTrends.filter(trend =>
+            trend.keyword.toLowerCase().includes(keyword.toLowerCase())
+          );
+          
+          const maxScore = relevantTrends.length > 0
+            ? Math.max(...relevantTrends.map(t => t.score))
+            : 0;
+          
+          const shouldAlert = maxScore >= input.alertThreshold;
+          
+          return {
+            keyword,
+            currentScore: maxScore,
+            shouldAlert,
+            trendingPlatforms: relevantTrends
+              .filter(t => t.score >= input.alertThreshold)
+              .map(t => t.platform),
+            lastUpdated: new Date().toISOString(),
+          };
+        });
+        
+        const alerts = monitoredTrends.filter(t => t.shouldAlert);
+        
+        return {
+          success: true,
+          data: {
+            monitoredTrends,
+            alerts,
+            alertCount: alerts.length,
+          },
+        };
+      } catch (_error) {
+        return {
+          success: false,
+          data: null,
+          error: 'Failed to monitor keywords',
+        };
+      }
+    }),
+});
+
+// Helper methods (would be class methods in production)
+function getRecommendation(prediction: string, score: number): string {
+  if (prediction === 'rising' && score > 0.8) {
+    return 'Create content immediately - high viral potential';
+  } else if (prediction === 'rising') {
+    return 'Good opportunity for content creation';
+  } else if (prediction === 'stable') {
+    return 'Safe choice for consistent engagement';
+  } else {
+    return 'Consider alternative keywords';
+  }
+}
+
+function getBestPlatforms(trends: any[]): string[] {
+  const platformCounts = trends.reduce((acc, trend) => {
+    acc[trend.platform] = (acc[trend.platform] || 0) + trend.score;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  return Object.entries(platformCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3)
+    .map(([platform]) => platform);
+}
+
+function getContentRecommendations(trends: any[], contentType?: string): string[] {
+  const recommendations = [
+    'Use trending hashtags in your content',
+    'Create content around peak engagement times',
+    'Incorporate current trending topics',
+  ];
+  
+  if (contentType === 'video') {
+    recommendations.push('Focus on short-form video content', 'Use trending audio tracks');
+  } else if (contentType === 'image') {
+    recommendations.push('Use bold, eye-catching visuals', 'Include trending colors');
+  }
+  
+  return recommendations;
+}
+
+function getOptimalTiming(): string[] {
+  return [
+    'Post between 6-9 PM for maximum engagement',
+    'Tuesday through Thursday show highest activity',
+    'Weekend posts perform well for lifestyle content',
+  ];
+}
+
+function calculateExpectedReach(trends: any[]): number {
+  const avgScore = trends.reduce((sum, trend) => sum + trend.score, 0) / trends.length;
+  return Math.floor(avgScore * 100000); // Mock calculation
+} 

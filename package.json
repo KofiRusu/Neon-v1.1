@@ -72,7 +72,11 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
+    "@axe-core/react": "^4.10.2",
     "@sendgrid/mail": "^8.1.5",
+    "jest-axe": "^10.0.0",
+    "jspdf": "^3.0.1",
+    "puppeteer": "^24.10.2",
     "twilio": "^5.7.1"
   }
 }

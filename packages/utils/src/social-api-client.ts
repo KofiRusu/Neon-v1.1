@@ -13,18 +13,11 @@ export interface TrendData {
 }
 
 export class SocialApiClient {
-  private apiKeys: {
-    tiktok?: string;
-    instagram?: string;
-    twitter?: string;
-  };
+  private _initialized: boolean = false;
 
   constructor() {
-    this.apiKeys = {
-      tiktok: process.env.TIKTOK_API_KEY,
-      instagram: process.env.INSTAGRAM_API_KEY,
-      twitter: process.env.TWITTER_API_KEY,
-    };
+    // Initialize API connections if needed
+    this._initialized = true;
   }
 
   async fetchTrendingTikTok(): Promise<TrendData[]> {
