@@ -40,6 +40,7 @@ export class SocialAgent extends AbstractAgent {
   
   constructor(id: string, name: string) {
     super(id, name, 'social', [
+      'generate_post',
       'schedule_post',
       'bulk_schedule',
       'manage_accounts',
@@ -59,6 +60,8 @@ export class SocialAgent extends AbstractAgent {
       const { task, context } = payload;
       
       switch (task) {
+        case 'generate_post':
+          return await this.generatePost(context);
         case 'schedule_post':
           return await this.schedulePostInternal(context);
         case 'bulk_schedule':
@@ -79,6 +82,284 @@ export class SocialAgent extends AbstractAgent {
           throw new Error(`Unknown task: ${task}`);
       }
     });
+  }
+
+  private async generatePost(context: any): Promise<any> {
+    const {
+      platform,
+      topic,
+      tone = 'professional',
+      includeHashtags = true,
+      targetAudience = 'general',
+      maxLength
+    } = context;
+
+    if (!platform || !topic) {
+      throw new Error('Platform and topic are required for post generation');
+    }
+
+    // Generate platform-optimized content
+    const baseContent = this.generateBaseContent(topic, tone, targetAudience);
+    const optimizedContent = this.optimizeContentForPlatform(baseContent, platform);
+    
+    // Apply length constraints if specified
+    const finalContent = maxLength ? this.truncateContent(optimizedContent, maxLength, platform) : optimizedContent;
+    
+    // Generate hashtags if requested
+    const hashtags = includeHashtags ? await this.generateHashtagsForPost(topic, platform) : [];
+    
+    // Calculate engagement predictions
+    const predictions = this.calculateEngagementPredictions(finalContent, hashtags, platform);
+
+    const generatedPost = {
+      id: `generated_post_${Date.now()}`,
+      content: finalContent,
+      hashtags,
+      platform,
+      estimatedReach: predictions.reach,
+      engagementScore: predictions.engagement,
+      metadata: {
+        topic,
+        tone,
+        targetAudience,
+        generatedAt: new Date().toISOString(),
+        platform,
+        contentLength: finalContent.length
+      }
+    };
+
+    return {
+      generatedPost,
+      suggestions: {
+        bestTimes: this.getOptimalPostTimes(platform),
+        improvements: this.getContentImprovements(finalContent, platform),
+        alternativeHashtags: this.getAlternativeHashtags(hashtags, topic)
+      },
+      platformInsights: {
+        characterLimit: this.getCharacterLimit(platform),
+        hashtagLimit: this.getHashtagLimit(platform),
+        bestPractices: this.getPlatformBestPractices(platform)
+      }
+    };
+  }
+
+  private generateBaseContent(topic: string, tone: string, targetAudience: string): string {
+    // Simulate AI content generation based on parameters
+    const templates = {
+      professional: [
+        `Discover the power of ${topic}. Professional solutions that deliver results.`,
+        `Transform your space with premium ${topic}. Excellence in every detail.`,
+        `Experience the difference with our ${topic} services. Quality guaranteed.`
+      ],
+      casual: [
+        `Check out our amazing ${topic}! You're going to love what we've got! 🔥`,
+        `Hey everyone! Just wanted to share our latest ${topic} - so excited about this! ✨`,
+        `Loving our new ${topic}! Can't wait for you all to see it! 💯`
+      ],
+      friendly: [
+        `We're so excited to share our ${topic} with you! Hope you love it as much as we do! 😊`,
+        `Just finished working on this ${topic} and we can't wait to show you! 🌟`,
+        `Our team has been working hard on ${topic} and we're thrilled with the results! 💫`
+      ],
+      authoritative: [
+        `Industry-leading ${topic} solutions. Trusted by professionals worldwide.`,
+        `Setting the standard for ${topic}. Unmatched expertise and proven results.`,
+        `The definitive choice for ${topic}. Excellence backed by years of experience.`
+      ],
+      playful: [
+        `Who's ready for some amazing ${topic}? Let's make magic happen! ✨🎉`,
+        `Time to light up your world with our ${topic}! Ready to be amazed? 🌈`,
+        `Get ready to fall in love with ${topic}! This is going to be epic! 🚀`
+      ]
+    };
+
+    const toneTemplates = templates[tone as keyof typeof templates] || templates.professional;
+    const baseTemplate = toneTemplates[Math.floor(Math.random() * toneTemplates.length)];
+    
+    // Customize for target audience
+    return this.customizeForAudience(baseTemplate, targetAudience);
+  }
+
+  private customizeForAudience(content: string, audience: string): string {
+    const audienceModifiers = {
+      general: content,
+      business: content.replace(/amazing|awesome|love/g, 'exceptional').replace(/🔥|✨|💯/g, ''),
+      creative: content + ' Let your creativity shine!',
+      technical: content.replace(/amazing|awesome/g, 'innovative').replace(/love/g, 'appreciate'),
+      young: content + ' 🔥💯',
+      professional: content.replace(/!/g, '.').replace(/🔥|✨|💯|😊|🌟|💫|🎉|🌈|🚀/g, '')
+    };
+
+    return audienceModifiers[audience as keyof typeof audienceModifiers] || content;
+  }
+
+  private truncateContent(content: string, maxLength: number, platform: string): string {
+    if (content.length <= maxLength) return content;
+    
+    const platformDefaults = {
+      twitter: 250, // Leave room for hashtags
+      instagram: 2000,
+      linkedin: 1300,
+      facebook: 400,
+      tiktok: 100,
+      youtube: 2000
+    };
+    
+    const limit = Math.min(maxLength, platformDefaults[platform as keyof typeof platformDefaults] || maxLength);
+    return content.substring(0, limit - 3) + '...';
+  }
+
+  private async generateHashtagsForPost(topic: string, platform: string): Promise<string[]> {
+    // Generate relevant hashtags for the post
+    const topicWords = topic.toLowerCase().split(' ').filter(word => word.length > 2);
+    const baseHashtags = topicWords.map(word => `#${word}`);
+    
+    const platformHashtags = {
+      instagram: ['#instaDaily', '#photoOfTheDay', '#instagood'],
+      twitter: ['#trending', '#MondayMotivation', '#ThrowbackThursday'],
+      linkedin: ['#professional', '#business', '#networking'],
+      facebook: ['#community', '#local', '#family'],
+      tiktok: ['#viral', '#fyp', '#trending'],
+      youtube: ['#subscribe', '#like', '#share']
+    };
+
+    const industryHashtags = ['#neonhub', '#neonsigns', '#customdesign', '#lighting', '#business'];
+    
+    const allHashtags = [
+      ...baseHashtags.slice(0, 2),
+      ...industryHashtags.slice(0, 3),
+      ...(platformHashtags[platform as keyof typeof platformHashtags] || []).slice(0, 2)
+    ];
+
+    return allHashtags.slice(0, this.getHashtagLimit(platform));
+  }
+
+  private calculateEngagementPredictions(content: string, hashtags: string[], platform: string): any {
+    // Simulate engagement prediction algorithm
+    const baseReach = Math.floor(Math.random() * 5000 + 1000);
+    const contentScore = content.length > 50 ? 1.2 : 1.0;
+    const hashtagScore = hashtags.length > 0 ? 1.3 : 1.0;
+    const platformMultiplier = {
+      instagram: 1.4,
+      twitter: 1.1,
+      linkedin: 1.2,
+      facebook: 1.0,
+      tiktok: 1.8,
+      youtube: 1.5
+    };
+
+    const multiplier = platformMultiplier[platform as keyof typeof platformMultiplier] || 1.0;
+    const finalReach = Math.floor(baseReach * contentScore * hashtagScore * multiplier);
+    const engagementRate = Math.floor(Math.random() * 30 + 65); // 65-95%
+
+    return {
+      reach: finalReach,
+      engagement: engagementRate
+    };
+  }
+
+  private getOptimalPostTimes(platform: string): string[] {
+    const times = {
+      instagram: ['11:00 AM', '2:00 PM', '5:00 PM'],
+      twitter: ['8:00 AM', '12:00 PM', '7:00 PM'],
+      linkedin: ['8:00 AM', '12:00 PM', '5:00 PM'],
+      facebook: ['9:00 AM', '1:00 PM', '3:00 PM'],
+      tiktok: ['6:00 AM', '10:00 AM', '7:00 PM'],
+      youtube: ['2:00 PM', '8:00 PM', '9:00 PM']
+    };
+
+    return times[platform as keyof typeof times] || ['12:00 PM', '6:00 PM'];
+  }
+
+  private getContentImprovements(content: string, platform: string): string[] {
+    const improvements = [];
+    
+    if (content.length < 50) {
+      improvements.push('Consider adding more detail to increase engagement');
+    }
+    
+    if (!/[!?]/.test(content)) {
+      improvements.push('Add excitement with exclamation points or questions');
+    }
+    
+    if (platform === 'instagram' && !/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/u.test(content)) {
+      improvements.push('Consider adding emojis for Instagram');
+    }
+    
+    if (platform === 'linkedin' && content.includes('amazing') || content.includes('awesome')) {
+      improvements.push('Use more professional language for LinkedIn');
+    }
+
+    return improvements.length > 0 ? improvements : ['Content looks great!'];
+  }
+
+  private getAlternativeHashtags(currentHashtags: string[], topic: string): string[] {
+    const alternatives = [
+      '#marketing', '#branding', '#design', '#creative', '#innovation',
+      '#quality', '#custom', '#premium', '#professional', '#unique'
+    ];
+    
+    // Filter out hashtags already used and add topic-specific ones
+    return alternatives
+      .filter(tag => !currentHashtags.includes(tag))
+      .concat([`#${topic.replace(/\s+/g, '').toLowerCase()}Ideas`])
+      .slice(0, 5);
+  }
+
+  private getCharacterLimit(platform: string): number {
+    const limits = {
+      twitter: 280,
+      instagram: 2200,
+      linkedin: 3000,
+      facebook: 63206,
+      tiktok: 150,
+      youtube: 2000
+    };
+
+    return limits[platform as keyof typeof limits] || 2000;
+  }
+
+  private getPlatformBestPractices(platform: string): string[] {
+    const practices = {
+      instagram: [
+        'Use high-quality visuals',
+        'Include 5-10 relevant hashtags',
+        'Post during peak hours',
+        'Engage with comments quickly'
+      ],
+      twitter: [
+        'Keep it concise and engaging',
+        'Use 1-2 hashtags maximum',
+        'Include visuals when possible',
+        'Engage in conversations'
+      ],
+      linkedin: [
+        'Share professional insights',
+        'Use industry-relevant hashtags',
+        'Post during business hours',
+        'Encourage professional discussions'
+      ],
+      facebook: [
+        'Focus on community building',
+        'Use native video when possible',
+        'Post when your audience is active',
+        'Encourage shares and comments'
+      ],
+      tiktok: [
+        'Create trending, engaging content',
+        'Use popular hashtags and sounds',
+        'Post consistently',
+        'Engage with trends quickly'
+      ],
+      youtube: [
+        'Create compelling thumbnails',
+        'Use detailed descriptions',
+        'Include relevant tags',
+        'Engage with subscribers'
+      ]
+    };
+
+    return practices[platform as keyof typeof practices] || practices.instagram;
   }
 
   private async schedulePostInternal(context: any): Promise<any> {
@@ -310,43 +591,45 @@ export class SocialAgent extends AbstractAgent {
 
   private async suggestHashtags(context: any): Promise<any> {
     const {
-      content,
+      topic,
       platform,
-      industry = 'neon_signs',
+      count = 10,
       targetAudience = 'general'
     } = context;
 
-    // Analyze content for relevant keywords
-    const extractedKeywords = this.extractKeywords(content);
+    if (!topic) {
+      throw new Error('Topic is required for hashtag suggestions');
+    }
+
+    // Analyze topic for relevant keywords
+    const extractedKeywords = this.extractKeywords(topic);
     
     // Get platform-specific hashtag suggestions
     const suggestions = {
-      trending: this.getTrendingHashtags(platform, industry),
-      relevant: this.getRelevantHashtags(extractedKeywords, industry),
-      niche: this.getNicheHashtags(industry, targetAudience),
+      trending: this.getTrendingHashtags(platform, 'neon_signs'),
+      relevant: this.getRelevantHashtags(extractedKeywords, 'neon_signs'),
+      niche: this.getNicheHashtags('neon_signs', targetAudience),
       branded: this.getBrandedHashtags(),
-      competitive: this.getCompetitorHashtags(industry)
+      competitive: this.getCompetitorHashtags('neon_signs')
     };
 
-    // Calculate hashtag performance estimates
-    const hashtagAnalysis = Object.keys(suggestions).map(category => ({
-      category,
-      hashtags: suggestions[category as keyof typeof suggestions].map((hashtag: string) => ({
-        hashtag,
-        estimatedReach: Math.floor(Math.random() * 50000 + 5000),
-        difficulty: Math.floor(Math.random() * 70 + 30), // 30-100
-        relevanceScore: Math.floor(Math.random() * 30 + 70), // 70-100
-        usageFrequency: this.getHashtagUsage(hashtag)
-      }))
+    // Flatten all suggestions and create hashtag objects
+    const allHashtags = Object.values(suggestions).flat();
+    const hashtagSuggestions = allHashtags.slice(0, count).map((hashtag: string) => ({
+      hashtag,
+      estimatedReach: Math.floor(Math.random() * 50000 + 5000),
+      difficulty: Math.floor(Math.random() * 70 + 30), // 30-100
+      relevanceScore: Math.floor(Math.random() * 30 + 70), // 70-100
     }));
 
     // Generate optimal hashtag mix
-    const optimalMix = this.generateOptimalHashtagMix(hashtagAnalysis, platform);
+    const optimalMix = this.generateOptimalHashtagMix([{ category: 'suggested', hashtags: hashtagSuggestions }], platform);
 
     return {
-      extractedKeywords,
-      suggestions: hashtagAnalysis,
+      hashtags: hashtagSuggestions,
+      suggestions: hashtagSuggestions, // Alternative format for compatibility
       optimalMix,
+      extractedKeywords,
       platformLimits: {
         instagram: 30,
         twitter: 'unlimited (but 2-3 recommended)',
@@ -354,14 +637,15 @@ export class SocialAgent extends AbstractAgent {
         facebook: 'no limit (but use sparingly)',
         tiktok: 100
       },
-      best_practices: {
+      bestPractices: {
         [platform]: this.getHashtagBestPractices(platform)
       },
       metadata: {
         generatedAt: new Date().toISOString(),
         platform,
-        industry,
-        targetAudience
+        topic,
+        targetAudience,
+        count
       }
     };
   }

@@ -9,6 +9,8 @@ import { OutreachAgent } from './agents/outreach-agent';
 import { TrendAgent } from './agents/trend-agent';
 import { InsightAgent } from './agents/insight-agent';
 import { DesignAgent } from './agents/design-agent';
+import { EmailMarketingAgent } from './agents/email-agent';
+import { CustomerSupportAgent } from './agents/support-agent';
 
 /**
  * Register all available agents with the AgentFactory
@@ -23,6 +25,8 @@ export function registerAllAgents(): void {
   AgentFactory.registerAgent('trend', TrendAgent);
   AgentFactory.registerAgent('insight', InsightAgent);
   AgentFactory.registerAgent('design', DesignAgent);
+  AgentFactory.registerAgent('email', EmailMarketingAgent);
+  AgentFactory.registerAgent('support', CustomerSupportAgent);
 
   logger.info(
     'Agent registry initialized',
@@ -50,6 +54,20 @@ export function isAgentTypeRegistered(type: string): boolean {
  */
 export function createSEOAgent(): SEOAgent {
   return new SEOAgent();
+}
+
+/**
+ * Create an Email Marketing agent instance
+ */
+export function createEmailMarketingAgent(): EmailMarketingAgent {
+  return new EmailMarketingAgent();
+}
+
+/**
+ * Create a Customer Support agent instance
+ */
+export function createCustomerSupportAgent(): CustomerSupportAgent {
+  return new CustomerSupportAgent();
 }
 
 /**
@@ -95,5 +113,31 @@ export const AGENT_CAPABILITIES = {
     'create_visual',
     'optimize_design',
     'generate_mockup'
+  ],
+  email: [
+    'generate_email_sequence',
+    'personalize_email',
+    'analyze_performance',
+    'create_ab_test',
+    'send_campaign',
+    'manage_templates',
+    'segment_audience',
+    'optimize_send_times',
+    'generate_subject_lines',
+    'create_newsletter'
+  ],
+  support: [
+    'classify_message',
+    'generate_reply',
+    'analyze_sentiment',
+    'escalate_ticket',
+    'create_ticket',
+    'update_ticket',
+    'send_whatsapp_message',
+    'auto_respond',
+    'manage_knowledge_base',
+    'generate_summary',
+    'track_satisfaction',
+    'manage_queue'
   ]
 } as const;

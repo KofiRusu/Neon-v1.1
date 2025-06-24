@@ -3,6 +3,52 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const socialRouter = createTRPCRouter({
+  generatePost: publicProcedure
+    .input(z.object({
+      platform: z.enum(['instagram', 'facebook', 'twitter', 'linkedin', 'tiktok', 'youtube']),
+      topic: z.string().min(1),
+      tone: z.enum(['professional', 'casual', 'friendly', 'authoritative', 'playful']),
+      includeHashtags: z.boolean().default(true),
+      targetAudience: z.string().optional(),
+      maxLength: z.number().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const socialAgent = new SocialAgent('social-content', 'Social Content Generator');
+      return await socialAgent.execute({
+        task: 'generate_post',
+        context: {
+          platform: input.platform,
+          topic: input.topic,
+          tone: input.tone,
+          includeHashtags: input.includeHashtags,
+          targetAudience: input.targetAudience,
+          maxLength: input.maxLength,
+        },
+        priority: 'high'
+      });
+    }),
+
+  suggestHashtags: publicProcedure
+    .input(z.object({
+      topic: z.string().min(1),
+      platform: z.enum(['instagram', 'facebook', 'twitter', 'linkedin', 'tiktok', 'youtube']).optional(),
+      count: z.number().min(1).max(50).default(10),
+      targetAudience: z.string().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const socialAgent = new SocialAgent('social-hashtags', 'Social Hashtag Generator');
+      return await socialAgent.execute({
+        task: 'suggest_hashtags',
+        context: {
+          topic: input.topic,
+          platform: input.platform,
+          count: input.count,
+          targetAudience: input.targetAudience,
+        },
+        priority: 'medium'
+      });
+    }),
+
   schedulePost: publicProcedure
     .input(z.object({
       platform: z.enum(['facebook', 'instagram', 'twitter', 'linkedin', 'tiktok', 'youtube']),

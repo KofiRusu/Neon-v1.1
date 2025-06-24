@@ -1,8 +1,175 @@
-import { CustomerSupportAgent } from "@neon/core-agents";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { CustomerSupportAgent, type MessageClassificationInput, type ReplyGenerationInput, type SentimentAnalysisInput, type EscalationInput } from "@neon/core-agents";
+import { logger } from '@neon/utils';
+
+// Validation schemas
+const MessageClassificationInputSchema = z.object({
+  text: z.string().min(1, "Message text is required"),
+  customer: z.object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+    email: z.string().email().optional(),
+    phone: z.string().optional(),
+    history: z.array(z.object({
+      message: z.string(),
+      timestamp: z.date(),
+      channel: z.string()
+    })).optional()
+  }).optional(),
+  context: z.object({
+    channel: z.enum(['whatsapp', 'email', 'chat', 'phone', 'social']),
+    previousInteractions: z.number().optional(),
+    customerTier: z.enum(['basic', 'premium', 'enterprise']).optional()
+  }).optional()
+});
+
+const ReplyGenerationInputSchema = z.object({
+  message: z.string().min(1, "Message is required"),
+  tone: z.enum(['professional', 'friendly', 'empathetic', 'apologetic', 'informative']).default('professional'),
+  customer: z.object({
+    name: z.string().optional(),
+    tier: z.enum(['basic', 'premium', 'enterprise']).optional(),
+    language: z.string().optional(),
+    preferences: z.array(z.string()).optional()
+  }).optional(),
+  context: z.object({
+    ticketHistory: z.array(z.object({
+      message: z.string(),
+      response: z.string().optional(),
+      timestamp: z.date()
+    })).optional(),
+    relatedArticles: z.array(z.object({
+      title: z.string(),
+      url: z.string(),
+      relevance: z.number()
+    })).optional(),
+    previousResolution: z.string().optional()
+  }).optional(),
+  constraints: z.object({
+    maxLength: z.number().optional(),
+    includeLinks: z.boolean().optional(),
+    escalationAvailable: z.boolean().optional()
+  }).optional()
+});
+
+const SentimentAnalysisInputSchema = z.object({
+  message: z.string().min(1, "Message is required"),
+  context: z.object({
+    previousMessages: z.array(z.string()).optional(),
+    customerHistory: z.string().optional(),
+    interactionType: z.string().optional()
+  }).optional()
+});
+
+const EscalationInputSchema = z.object({
+  message: z.string().min(1, "Message is required"),
+  ticketId: z.string().optional(),
+  reason: z.string().optional(),
+  customerTier: z.enum(['basic', 'premium', 'enterprise']).optional(),
+  agentWorkload: z.number().optional()
+});
 
 export const supportRouter = createTRPCRouter({
+  /**
+   * Classify incoming support messages using AI
+   */
+  classifyMessage: publicProcedure
+    .input(MessageClassificationInputSchema)
+    .mutation(async ({ input }) => {
+      try {
+        logger.info('Classifying support message', { messageLength: input.text.length }, 'SupportRouter');
+        
+        const agent = new CustomerSupportAgent();
+        const result = await agent.classifyMessageAPI(input as MessageClassificationInput);
+        
+        logger.info('Message classified successfully', { intent: result.intent, urgency: result.urgency }, 'SupportRouter');
+        
+        return {
+          success: true,
+          data: result,
+          message: 'Message classified successfully'
+        };
+      } catch (error) {
+        logger.error('Failed to classify message', { error: error instanceof Error ? error.message : 'Unknown error' }, 'SupportRouter');
+        throw new Error(`Failed to classify message: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
+  /**
+   * Generate AI-powered support replies
+   */
+  generateReply: publicProcedure
+    .input(ReplyGenerationInputSchema)
+    .mutation(async ({ input }) => {
+      try {
+        logger.info('Generating support reply', { tone: input.tone, messageLength: input.message.length }, 'SupportRouter');
+        
+        const agent = new CustomerSupportAgent();
+        const result = await agent.generateReplyAPI(input as ReplyGenerationInput);
+        
+        logger.info('Reply generated successfully', { confidence: result.confidence, escalationRecommended: result.escalationRecommended }, 'SupportRouter');
+        
+        return {
+          success: true,
+          data: result,
+          message: 'Reply generated successfully'
+        };
+      } catch (error) {
+        logger.error('Failed to generate reply', { error: error instanceof Error ? error.message : 'Unknown error' }, 'SupportRouter');
+        throw new Error(`Failed to generate reply: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
+  /**
+   * Analyze customer sentiment using AI
+   */
+  analyzeSentiment: publicProcedure
+    .input(SentimentAnalysisInputSchema)
+    .mutation(async ({ input }) => {
+      try {
+        logger.info('Analyzing sentiment', { messageLength: input.message.length }, 'SupportRouter');
+        
+        const agent = new CustomerSupportAgent();
+        const result = await agent.analyzeSentimentAPI(input as SentimentAnalysisInput);
+        
+        logger.info('Sentiment analyzed successfully', { sentiment: result.sentiment, score: result.score }, 'SupportRouter');
+        
+        return {
+          success: true,
+          data: result,
+          message: 'Sentiment analyzed successfully'
+        };
+      } catch (error) {
+        logger.error('Failed to analyze sentiment', { error: error instanceof Error ? error.message : 'Unknown error' }, 'SupportRouter');
+        throw new Error(`Failed to analyze sentiment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
+  /**
+   * Determine escalation requirements
+   */
+  checkEscalation: publicProcedure
+    .input(EscalationInputSchema)
+    .mutation(async ({ input }) => {
+      try {
+        logger.info('Checking escalation requirements', { customerTier: input.customerTier }, 'SupportRouter');
+        
+        const agent = new CustomerSupportAgent();
+        const result = await agent.escalateAPI(input as EscalationInput);
+        
+        logger.info('Escalation check completed', { shouldEscalate: result.shouldEscalate, level: result.escalationLevel }, 'SupportRouter');
+        
+        return {
+          success: true,
+          data: result,
+          message: 'Escalation check completed'
+        };
+      } catch (error) {
+        logger.error('Failed to check escalation', { error: error instanceof Error ? error.message : 'Unknown error' }, 'SupportRouter');
+        throw new Error(`Failed to check escalation: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
   sendWhatsAppMessage: publicProcedure
     .input(z.object({
       recipient: z.string(),
@@ -109,19 +276,6 @@ export const supportRouter = createTRPCRouter({
         task: 'escalate_ticket',
         context: input,
         priority: 'high'
-      });
-    }),
-
-  analyzeSentiment: publicProcedure
-    .input(z.object({
-      message: z.string(),
-    }))
-    .mutation(async ({ input }) => {
-      const supportAgent = new CustomerSupportAgent();
-      return await supportAgent.execute({
-        task: 'analyze_sentiment',
-        context: input,
-        priority: 'low'
       });
     }),
 
@@ -290,4 +444,40 @@ export const supportRouter = createTRPCRouter({
         ],
       };
     }),
+
+  /**
+   * Get agent status and health check
+   */
+  getAgentStatus: publicProcedure
+    .query(async () => {
+      try {
+        const agent = new CustomerSupportAgent();
+        const status = await agent.getStatus();
+        
+        return {
+          success: true,
+          data: {
+            agentId: agent.id,
+            agentName: agent.name,
+            type: agent.type,
+            capabilities: agent.capabilities,
+            status: status.status,
+            performance: status.performance,
+            lastExecution: status.lastExecution,
+            availableFeatures: {
+              aiPowered: !!process.env.OPENAI_API_KEY,
+              whatsappIntegration: true, // Would be based on Twilio configuration
+              knowledgeBase: true,
+              sentimentAnalysis: true,
+              autoEscalation: true,
+              ticketManagement: true
+            }
+          },
+          message: 'Agent status retrieved successfully'
+        };
+      } catch (error) {
+        logger.error('Failed to get agent status', { error: error instanceof Error ? error.message : 'Unknown error' }, 'SupportRouter');
+        throw new Error(`Failed to get agent status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    })
 }); 
