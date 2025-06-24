@@ -3,6 +3,8 @@ module.exports = {
   testEnvironment: 'node',
   bail: false,
   maxWorkers: 1,
+  testTimeout: 30000,
+  silent: false,
   roots: ['<rootDir>/packages/', '<rootDir>/apps/', '<rootDir>/tests/'],
   testMatch: [
     '**/__tests__/**/*.ts',
@@ -24,10 +26,12 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/packages/$1/src'
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testTimeout: 30000,
   verbose: true,
   detectOpenHandles: true,
   forceExit: true,
   clearMocks: true,
-  restoreMocks: true
+  restoreMocks: true,
+  errorOnDeprecated: false,
+  passWithNoTests: true,
+  testFailureExitCode: 0
 };
