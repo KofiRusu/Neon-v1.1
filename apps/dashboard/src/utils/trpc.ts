@@ -16,8 +16,20 @@ export const api = createTRPCNext<AppRouter>({
       links: [
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          headers() {
+            return {};
+          },
         }),
       ],
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            staleTime: 5 * 1000, // 5 seconds
+            refetchOnWindowFocus: false,
+          },
+        },
+      },
     };
   },
   ssr: false,

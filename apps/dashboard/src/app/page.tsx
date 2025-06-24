@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { trpc } from '../lib/trpc';
+import { api } from '../utils/trpc';
 import {
   ChartBarIcon,
   CogIcon,
@@ -40,9 +40,21 @@ export default function Dashboard(): JSX.Element {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch real data from our API
-  const { data: campaignStats } = trpc.campaign.getStats.useQuery();
-  const { data: recentAgentActivity } = trpc.agent.getRecentActions.useQuery({ limit: 5 });
+  // Fetch real data from our API with error handling
+  const { data: campaignStats } = api.campaign.getStats.useQuery(undefined, {
+    enabled: true,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+  
+  const { data: recentAgentActivity } = api.agent.getRecentActions.useQuery(
+    { limit: 5 }, 
+    {
+      enabled: true,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const navigationItems = [
     {
@@ -297,7 +309,7 @@ export default function Dashboard(): JSX.Element {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-neon-blue">NeonHub</h1>
-                  <p className="text-xs text-secondary">AI Marketing Ecosystem v0.3</p>
+                  <p className="text-xs text-secondary">AI Marketing Ecosystem v1.1</p>
                 </div>
               </div>
               <div className="hidden lg:flex items-center space-x-4 text-sm text-secondary">
