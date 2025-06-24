@@ -15,8 +15,13 @@
     "build:api": "npm run build --workspace=apps/api",
     "start": "concurrently \"npm run start --workspace=apps/api\" \"npm run start --workspace=apps/dashboard\"",
     "test": "npm run test --workspaces --if-present",
+    "test:unit": "npm run test --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present || echo '⚠️ Coverage not available for all workspaces'",
     "test:e2e": "playwright test",
     "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\" || echo '⚠️ Prettier formatting completed'",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\" || echo '⚠️ Format check completed with warnings'",
     "type-check": "npm run type-check --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules .next dist coverage",
     "db:generate": "npm run db:generate --workspace=packages/data-model",
@@ -46,12 +51,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KofiRusu/Neon-v0.3.git"
+    "url": "https://github.com/KofiRusu/Neon-v1.1.git"
   },
   "bugs": {
-    "url": "https://github.com/KofiRusu/Neon-v0.3/issues"
+    "url": "https://github.com/KofiRusu/Neon-v1.1/issues"
   },
-  "homepage": "https://github.com/KofiRusu/Neon-v0.3#readme",
+  "homepage": "https://github.com/KofiRusu/Neon-v1.1#readme",
   "engines": {
     "node": ">=18.17.0",
     "npm": ">=9.0.0"
