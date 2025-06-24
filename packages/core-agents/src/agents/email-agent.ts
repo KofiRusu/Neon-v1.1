@@ -798,36 +798,42 @@ Format as JSON with insights array and recommendations array.
     return Math.round(Math.min(100, score));
   }
 
-  private generateOptimizationSuggestions(metrics: any) {
+  private generateOptimizationSuggestions(metrics: any): Array<{
+    category: string;
+    suggestion: string;
+    impact: 'low' | 'medium' | 'high';
+    effort: 'easy' | 'medium' | 'hard';
+    priority: number;
+  }> {
     const suggestions = [];
-    
-    if (metrics.openRate < 20) {
+
+    if (metrics.openRate < 0.2) {
       suggestions.push({
-        category: 'Subject Lines',
-        suggestion: 'Test more compelling subject lines with urgency or personalization',
-        impact: 'high',
-        effort: 'easy',
-        priority: 9
+        category: 'Subject Line',
+        suggestion: 'Test shorter, more compelling subject lines',
+        impact: 'high' as const,
+        effort: 'easy' as const,
+        priority: 1
       });
     }
-    
-    if (metrics.clickRate < 3) {
+
+    if (metrics.clickRate < 0.05) {
+      suggestions.push({
+        category: 'Call to Action',
+        suggestion: 'Make CTA buttons more prominent and compelling',
+        impact: 'medium' as const,
+        effort: 'medium' as const,
+        priority: 2
+      });
+    }
+
+    if (metrics.unsubscribeRate > 0.01) {
       suggestions.push({
         category: 'Content',
-        suggestion: 'Improve call-to-action buttons and email design',
-        impact: 'high',
-        effort: 'medium',
-        priority: 8
-      });
-    }
-    
-    if (metrics.deliveryRate < 95) {
-      suggestions.push({
-        category: 'Deliverability',
-        suggestion: 'Clean email list and improve sender reputation',
-        impact: 'high',
-        effort: 'hard',
-        priority: 10
+        suggestion: 'Review content relevance and frequency',
+        impact: 'high' as const,
+        effort: 'hard' as const,
+        priority: 1
       });
     }
 

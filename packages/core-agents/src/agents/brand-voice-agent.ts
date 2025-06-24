@@ -398,7 +398,7 @@ export class BrandVoiceAgent extends AbstractAgent {
     totalScore += toneScore * weights.toneAlignment;
     
     // Keyword usage bonus
-    const keywordScore = Object.values(analysis.keywordUsage).reduce((sum: number, count: number) => sum + count, 0);
+    const keywordScore = Number(Object.values(analysis.keywordUsage).reduce((sum: number, count: number) => sum + (count as number), 0));
     totalScore += Math.min(100, keywordScore * 10) * weights.keywordUsage;
     
     return Math.round(totalScore);
@@ -438,7 +438,7 @@ export class BrandVoiceAgent extends AbstractAgent {
     }
     
     // Keyword suggestions
-    const keywordCount = Object.values(analysis.keywordUsage).reduce((sum: number, count: number) => sum + count, 0);
+    const keywordCount = Object.values(analysis.keywordUsage).reduce((sum: number, count: number) => sum + (count as number), 0);
     if (keywordCount === 0) {
       suggestions.push({
         type: 'vocabulary',

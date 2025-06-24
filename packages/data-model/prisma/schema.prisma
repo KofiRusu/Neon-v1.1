@@ -85,6 +85,8 @@ model Campaign {
   analytics       Analytics[]
   campaignMetrics CampaignMetric[]
   user            User             @relation(fields: [userId], references: [id])
+  b2bLeads        B2BLead[]
+  outreachHistory OutreachHistory[]
 
   @@map("campaigns")
 }

@@ -5,7 +5,7 @@
  * and error handling capabilities.
  */
 
-import { db } from '@neon/data-model';
+import { db } from '../../data-model/src';
 import type { AgentName } from '@neon/types';
 import { logger } from './logger';
 

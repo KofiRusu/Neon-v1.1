@@ -1,7 +1,15 @@
 module.exports = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+      tsconfig: {
+        module: 'esnext'
+      }
+    }
+  },
   moduleNameMapping: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
@@ -32,9 +40,17 @@ module.exports = {
     {
       displayName: 'core-agents',
       testMatch: ['<rootDir>/packages/core-agents/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest',
+      preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
       extensionsToTreatAsEsm: ['.ts'],
+      globals: {
+        'ts-jest': {
+          useESM: true,
+          tsconfig: {
+            module: 'esnext'
+          }
+        }
+      },
       moduleNameMapping: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
       },
@@ -50,14 +66,26 @@ module.exports = {
     {
       displayName: 'reasoning-engine',
       testMatch: ['<rootDir>/packages/reasoning-engine/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest',
+      preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
+      extensionsToTreatAsEsm: ['.ts'],
+      globals: {
+        'ts-jest': {
+          useESM: true
+        }
+      }
     },
     {
       displayName: 'utils',
       testMatch: ['<rootDir>/packages/utils/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest',
+      preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
+      extensionsToTreatAsEsm: ['.ts'],
+      globals: {
+        'ts-jest': {
+          useESM: true
+        }
+      }
     },
   ],
 };

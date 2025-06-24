@@ -1,5 +1,28 @@
+import OpenAI from 'openai';
 import { AbstractAgent } from '../base-agent';
-import type { AgentResult, AgentPayload } from '../base-agent';
+import type { AgentPayload, AgentResult } from '../base-agent';
+import type { AgentContext, ContentResult } from '../types';
+import { logger } from '@neon/utils';
+
+// Define local interfaces for content generation
+export interface ContentGenerationParams {
+  topic: string;
+  type: string;
+  tone?: string;
+  keywords?: string[];
+  targetAudience?: string;
+}
+
+export interface ContentOptimizationParams {
+  content: string;
+  targetKeywords: string[];
+  platform?: string;
+}
+
+export interface ContentAnalysisParams {
+  content: string;
+  metrics?: string[];
+}
 
 export interface ContentGenerationContext {
   type: 'blog' | 'social_post' | 'email' | 'caption' | 'copy';
