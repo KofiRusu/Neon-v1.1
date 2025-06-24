@@ -2,7 +2,12 @@
 
 # 🚀 NeonHub v1.1 - AI-Powered Marketing Automation Platform
 
+[![CI/CD Pipeline](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/ci.yml/badge.svg)](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/ci.yml)
+[![Deployment](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/deploy.yml/badge.svg)](https://github.com/KofiRusu/Neon-v1.1/actions/workflows/deploy.yml)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v1.1.git)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Revolutionary AI-powered marketing automation platform with autonomous agent architecture, designed for modern businesses seeking intelligent, scalable marketing solutions.**
 
