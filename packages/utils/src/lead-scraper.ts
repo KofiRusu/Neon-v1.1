@@ -7,19 +7,59 @@ import puppeteer, { Browser } from 'puppeteer';
 
 export interface LeadData {
   email: string;
-  firstName?: string;
-  lastName?: string;
-  company?: string;
-  position?: string;
-  linkedinUrl?: string;
+  firstName: string;
+  lastName: string;
+  company: string;
+  position: string;
+  linkedinUrl: string;
+  industry: string;
+  companySize: string;
+  location: string;
+  score?: number;
+  lastInteraction?: Date;
+  source?: string;
+}
+
+export interface LeadSearchCriteria {
+  keywords: string[];
   industry?: string;
-  companySize?: string;
   location?: string;
+  companySize?: string;
+  seniority?: string;
+  excludeCompanies?: string[];
+  maxResults?: number;
+}
+
+export interface LeadScrapingResult {
+  leads: LeadData[];
+  totalFound: number;
+  searchCriteria: LeadSearchCriteria;
+  searchTime: Date;
+  sources: string[];
 }
 
 export class LeadScraper {
   private browser: Browser | null = null;
   private isHeadless: boolean;
+
+  private static industries = [
+    'Technology', 'Healthcare', 'Finance', 'Manufacturing', 
+    'Retail', 'Education', 'Real Estate', 'Marketing'
+  ];
+
+  private static positions = [
+    'CEO', 'CTO', 'CMO', 'VP Sales', 'Marketing Director', 
+    'Sales Manager', 'Business Development', 'Head of Growth'
+  ];
+
+  private static companySizes = [
+    '1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'
+  ];
+
+  private static locations = [
+    'New York, NY', 'San Francisco, CA', 'Los Angeles, CA', 
+    'Chicago, IL', 'Austin, TX', 'Boston, MA', 'Seattle, WA'
+  ];
 
   constructor(headless = true) {
     this.isHeadless = headless;
@@ -76,6 +116,8 @@ export class LeadScraper {
           industry: industryGuess,
           companySize,
           location: locations[Math.floor(Math.random() * locations.length)] || 'San Francisco, CA',
+          score: Math.floor(Math.random() * 100) + 1,
+          source: 'Mock Data Generator'
         });
       }
 
@@ -107,6 +149,8 @@ export class LeadScraper {
         industry: 'Technology',
         companySize: '100-500',
         location: 'San Francisco, CA',
+        score: Math.floor(Math.random() * 100) + 1,
+        source: 'Email Enrichment'
       };
 
       await page.close();
@@ -134,6 +178,8 @@ export class LeadScraper {
           location,
           position: 'Business Owner',
           companySize: '10-50',
+          score: Math.floor(Math.random() * 100) + 1,
+          source: 'Mock Data Generator'
         });
       }
 
@@ -177,6 +223,8 @@ export class LeadScraper {
         company: companyName,
         position: 'Marketing Manager',
         industry: 'Business Services',
+        score: Math.floor(Math.random() * 100) + 1,
+        source: 'Google Search'
       }];
 
       await page.close();
@@ -200,6 +248,8 @@ export class LeadScraper {
         industry: 'Technology',
         companySize: '50-200',
         location: 'San Francisco, CA',
+        score: Math.floor(Math.random() * 100) + 1,
+        source: 'Mock Data Generator'
       });
     }
     return leads;
@@ -211,4 +261,127 @@ export class LeadScraper {
       this.browser = null;
     }
   }
-} 
+
+  /**
+   * Search for leads based on criteria
+   */
+  async searchLeads(criteria: LeadSearchCriteria): Promise<LeadScrapingResult> {
+    const maxResults = criteria.maxResults || 50;
+    const leads: LeadData[] = [];
+
+    // Generate mock leads based on search criteria
+    const searchQuery = criteria.keywords.join(' ');
+    
+    for (let i = 0; i < Math.min(maxResults, 100); i++) {
+      const companySize = criteria.companySize || 
+        LeadScraper.companySizes[Math.floor(Math.random() * LeadScraper.companySizes.length)];
+      
+      leads.push({
+        email: `lead${i}.${searchQuery.replace(/\s+/g, '').toLowerCase()}@company${i}.com`,
+        firstName: this.generateFirstName(),
+        lastName: this.generateLastName(),
+        company: this.generateCompanyName(criteria.industry),
+        position: LeadScraper.positions[Math.floor(Math.random() * LeadScraper.positions.length)],
+        linkedinUrl: `https://linkedin.com/in/lead${i}`,
+        industry: criteria.industry || LeadScraper.industries[Math.floor(Math.random() * LeadScraper.industries.length)],
+        companySize,
+        location: criteria.location || LeadScraper.locations[Math.floor(Math.random() * LeadScraper.locations.length)],
+        score: Math.floor(Math.random() * 100) + 1,
+        source: 'Mock Data Generator'
+      });
+    }
+
+    return {
+      leads,
+      totalFound: leads.length,
+      searchCriteria: criteria,
+      searchTime: new Date(),
+      sources: ['LinkedIn (Simulated)', 'Company Websites (Simulated)', 'Public Databases (Simulated)']
+    };
+  }
+
+  /**
+   * Enrich lead data with additional information
+   */
+  async enrichLead(email: string): Promise<LeadData | null> {
+    // Simulate lead enrichment
+    if (!email.includes('@')) {
+      return null;
+    }
+
+    const company = email.split('@')[1].split('.')[0];
+    
+    return {
+      email,
+      firstName: this.generateFirstName(),
+      lastName: this.generateLastName(),
+      company: this.capitalizeFirst(company),
+      position: LeadScraper.positions[Math.floor(Math.random() * LeadScraper.positions.length)],
+      linkedinUrl: `https://linkedin.com/in/${email.split('@')[0]}`,
+      industry: LeadScraper.industries[Math.floor(Math.random() * LeadScraper.industries.length)],
+      companySize: LeadScraper.companySizes[Math.floor(Math.random() * LeadScraper.companySizes.length)],
+      location: LeadScraper.locations[Math.floor(Math.random() * LeadScraper.locations.length)],
+      score: Math.floor(Math.random() * 100) + 1,
+      source: 'Email Enrichment'
+    };
+  }
+
+  /**
+   * Score lead quality based on various factors
+   */
+  scoreLead(lead: LeadData): number {
+    let score = 50; // Base score
+
+    // Industry scoring
+    if (['Technology', 'Healthcare', 'Finance'].includes(lead.industry)) {
+      score += 20;
+    }
+
+    // Position scoring
+    if (['CEO', 'CTO', 'CMO'].includes(lead.position)) {
+      score += 25;
+    }
+
+    // Company size scoring
+    if (['201-500', '501-1000', '1000+'].includes(lead.companySize)) {
+      score += 15;
+    }
+
+    // LinkedIn presence
+    if (lead.linkedinUrl && lead.linkedinUrl.includes('linkedin.com')) {
+      score += 10;
+    }
+
+    return Math.min(score, 100);
+  }
+
+  private generateFirstName(): string {
+    const names = ['John', 'Jane', 'Michael', 'Sarah', 'David', 'Emily', 'Robert', 'Ashley', 'Christopher', 'Jessica'];
+    return names[Math.floor(Math.random() * names.length)];
+  }
+
+  private generateLastName(): string {
+    const names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+    return names[Math.floor(Math.random() * names.length)];
+  }
+
+  private generateCompanyName(industry?: string): string {
+    const prefixes = ['Tech', 'Global', 'Advanced', 'Prime', 'Elite', 'Digital', 'Smart', 'Pro'];
+    const suffixes = ['Solutions', 'Systems', 'Corp', 'Inc', 'Group', 'Ventures', 'Labs', 'Works'];
+    
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+    
+    return `${prefix} ${suffix}`;
+  }
+
+  private capitalizeFirst(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+}
+
+// Export singleton instance
+export const leadScraper = new LeadScraper();
+
+// Export default for compatibility
+export default leadScraper; 
