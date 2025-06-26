@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-06-26T17:55:06.744Z",
+  "totalIssues": 666,
+  "totalErrors": 458,
+  "totalWarnings": 208,
+  "totalFiles": 64,
+  "workspaces": [
+    "api",
+    "core-agents",
+    "dashboard",
+    "data-model",
+    "reasoning-engine",
+    "types",
+    "utils"
+  ],
+  "topRules": [
+    [
+      "@typescript-eslint/no-explicit-any",
+      386
+    ],
+    [
+      "@typescript-eslint/no-unused-vars",
+      172
+    ],
+    [
+      "@typescript-eslint/no-empty-object-type",
+      24
+    ],
+    [
+      "@typescript-eslint/no-non-null-assertion",
+      23
+    ],
+    [
+      "no-console",
+      21
+    ],
+    [
+      "@typescript-eslint/explicit-function-return-type",
+      18
+    ],
+    [
+      "prefer-template",
+      7
+    ],
+    [
+      "@typescript-eslint/no-require-imports",
+      6
+    ],
+    [
+      "react/no-unescaped-entities",
+      4
+    ],
+    [
+      "@next/next/no-img-element",
+      2
+    ]
+  ],
+  "severity": {
+    "error": 458,
+    "warning": 208
+  }
+}

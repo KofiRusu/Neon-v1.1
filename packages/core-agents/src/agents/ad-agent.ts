@@ -9,7 +9,7 @@ export interface AdCampaignContext {
   platform: 'facebook' | 'google' | 'instagram' | 'linkedin' | 'tiktok' | 'twitter';
   budget: number;
   targetAudience: {
-    demographics: Record<string, any>;
+    demographics: Record<string, unknown>;
     interests: string[];
     behaviors: string[];
     locations: string[];

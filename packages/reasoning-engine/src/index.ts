@@ -8,7 +8,7 @@ export interface ReasoningContext {
   userId?: string;
   campaignId?: string;
   history: ContextEntry[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   createdAt: Date;
   lastAccessed: Date;
   priority: 'low' | 'medium' | 'high' | 'critical';
@@ -17,11 +17,11 @@ export interface ReasoningContext {
 export interface ContextEntry {
   id: string;
   type: 'user_input' | 'agent_output' | 'system_message' | 'tool_call' | 'tool_result';
-  content: any;
+  content: unknown;
   agentId?: string;
   timestamp: Date;
   tokens?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface InferenceRequest {
@@ -32,7 +32,7 @@ export interface InferenceRequest {
   maxTokens?: number;
   stream?: boolean;
   priority?: 'low' | 'medium' | 'high' | 'critical';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface InferenceResult {
@@ -44,7 +44,7 @@ export interface InferenceResult {
   responseTime: number;
   cached: boolean;
   confidence?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AgentRoute {
@@ -173,7 +173,15 @@ export class ContextCache {
     }
   }
 
-  getMetrics() {
+  getMetrics(): {
+    hits: number;
+    misses: number;
+    evictions: number;
+    totalTokens: number;
+    hitRate: number;
+    cacheSize: number;
+    avgTokensPerContext: number;
+  } {
     return {
       ...this.metrics,
       hitRate: this.metrics.hits / (this.metrics.hits + this.metrics.misses),
@@ -440,7 +448,15 @@ export class ReasoningEngine extends EventEmitter {
     this.agentRouter.registerAgent(agentType, capabilities);
   }
 
-  getMetrics() {
+  getMetrics(): {
+    totalInferences: number;
+    avgResponseTime: number;
+    streamingRequests: number;
+    cachedResponses: number;
+    cache: ReturnType<ContextCache['getMetrics']>;
+    agents: AgentRoute[];
+    activeInferences: number;
+  } {
     return {
       ...this.metrics,
       cache: this.contextCache.getMetrics(),
