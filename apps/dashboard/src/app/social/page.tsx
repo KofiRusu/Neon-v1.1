@@ -42,12 +42,17 @@ interface ScheduledPostData {
 }
 
 const PLATFORMS = [
-  { value: 'instagram', label: 'Instagram', color: 'bg-gradient-to-r from-purple-500 to-pink-500', icon: '📷' },
+  {
+    value: 'instagram',
+    label: 'Instagram',
+    color: 'bg-gradient-to-r from-purple-500 to-pink-500',
+    icon: '📷',
+  },
   { value: 'facebook', label: 'Facebook', color: 'bg-blue-600', icon: '👥' },
   { value: 'twitter', label: 'Twitter', color: 'bg-sky-500', icon: '🐦' },
   { value: 'linkedin', label: 'LinkedIn', color: 'bg-blue-700', icon: '💼' },
   { value: 'tiktok', label: 'TikTok', color: 'bg-black', icon: '🎵' },
-  { value: 'youtube', label: 'YouTube', color: 'bg-red-600', icon: '📺' }
+  { value: 'youtube', label: 'YouTube', color: 'bg-red-600', icon: '📺' },
 ];
 
 const TONES = [
@@ -55,7 +60,7 @@ const TONES = [
   { value: 'casual', label: 'Casual' },
   { value: 'friendly', label: 'Friendly' },
   { value: 'authoritative', label: 'Authoritative' },
-  { value: 'playful', label: 'Playful' }
+  { value: 'playful', label: 'Playful' },
 ];
 
 export default function SocialMediaManagerPage(): JSX.Element {
@@ -72,11 +77,30 @@ export default function SocialMediaManagerPage(): JSX.Element {
   const [selectedTime, setSelectedTime] = useState('12:00');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
-  const [showToast, setShowToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
+  const [showToast, setShowToast] = useState<{
+    show: boolean;
+    message: string;
+    type: 'success' | 'error';
+  }>({ show: false, message: '', type: 'success' });
 
   // tRPC mutations and queries
   const generatePostMutation = trpc.social.generatePost.useMutation({
-    onSuccess: (data: { generatedPost?: { id: string; content: string; hashtags?: string[]; estimatedReach?: number; engagementScore?: number; }; posts?: { id: string; content: string; hashtags?: string[]; estimatedReach?: number; engagementScore?: number; }[] }) => {
+    onSuccess: (data: {
+      generatedPost?: {
+        id: string;
+        content: string;
+        hashtags?: string[];
+        estimatedReach?: number;
+        engagementScore?: number;
+      };
+      posts?: {
+        id: string;
+        content: string;
+        hashtags?: string[];
+        estimatedReach?: number;
+        engagementScore?: number;
+      }[];
+    }) => {
       // Handle both possible response formats
       const post = data.generatedPost || (data.posts && data.posts[0]);
       if (post) {
@@ -86,9 +110,12 @@ export default function SocialMediaManagerPage(): JSX.Element {
           hashtags: post.hashtags || [],
           platform: selectedPlatform,
           estimatedReach: post.estimatedReach,
-          engagementScore: post.engagementScore
+          engagementScore: post.engagementScore,
         });
-        showToastMessage(`Generated ${post.content.length} character post for ${selectedPlatform}`, 'success');
+        showToastMessage(
+          `Generated ${post.content.length} character post for ${selectedPlatform}`,
+          'success'
+        );
       }
     },
     onError: (error: { message: string }) => {
@@ -106,11 +133,14 @@ export default function SocialMediaManagerPage(): JSX.Element {
           hashtags: post.hashtags || [],
           scheduledTime: new Date(post.scheduledTime),
           status: post.status as 'scheduled' | 'published' | 'failed',
-          mediaUrls: post.mediaUrls || []
+          mediaUrls: post.mediaUrls || [],
         }));
         setScheduledPosts(prev => [...prev, ...newScheduledPosts]);
         setShowScheduleModal(false);
-        showToastMessage(`Post scheduled for ${format(new Date(data.scheduledPosts[0].scheduledTime), 'PPP')}`, 'success');
+        showToastMessage(
+          `Post scheduled for ${format(new Date(data.scheduledPosts[0].scheduledTime), 'PPP')}`,
+          'success'
+        );
       }
     },
     onError: (error: { message: string }) => {
@@ -143,7 +173,13 @@ export default function SocialMediaManagerPage(): JSX.Element {
 
     suggestHashtagsMutation.mutate({
       topic: hashtagTopic,
-      platform: selectedPlatform as 'instagram' | 'facebook' | 'twitter' | 'linkedin' | 'tiktok' | 'youtube',
+      platform: selectedPlatform as
+        | 'instagram'
+        | 'facebook'
+        | 'twitter'
+        | 'linkedin'
+        | 'tiktok'
+        | 'youtube',
       count: 8,
     });
   }, [hashtagTopic, selectedPlatform, suggestHashtagsMutation]);
@@ -155,7 +191,13 @@ export default function SocialMediaManagerPage(): JSX.Element {
     }
 
     generatePostMutation.mutate({
-      platform: selectedPlatform as 'instagram' | 'facebook' | 'twitter' | 'linkedin' | 'tiktok' | 'youtube',
+      platform: selectedPlatform as
+        | 'instagram'
+        | 'facebook'
+        | 'twitter'
+        | 'linkedin'
+        | 'tiktok'
+        | 'youtube',
       topic: postTopic,
       tone: postTone as 'professional' | 'casual' | 'friendly' | 'authoritative' | 'playful',
       includeHashtags: true,
@@ -188,7 +230,13 @@ export default function SocialMediaManagerPage(): JSX.Element {
     const scheduledDateTime = new Date(`${selectedDate}T${selectedTime}`);
 
     schedulePostMutation.mutate({
-      platform: selectedPlatform as 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'tiktok' | 'youtube',
+      platform: selectedPlatform as
+        | 'facebook'
+        | 'instagram'
+        | 'twitter'
+        | 'linkedin'
+        | 'tiktok'
+        | 'youtube',
       content: {
         text: generatedPost.content,
         hashtags: generatedPost.hashtags,
@@ -218,7 +266,17 @@ export default function SocialMediaManagerPage(): JSX.Element {
     return format(date, 'MMM dd, yyyy • h:mm a');
   };
 
-  const TabButton = ({ _id, label, active, onClick }: { _id: string; label: string; active: boolean; onClick: () => void }): JSX.Element => (
+  const TabButton = ({
+    _id,
+    label,
+    active,
+    onClick,
+  }: {
+    _id: string;
+    label: string;
+    active: boolean;
+    onClick: () => void;
+  }): JSX.Element => (
     <button
       onClick={onClick}
       className={`px-6 py-3 font-medium rounded-lg transition-all duration-200 ${
@@ -235,9 +293,11 @@ export default function SocialMediaManagerPage(): JSX.Element {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
       {/* Toast Notification */}
       {showToast.show && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
-          showToast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-        } text-white`}>
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+            showToast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+          } text-white`}
+        >
           {showToast.message}
         </div>
       )}
@@ -256,9 +316,24 @@ export default function SocialMediaManagerPage(): JSX.Element {
       <div className="max-w-7xl mx-auto">
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-6 bg-slate-800/30 p-2 rounded-xl backdrop-blur-sm">
-          <TabButton _id="generator" label="Post Generator" active={activeTab === 'generator'} onClick={() => setActiveTab('generator')} />
-          <TabButton _id="hashtags" label="Hashtag Tool" active={activeTab === 'hashtags'} onClick={() => setActiveTab('hashtags')} />
-          <TabButton _id="schedule" label="Schedule Grid" active={activeTab === 'schedule'} onClick={() => setActiveTab('schedule')} />
+          <TabButton
+            _id="generator"
+            label="Post Generator"
+            active={activeTab === 'generator'}
+            onClick={() => setActiveTab('generator')}
+          />
+          <TabButton
+            _id="hashtags"
+            label="Hashtag Tool"
+            active={activeTab === 'hashtags'}
+            onClick={() => setActiveTab('hashtags')}
+          />
+          <TabButton
+            _id="schedule"
+            label="Schedule Grid"
+            active={activeTab === 'schedule'}
+            onClick={() => setActiveTab('schedule')}
+          />
         </div>
 
         {/* Post Generator Tab */}
@@ -278,10 +353,10 @@ export default function SocialMediaManagerPage(): JSX.Element {
                   <label className="block text-white text-sm font-medium mb-2">Platform</label>
                   <select
                     value={selectedPlatform}
-                    onChange={(e) => setSelectedPlatform(e.target.value)}
+                    onChange={e => setSelectedPlatform(e.target.value)}
                     className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
                   >
-                    {PLATFORMS.map((platform) => (
+                    {PLATFORMS.map(platform => (
                       <option key={platform.value} value={platform.value}>
                         {`${platform.icon} ${platform.label}`}
                       </option>
@@ -295,7 +370,7 @@ export default function SocialMediaManagerPage(): JSX.Element {
                   <textarea
                     placeholder="What would you like to post about? (e.g., 'LED neon signs for restaurants')"
                     value={postTopic}
-                    onChange={(e) => setPostTopic(e.target.value)}
+                    onChange={e => setPostTopic(e.target.value)}
                     className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-400 focus:outline-none focus:border-purple-500"
                     rows={3}
                   />
@@ -306,10 +381,10 @@ export default function SocialMediaManagerPage(): JSX.Element {
                   <label className="block text-white text-sm font-medium mb-2">Tone</label>
                   <select
                     value={postTone}
-                    onChange={(e) => setPostTone(e.target.value)}
+                    onChange={e => setPostTone(e.target.value)}
                     className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
                   >
-                    {TONES.map((tone) => (
+                    {TONES.map(tone => (
                       <option key={tone.value} value={tone.value}>
                         {tone.label}
                       </option>
@@ -329,9 +404,7 @@ export default function SocialMediaManagerPage(): JSX.Element {
                       Generating...
                     </span>
                   ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      ✨ Generate Post
-                    </span>
+                    <span className="flex items-center justify-center gap-2">✨ Generate Post</span>
                   )}
                 </button>
               </div>
@@ -350,7 +423,9 @@ export default function SocialMediaManagerPage(): JSX.Element {
                   {/* Platform Preview */}
                   <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className={`w-8 h-8 rounded-full ${getPlatformColor(generatedPost.platform)} flex items-center justify-center text-white text-sm font-bold`}>
+                      <div
+                        className={`w-8 h-8 rounded-full ${getPlatformColor(generatedPost.platform)} flex items-center justify-center text-white text-sm font-bold`}
+                      >
                         {getPlatformIcon(generatedPost.platform)}
                       </div>
                       <div>
@@ -364,7 +439,10 @@ export default function SocialMediaManagerPage(): JSX.Element {
                     {generatedPost.hashtags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {generatedPost.hashtags.map((hashtag, index) => (
-                          <span key={index} className="bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-1 rounded-full text-xs">
+                          <span
+                            key={index}
+                            className="bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-1 rounded-full text-xs"
+                          >
                             {hashtag}
                           </span>
                         ))}
@@ -378,14 +456,18 @@ export default function SocialMediaManagerPage(): JSX.Element {
                       {generatedPost.estimatedReach && (
                         <div className="bg-slate-700/30 rounded-lg p-3 text-center">
                           <div className="text-purple-400 text-2xl mb-1">👥</div>
-                          <div className="text-white font-semibold">{generatedPost.estimatedReach.toLocaleString()}</div>
+                          <div className="text-white font-semibold">
+                            {generatedPost.estimatedReach.toLocaleString()}
+                          </div>
                           <div className="text-slate-400 text-xs">Est. Reach</div>
                         </div>
                       )}
                       {generatedPost.engagementScore && (
                         <div className="bg-slate-700/30 rounded-lg p-3 text-center">
                           <div className="text-green-400 text-2xl mb-1">📈</div>
-                          <div className="text-white font-semibold">{generatedPost.engagementScore}%</div>
+                          <div className="text-white font-semibold">
+                            {generatedPost.engagementScore}%
+                          </div>
                           <div className="text-slate-400 text-xs">Engagement Score</div>
                         </div>
                       )}
@@ -395,17 +477,18 @@ export default function SocialMediaManagerPage(): JSX.Element {
                   {/* Action Buttons */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleCopyToClipboard(`${generatedPost.content}\n\n${generatedPost.hashtags.join(' ')}`, generatedPost.id)}
+                      onClick={() =>
+                        handleCopyToClipboard(
+                          `${generatedPost.content}\n\n${generatedPost.hashtags.join(' ')}`,
+                          generatedPost.id
+                        )
+                      }
                       className="flex-1 border border-slate-600 text-white hover:bg-slate-700 py-2 px-4 rounded-lg transition-colors"
                     >
                       {copiedItems.has(generatedPost.id) ? (
-                        <span className="flex items-center justify-center gap-2">
-                          ✓ Copied!
-                        </span>
+                        <span className="flex items-center justify-center gap-2">✓ Copied!</span>
                       ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          📋 Copy
-                        </span>
+                        <span className="flex items-center justify-center gap-2">📋 Copy</span>
                       )}
                     </button>
                     <button
@@ -439,11 +522,13 @@ export default function SocialMediaManagerPage(): JSX.Element {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-white text-sm font-medium mb-2">Topic or Keywords</label>
+                  <label className="block text-white text-sm font-medium mb-2">
+                    Topic or Keywords
+                  </label>
                   <textarea
                     placeholder="Enter your topic or keywords (e.g., 'custom neon signs', 'restaurant lighting')"
                     value={hashtagTopic}
-                    onChange={(e) => setHashtagTopic(e.target.value)}
+                    onChange={e => setHashtagTopic(e.target.value)}
                     className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
                     rows={3}
                   />
@@ -486,7 +571,9 @@ export default function SocialMediaManagerPage(): JSX.Element {
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-blue-400 font-medium">{suggestion.hashtag}</span>
                           <button
-                            onClick={() => handleCopyToClipboard(suggestion.hashtag, `hashtag-${index}`)}
+                            onClick={() =>
+                              handleCopyToClipboard(suggestion.hashtag, `hashtag-${index}`)
+                            }
                             className="text-slate-300 hover:text-white text-sm"
                           >
                             {copiedItems.has(`hashtag-${index}`) ? '✓' : '📋'}
@@ -494,7 +581,9 @@ export default function SocialMediaManagerPage(): JSX.Element {
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           <div className="text-center">
-                            <div className="text-white font-semibold">{suggestion.estimatedReach.toLocaleString()}</div>
+                            <div className="text-white font-semibold">
+                              {suggestion.estimatedReach.toLocaleString()}
+                            </div>
                             <div className="text-slate-400">Reach</div>
                           </div>
                           <div className="text-center">
@@ -502,7 +591,9 @@ export default function SocialMediaManagerPage(): JSX.Element {
                             <div className="text-slate-400">Difficulty</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-white font-semibold">{suggestion.relevanceScore}%</div>
+                            <div className="text-white font-semibold">
+                              {suggestion.relevanceScore}%
+                            </div>
                             <div className="text-slate-400">Relevance</div>
                           </div>
                         </div>
@@ -540,7 +631,7 @@ export default function SocialMediaManagerPage(): JSX.Element {
 
             {scheduledPosts.length > 0 ? (
               <div className="space-y-4">
-                {scheduledPosts.map((post) => (
+                {scheduledPosts.map(post => (
                   <div
                     key={post.id}
                     className="bg-slate-700/50 rounded-lg p-4 border border-slate-600 hover:border-slate-500 transition-colors"
@@ -548,25 +639,32 @@ export default function SocialMediaManagerPage(): JSX.Element {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <div className={`w-6 h-6 rounded ${getPlatformColor(post.platform)} flex items-center justify-center text-white text-xs`}>
+                          <div
+                            className={`w-6 h-6 rounded ${getPlatformColor(post.platform)} flex items-center justify-center text-white text-xs`}
+                          >
                             {getPlatformIcon(post.platform)}
                           </div>
                           <span className="text-white font-medium capitalize">{post.platform}</span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            post.status === 'scheduled' ? 'bg-orange-600/20 text-orange-400' :
-                            post.status === 'published' ? 'bg-green-600/20 text-green-400' :
-                            'bg-red-600/20 text-red-400'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              post.status === 'scheduled'
+                                ? 'bg-orange-600/20 text-orange-400'
+                                : post.status === 'published'
+                                  ? 'bg-green-600/20 text-green-400'
+                                  : 'bg-red-600/20 text-red-400'
+                            }`}
+                          >
                             {post.status}
                           </span>
                         </div>
-                        <p className="text-slate-300 text-sm mb-2 line-clamp-3">
-                          {post.content}
-                        </p>
+                        <p className="text-slate-300 text-sm mb-2 line-clamp-3">{post.content}</p>
                         {post.hashtags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mb-2">
                             {post.hashtags.slice(0, 5).map((hashtag, index) => (
-                              <span key={index} className="bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-1 rounded-full text-xs">
+                              <span
+                                key={index}
+                                className="bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-1 rounded-full text-xs"
+                              >
                                 {hashtag}
                               </span>
                             ))}
@@ -608,28 +706,28 @@ export default function SocialMediaManagerPage(): JSX.Element {
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 w-full max-w-md">
             <h3 className="text-xl font-semibold text-white mb-4">Schedule Post</h3>
             <p className="text-slate-300 mb-6">Choose when to publish your post</p>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-white text-sm font-medium mb-2">Date</label>
                 <input
                   type="date"
                   value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  onChange={e => setSelectedDate(e.target.value)}
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-white text-sm font-medium mb-2">Time</label>
                 <input
                   type="time"
                   value={selectedTime}
-                  onChange={(e) => setSelectedTime(e.target.value)}
+                  onChange={e => setSelectedTime(e.target.value)}
                   className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
-              
+
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowScheduleModal(false)}

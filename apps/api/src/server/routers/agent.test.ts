@@ -28,10 +28,16 @@ describe('agentRouter', () => {
   describe('getAll', () => {
     it('should return all agents successfully', async () => {
       const mockAgents = [
-        { id: '1', name: 'Content Agent', type: 'CONTENT', status: 'ACTIVE', createdAt: new Date() },
+        {
+          id: '1',
+          name: 'Content Agent',
+          type: 'CONTENT',
+          status: 'ACTIVE',
+          createdAt: new Date(),
+        },
         { id: '2', name: 'SEO Agent', type: 'SEO', status: 'ACTIVE', createdAt: new Date() },
       ];
-      
+
       mockContext.prisma.agent.findMany.mockResolvedValue(mockAgents);
 
       const caller = agentRouter.createCaller(mockContext);
@@ -49,7 +55,10 @@ describe('agentRouter', () => {
       const caller = agentRouter.createCaller(mockContext);
 
       await expect(caller.getAll()).rejects.toThrow(TRPCError);
-      expect(mockContext.logger.error).toHaveBeenCalledWith('Failed to fetch agents:', expect.any(Error));
+      expect(mockContext.logger.error).toHaveBeenCalledWith(
+        'Failed to fetch agents:',
+        expect.any(Error)
+      );
     });
   });
 
@@ -60,9 +69,7 @@ describe('agentRouter', () => {
         name: 'Content Agent',
         type: 'CONTENT',
         status: 'ACTIVE',
-        executions: [
-          { id: 'exec1', status: 'COMPLETED', startedAt: new Date() },
-        ],
+        executions: [{ id: 'exec1', status: 'COMPLETED', startedAt: new Date() }],
       };
 
       mockContext.prisma.agent.findUnique.mockResolvedValue(mockAgent);
@@ -203,10 +210,12 @@ describe('agentRouter', () => {
 
       const caller = agentRouter.createCaller(mockContext);
 
-      await expect(caller.execute({
-        agentId: 'nonexistent',
-        task: 'test',
-      })).rejects.toThrow(
+      await expect(
+        caller.execute({
+          agentId: 'nonexistent',
+          task: 'test',
+        })
+      ).rejects.toThrow(
         expect.objectContaining({
           code: 'NOT_FOUND',
           message: 'Agent not found',

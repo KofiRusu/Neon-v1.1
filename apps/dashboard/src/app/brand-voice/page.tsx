@@ -7,17 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  TrendingUp, 
-  MessageSquare, 
-  Target, 
-  BarChart3, 
-  Settings, 
+import {
+  TrendingUp,
+  MessageSquare,
+  Target,
+  BarChart3,
+  Settings,
   Plus,
   Brain,
   CheckCircle,
   AlertCircle,
-  Lightbulb
+  Lightbulb,
 } from 'lucide-react';
 import { BrandVoiceProfileModal } from '@/components/BrandVoiceProfileModal';
 import { ContentVoiceAnalyzer } from '@/components/ContentVoiceAnalyzer';
@@ -118,10 +118,7 @@ export default function BrandVoicePage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setProfileModalOpen(true)}
-          >
+          <Button variant="outline" onClick={() => setProfileModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             New Profile
           </Button>
@@ -141,9 +138,7 @@ export default function BrandVoicePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">92%</div>
-            <p className="text-xs text-muted-foreground">
-              +2.1% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+2.1% from last month</p>
             <Progress value={92} className="mt-2" />
           </CardContent>
         </Card>
@@ -155,9 +150,7 @@ export default function BrandVoicePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">85</div>
-            <p className="text-xs text-muted-foreground">
-              Across all content types
-            </p>
+            <p className="text-xs text-muted-foreground">Across all content types</p>
             <Progress value={85} className="mt-2" />
           </CardContent>
         </Card>
@@ -169,9 +162,7 @@ export default function BrandVoicePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,247</div>
-            <p className="text-xs text-muted-foreground">
-              This month
-            </p>
+            <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
 
@@ -182,9 +173,7 @@ export default function BrandVoicePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              2 in use this week
-            </p>
+            <p className="text-xs text-muted-foreground">2 in use this week</p>
           </CardContent>
         </Card>
       </div>
@@ -209,8 +198,11 @@ export default function BrandVoicePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockConsistencyData.map((item) => (
-                  <div key={item.contentType} className="flex items-center justify-between p-3 border rounded-lg">
+                {mockConsistencyData.map(item => (
+                  <div
+                    key={item.contentType}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="font-medium">{item.contentType}</div>
                       <Badge variant="outline">{item.count} items</Badge>
@@ -231,20 +223,22 @@ export default function BrandVoicePage() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Voice Analyses</CardTitle>
-              <CardDescription>
-                Latest content analyzed for brand voice consistency
-              </CardDescription>
+              <CardDescription>Latest content analyzed for brand voice consistency</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {mockRecentAnalyses.map((analysis) => (
-                  <div key={analysis.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {mockRecentAnalyses.map(analysis => (
+                  <div
+                    key={analysis.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-3">
                       <Badge variant="outline" className="capitalize">
                         {analysis.contentType}
                       </Badge>
                       <span className="text-sm text-gray-600">
-                        {analysis.analyzedAt.toLocaleDateString()} at {analysis.analyzedAt.toLocaleTimeString()}
+                        {analysis.analyzedAt.toLocaleDateString()} at{' '}
+                        {analysis.analyzedAt.toLocaleTimeString()}
                       </span>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -273,7 +267,9 @@ export default function BrandVoicePage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">Voice Profiles</h3>
-              <p className="text-sm text-gray-600">Manage your brand voice profiles and configurations</p>
+              <p className="text-sm text-gray-600">
+                Manage your brand voice profiles and configurations
+              </p>
             </div>
             <Button onClick={() => setProfileModalOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
@@ -282,8 +278,11 @@ export default function BrandVoicePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockProfiles.map((profile) => (
-              <Card key={profile.id} className={`cursor-pointer transition-all hover:shadow-md ${profile.isActive ? 'ring-2 ring-blue-500' : ''}`}>
+            {mockProfiles.map(profile => (
+              <Card
+                key={profile.id}
+                className={`cursor-pointer transition-all hover:shadow-md ${profile.isActive ? 'ring-2 ring-blue-500' : ''}`}
+              >
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{profile.name}</CardTitle>
@@ -309,12 +308,12 @@ export default function BrandVoicePage() {
                       </span>
                     </div>
                     <Progress value={profile.averageScore} />
-                    
+
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>{profile.analysisCount} analyses</span>
                       <span>{profile.consistency}% consistent</span>
                     </div>
-                    
+
                     <div className="text-xs text-gray-500">
                       Last used: {profile.lastUsed.toLocaleDateString()}
                     </div>

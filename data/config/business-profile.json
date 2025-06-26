@@ -12,7 +12,12 @@
     "voice": "Creative, Professional, Energetic",
     "tone": "Friendly yet authoritative, inspiring creativity",
     "personality": ["Innovative", "Reliable", "Artistic", "Customer-focused"],
-    "values": ["Quality craftsmanship", "Creative expression", "Sustainable practices", "Customer satisfaction"],
+    "values": [
+      "Quality craftsmanship",
+      "Creative expression",
+      "Sustainable practices",
+      "Customer satisfaction"
+    ],
     "colors": {
       "primary": "#FF0080",
       "secondary": "#00FF88",
@@ -29,43 +34,98 @@
     "primary": {
       "demographic": "Business owners aged 28-55",
       "psychographic": "Entrepreneurs seeking unique branding solutions",
-      "painPoints": ["Generic signage options", "High costs", "Long lead times", "Poor durability"],
-      "goals": ["Stand out from competition", "Attract more customers", "Create memorable brand presence"]
+      "painPoints": [
+        "Generic signage options",
+        "High costs",
+        "Long lead times",
+        "Poor durability"
+      ],
+      "goals": [
+        "Stand out from competition",
+        "Attract more customers",
+        "Create memorable brand presence"
+      ]
     },
     "secondary": {
       "demographic": "Event planners and individuals aged 25-45",
       "psychographic": "Creative professionals and celebration enthusiasts",
-      "painPoints": ["Limited customization options", "Expensive rental fees", "Quality concerns"],
-      "goals": ["Create Instagram-worthy events", "Personalized celebrations", "Unique home décor"]
+      "painPoints": [
+        "Limited customization options",
+        "Expensive rental fees",
+        "Quality concerns"
+      ],
+      "goals": [
+        "Create Instagram-worthy events",
+        "Personalized celebrations",
+        "Unique home décor"
+      ]
     },
     "tertiary": {
       "demographic": "Restaurants and retail stores",
       "psychographic": "Small to medium business owners",
-      "painPoints": ["Visibility issues", "Maintenance costs", "Energy efficiency"],
-      "goals": ["Increase foot traffic", "Create ambiance", "Reduce operational costs"]
+      "painPoints": [
+        "Visibility issues",
+        "Maintenance costs",
+        "Energy efficiency"
+      ],
+      "goals": [
+        "Increase foot traffic",
+        "Create ambiance",
+        "Reduce operational costs"
+      ]
     }
   },
   "products": [
     {
       "category": "Custom Business Signs",
-      "items": ["Storefront neon signs", "LED business displays", "Window signs", "Logo recreations"],
+      "items": [
+        "Storefront neon signs",
+        "LED business displays",
+        "Window signs",
+        "Logo recreations"
+      ],
       "priceRange": "$299-$2999",
       "leadTime": "5-14 days",
-      "features": ["Weather-resistant", "Energy-efficient LED", "Custom colors", "Remote control options"]
+      "features": [
+        "Weather-resistant",
+        "Energy-efficient LED",
+        "Custom colors",
+        "Remote control options"
+      ]
     },
     {
       "category": "Event Signage",
-      "items": ["Wedding signs", "Party decorations", "Corporate event displays", "Trade show signs"],
+      "items": [
+        "Wedding signs",
+        "Party decorations",
+        "Corporate event displays",
+        "Trade show signs"
+      ],
       "priceRange": "$149-$899",
       "leadTime": "3-10 days",
-      "features": ["Portable design", "Battery operated options", "Custom text", "Dimming controls"]
+      "features": [
+        "Portable design",
+        "Battery operated options",
+        "Custom text",
+        "Dimming controls"
+      ]
     },
     {
       "category": "Home Décor",
-      "items": ["Personalized name signs", "Motivational quotes", "Gaming setups", "Room accents"],
+      "items": [
+        "Personalized name signs",
+        "Motivational quotes",
+        "Gaming setups",
+        "Room accents"
+      ],
       "priceRange": "$99-$599",
       "leadTime": "2-7 days",
-      "features": ["Multiple sizes", "Color changing", "App control", "Easy installation"]
+      "features": [
+        "Multiple sizes",
+        "Color changing",
+        "App control",
+        "Easy installation"
+      ]
     }
   ],
   "competitiveAdvantages": [
@@ -108,9 +168,24 @@
       "Event transformations"
     ],
     "contentTypes": {
-      "social": ["Process videos", "Before/after photos", "Customer testimonials", "Design tips"],
-      "blog": ["Industry trends", "Installation guides", "Design inspiration", "Case studies"],
-      "email": ["New product announcements", "Seasonal promotions", "Design contests", "Maintenance tips"]
+      "social": [
+        "Process videos",
+        "Before/after photos",
+        "Customer testimonials",
+        "Design tips"
+      ],
+      "blog": [
+        "Industry trends",
+        "Installation guides",
+        "Design inspiration",
+        "Case studies"
+      ],
+      "email": [
+        "New product announcements",
+        "Seasonal promotions",
+        "Design contests",
+        "Maintenance tips"
+      ]
     },
     "postingSchedule": {
       "instagram": "Daily (focus on visual content)",
@@ -122,35 +197,87 @@
   },
   "customerJourney": {
     "awareness": {
-      "touchpoints": ["Social media", "Google search", "Local directories", "Word of mouth"],
-      "content": ["Educational posts", "Design inspiration", "Customer showcases"],
-      "goals": ["Brand recognition", "Problem identification", "Solution awareness"]
+      "touchpoints": [
+        "Social media",
+        "Google search",
+        "Local directories",
+        "Word of mouth"
+      ],
+      "content": [
+        "Educational posts",
+        "Design inspiration",
+        "Customer showcases"
+      ],
+      "goals": [
+        "Brand recognition",
+        "Problem identification",
+        "Solution awareness"
+      ]
     },
     "consideration": {
-      "touchpoints": ["Website visit", "Free consultation", "Portfolio review", "Price quotes"],
-      "content": ["Case studies", "Pricing guides", "Process explanations", "Testimonials"],
+      "touchpoints": [
+        "Website visit",
+        "Free consultation",
+        "Portfolio review",
+        "Price quotes"
+      ],
+      "content": [
+        "Case studies",
+        "Pricing guides",
+        "Process explanations",
+        "Testimonials"
+      ],
       "goals": ["Trust building", "Differentiation", "Value demonstration"]
     },
     "decision": {
-      "touchpoints": ["Consultation call", "Design mockup", "Contract signing", "Deposit payment"],
-      "content": ["Custom proposals", "Warranty information", "Timeline details", "Payment options"],
+      "touchpoints": [
+        "Consultation call",
+        "Design mockup",
+        "Contract signing",
+        "Deposit payment"
+      ],
+      "content": [
+        "Custom proposals",
+        "Warranty information",
+        "Timeline details",
+        "Payment options"
+      ],
       "goals": ["Conversion", "Project initiation", "Relationship building"]
     },
     "retention": {
-      "touchpoints": ["Installation", "Follow-up", "Maintenance", "Referral requests"],
-      "content": ["Care instructions", "Upgrade offers", "Loyalty programs", "Referral incentives"],
+      "touchpoints": [
+        "Installation",
+        "Follow-up",
+        "Maintenance",
+        "Referral requests"
+      ],
+      "content": [
+        "Care instructions",
+        "Upgrade offers",
+        "Loyalty programs",
+        "Referral incentives"
+      ],
       "goals": ["Satisfaction", "Repeat business", "Advocacy", "Reviews"]
     }
   },
   "seasonality": {
     "high": {
       "months": ["November", "December", "January", "May", "June"],
-      "reasons": ["Holiday decorations", "New Year branding", "Wedding season", "Grand openings"],
+      "reasons": [
+        "Holiday decorations",
+        "New Year branding",
+        "Wedding season",
+        "Grand openings"
+      ],
       "strategy": "Premium pricing, extended hours, additional staff"
     },
     "medium": {
       "months": ["March", "April", "July", "August", "September"],
-      "reasons": ["Spring cleaning/renovation", "Summer events", "Back-to-school promotions"],
+      "reasons": [
+        "Spring cleaning/renovation",
+        "Summer events",
+        "Back-to-school promotions"
+      ],
       "strategy": "Balanced inventory, promotional campaigns, content marketing"
     },
     "low": {
@@ -161,4 +288,4 @@
   },
   "lastUpdated": "2024-12-23T19:30:00Z",
   "version": "1.0.0"
-} 
+}

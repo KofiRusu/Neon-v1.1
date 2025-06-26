@@ -14,15 +14,17 @@ const pdfGenerator = new PDFGenerator();
 export const outreachRouter = createTRPCRouter({
   // Scrape leads from LinkedIn
   scrapeLeads: publicProcedure
-    .input(z.object({
-      searchQuery: z.string(),
-      maxResults: z.number().min(1).max(100).default(50),
-      platform: z.enum(['linkedin', 'directory']).default('linkedin'),
-    }))
+    .input(
+      z.object({
+        searchQuery: z.string(),
+        maxResults: z.number().min(1).max(100).default(50),
+        platform: z.enum(['linkedin', 'directory']).default('linkedin'),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         let leads;
-        
+
         if (input.platform === 'linkedin') {
           leads = await leadScraper.scrapeLinkedIn(input.searchQuery, input.maxResults);
         } else {
@@ -51,13 +53,15 @@ export const outreachRouter = createTRPCRouter({
 
   // Enrich lead data
   enrichLead: publicProcedure
-    .input(z.object({
-      email: z.string().email(),
-    }))
+    .input(
+      z.object({
+        email: z.string().email(),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         const enrichedData = await leadScraper.enrichLeadData(input.email);
-        
+
         return {
           success: true,
           data: enrichedData,
@@ -73,22 +77,24 @@ export const outreachRouter = createTRPCRouter({
 
   // Generate proposal PDF
   generateProposal: publicProcedure
-    .input(z.object({
-      clientName: z.string(),
-      clientCompany: z.string(),
-      signType: z.string(),
-      dimensions: z.string(),
-      price: z.number(),
-      deliveryTime: z.string(),
-      customFeatures: z.array(z.string()).optional(),
-    }))
+    .input(
+      z.object({
+        clientName: z.string(),
+        clientCompany: z.string(),
+        signType: z.string(),
+        dimensions: z.string(),
+        price: z.number(),
+        deliveryTime: z.string(),
+        customFeatures: z.array(z.string()).optional(),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         const pdfBuffer = await pdfGenerator.generateProposal(input);
-        
+
         // In production, save to file storage and return URL
         const proposalId = `proposal_${Date.now()}`;
-        
+
         return {
           success: true,
           proposalId,
@@ -105,19 +111,18 @@ export const outreachRouter = createTRPCRouter({
 
   // Generate offer sheet
   generateOfferSheet: publicProcedure
-    .input(z.object({
-      signType: z.string(),
-      targetMarket: z.string(),
-    }))
+    .input(
+      z.object({
+        signType: z.string(),
+        targetMarket: z.string(),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
-        const pdfBuffer = await pdfGenerator.generateOfferSheet(
-          input.signType,
-          input.targetMarket
-        );
-        
+        const pdfBuffer = await pdfGenerator.generateOfferSheet(input.signType, input.targetMarket);
+
         const offerId = `offer_${Date.now()}`;
-        
+
         return {
           success: true,
           offerId,
@@ -134,17 +139,19 @@ export const outreachRouter = createTRPCRouter({
 
   // Send outreach email
   sendOutreach: publicProcedure
-    .input(z.object({
-      leadId: z.string(),
-      subject: z.string(),
-      template: z.string(),
-      personalization: z.record(z.string()).optional(),
-    }))
+    .input(
+      z.object({
+        leadId: z.string(),
+        subject: z.string(),
+        template: z.string(),
+        personalization: z.record(z.string()).optional(),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         // Mock email sending - integrate with SendGrid/Mailgun
         const emailId = `email_${Date.now()}`;
-        
+
         // In production, track email status
         return {
           success: true,
@@ -162,9 +169,11 @@ export const outreachRouter = createTRPCRouter({
 
   // Get outreach campaign stats
   getCampaignStats: publicProcedure
-    .input(z.object({
-      campaignId: z.string(),
-    }))
+    .input(
+      z.object({
+        campaignId: z.string(),
+      })
+    )
     .query(async ({ input }) => {
       // Mock campaign statistics
       const stats = {
@@ -188,13 +197,15 @@ export const outreachRouter = createTRPCRouter({
 
   // Validate email list
   validateEmails: publicProcedure
-    .input(z.object({
-      emails: z.array(z.string()),
-    }))
+    .input(
+      z.object({
+        emails: z.array(z.string()),
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         const validationResults = await Promise.all(
-          input.emails.map(async (email) => ({
+          input.emails.map(async email => ({
             email,
             isValid: await leadScraper.validateEmail(email),
           }))
@@ -220,4 +231,4 @@ export const outreachRouter = createTRPCRouter({
         };
       }
     }),
-}); 
+});

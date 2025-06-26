@@ -1,3 +1,22 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
-node scripts/git-validate.js
+
+echo "🔍 Running pre-push quality checks..."
+
+# Run linting with auto-fix for minor issues
+echo "🧹 Running linting..."
+npm run lint:fix
+
+# Run type checking
+echo "🏷️  Running type checks..."
+npm run type-check
+
+# Run tests
+echo "🧪 Running tests..."
+npm run test
+
+# Run format check
+echo "💄 Checking code formatting..."
+npm run format:check
+
+echo "✅ All quality checks passed!"

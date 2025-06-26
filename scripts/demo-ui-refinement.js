@@ -9,12 +9,12 @@ async function demonstrateUIRefinement() {
 
   // Create agent instance
   const agent = new UIRefinementAgent('demo-ui-agent', 'Demo UI Refinement Agent');
-  
+
   console.log(`✅ Agent initialized: ${agent.name}`);
   console.log(`📋 Capabilities: ${agent.capabilities.join(', ')}\n`);
 
   const targetDir = 'apps/dashboard/src/app/social';
-  
+
   console.log('🔍 Running contrast analysis on the social page...');
   console.log(`📁 Target directory: ${targetDir}\n`);
 
@@ -23,9 +23,9 @@ async function demonstrateUIRefinement() {
     const contrastResult = await agent.execute({
       task: 'check_contrast',
       context: { targetDir },
-      priority: 'high'
+      priority: 'high',
     });
-    
+
     if (contrastResult.success && contrastResult.data.issues.length > 0) {
       console.log(`⚠️  Found ${contrastResult.data.issues.length} contrast issues:`);
       contrastResult.data.issues.forEach((issue, index) => {
@@ -43,9 +43,9 @@ async function demonstrateUIRefinement() {
     const accessibilityResult = await agent.execute({
       task: 'validate_accessibility',
       context: { targetDir },
-      priority: 'high'
+      priority: 'high',
     });
-    
+
     if (accessibilityResult.success && accessibilityResult.data.issues.length > 0) {
       console.log(`⚠️  Found ${accessibilityResult.data.issues.length} accessibility issues:`);
       accessibilityResult.data.issues.slice(0, 5).forEach((issue, index) => {
@@ -65,9 +65,9 @@ async function demonstrateUIRefinement() {
     const themeResult = await agent.execute({
       task: 'fix_theme_consistency',
       context: { targetDir },
-      priority: 'medium'
+      priority: 'medium',
     });
-    
+
     if (themeResult.success && themeResult.data.fixedIssues.length > 0) {
       console.log(`✨ Fixed ${themeResult.data.fixedIssues.length} theme consistency issues:`);
       themeResult.data.fixedIssues.slice(0, 3).forEach((fix, index) => {
@@ -83,26 +83,26 @@ async function demonstrateUIRefinement() {
     const autoFixResult = await agent.execute({
       task: 'auto_fix_ui_issues',
       context: { targetDir, autoFix: false }, // Set to false for demo
-      priority: 'high'
+      priority: 'high',
     });
-    
+
     if (autoFixResult.success) {
       const totalIssues = autoFixResult.data.issues.length;
       const fixableIssues = autoFixResult.data.fixedIssues.length;
-      
+
       console.log(`📊 Analysis Summary:`);
       console.log(`   • Total issues found: ${totalIssues}`);
       console.log(`   • Issues that can be auto-fixed: ${fixableIssues}`);
       console.log(`   • Manual review needed: ${totalIssues - fixableIssues}`);
       console.log('');
-      
+
       if (totalIssues > 0) {
         console.log('📋 Issue Breakdown:');
         const issueTypes = {};
         autoFixResult.data.issues.forEach(issue => {
           issueTypes[issue.type] = (issueTypes[issue.type] || 0) + 1;
         });
-        
+
         Object.entries(issueTypes).forEach(([type, count]) => {
           console.log(`   • ${type}: ${count} issues`);
         });
@@ -116,12 +116,11 @@ async function demonstrateUIRefinement() {
     console.log(`   • Status: ${status.status}`);
     console.log(`   • Last execution: ${status.lastExecution?.toISOString()}`);
     console.log(`   • Performance: ${status.performance}ms`);
-    
+
     console.log('\n🎉 UIRefinementAgent demonstration completed!');
     console.log('\nTo enable automatic fixes, set the autoFix flag to true.');
     console.log('The agent can also be integrated into your development workflow');
     console.log('to automatically detect and fix UI issues during development.');
-
   } catch (error) {
     console.error('❌ Demonstration failed:', error.message);
     console.error(error.stack);
@@ -139,7 +138,9 @@ console.log('2. One-time analysis:');
 console.log('   node scripts/agents/ui-refinement-agent.js --once');
 console.log('');
 console.log('3. Analysis with auto-commit:');
-console.log('   UI_AUTO_FIX=true UI_AUTO_COMMIT=true node scripts/agents/ui-refinement-agent.js --once');
+console.log(
+  '   UI_AUTO_FIX=true UI_AUTO_COMMIT=true node scripts/agents/ui-refinement-agent.js --once'
+);
 console.log('');
 
 // Run demonstration if this script is executed directly

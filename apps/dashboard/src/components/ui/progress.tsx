@@ -7,17 +7,11 @@ export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Progress({ className, value = 0, max = 100, ...props }: ProgressProps) {
-  const percentage = Math.min(Math.max(value, 0), max) / max * 100;
+  const percentage = (Math.min(Math.max(value, 0), max) / max) * 100;
 
   return (
-    <div
-      className={cn('progress-neon', className)}
-      {...props}
-    >
-      <div
-        className="progress-fill"
-        style={{ width: `${percentage}%` }}
-      />
+    <div className={cn('progress-neon', className)} {...props}>
+      <div className="progress-fill" style={{ width: `${percentage}%` }} />
     </div>
   );
-} 
+}

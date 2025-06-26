@@ -24,7 +24,7 @@ export const appRouter = createTRPCRouter({
   campaign: campaignRouter,
   agent: agentRouter,
   metrics: metricsRouter,
-  
+
   // Feature routers
   content: contentRouter,
   seo: seoRouter,
@@ -34,7 +34,7 @@ export const appRouter = createTRPCRouter({
   outreach: outreachRouter,
   trends: trendsRouter,
   brandVoice: brandVoiceRouter,
-  
+
   // Health check and fallbacks
   health: fallbackRouter.health,
 });

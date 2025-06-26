@@ -13,7 +13,14 @@ export interface EmailTemplate {
   content: string;
   htmlContent?: string;
   variables: string[];
-  type: 'welcome' | 'nurture' | 'promotion' | 'retention' | 'follow_up' | 'newsletter' | 'abandoned_cart';
+  type:
+    | 'welcome'
+    | 'nurture'
+    | 'promotion'
+    | 'retention'
+    | 'follow_up'
+    | 'newsletter'
+    | 'abandoned_cart';
   industry?: string;
   tone?: 'professional' | 'casual' | 'friendly' | 'urgent' | 'promotional';
   estimatedReadTime?: number;
@@ -201,10 +208,15 @@ interface SendGridClient {
     subject: string;
     text?: string;
     html?: string;
-  }) => Promise<[{
-    statusCode: number;
-    headers: Record<string, string>;
-  }, {}]>;
+  }) => Promise<
+    [
+      {
+        statusCode: number;
+        headers: Record<string, string>;
+      },
+      {},
+    ]
+  >;
 }
 
 let sendGridClient: SendGridClient | null = null;
@@ -217,7 +229,11 @@ try {
     sendGridClient = sgMail;
   }
 } catch (error) {
-  logger.warn('SendGrid not available, email will run in mock mode', { error }, 'EmailMarketingAgent');
+  logger.warn(
+    'SendGrid not available, email will run in mock mode',
+    { error },
+    'EmailMarketingAgent'
+  );
 }
 
 export class EmailMarketingAgent extends AbstractAgent {
@@ -237,7 +253,7 @@ export class EmailMarketingAgent extends AbstractAgent {
       'segment_audience',
       'optimize_send_times',
       'generate_subject_lines',
-      'create_newsletter'
+      'create_newsletter',
     ]);
 
     this.openai = new OpenAI({
@@ -245,7 +261,11 @@ export class EmailMarketingAgent extends AbstractAgent {
     });
 
     if (!process.env.OPENAI_API_KEY) {
-      logger.warn('OPENAI_API_KEY not found. EmailMarketingAgent will run in limited mode.', {}, 'EmailMarketingAgent');
+      logger.warn(
+        'OPENAI_API_KEY not found. EmailMarketingAgent will run in limited mode.',
+        {},
+        'EmailMarketingAgent'
+      );
     }
 
     this.initializeDefaultTemplates();
@@ -254,7 +274,7 @@ export class EmailMarketingAgent extends AbstractAgent {
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'generate_email_sequence':
           return await this.generateEmailSequenceAI(context as EmailSequenceInput);
@@ -286,26 +306,43 @@ export class EmailMarketingAgent extends AbstractAgent {
    * Generate AI-powered email sequence
    */
   async generateEmailSequence(input: EmailSequenceInput): Promise<EmailSequenceOutput> {
-    const { topic, audience, businessType, sequenceLength = 3, tone = 'professional', goals = [], industry } = input;
-    
+    const {
+      topic,
+      audience,
+      businessType,
+      sequenceLength = 3,
+      tone = 'professional',
+      goals = [],
+      industry,
+    } = input;
+
     if (!this.openai) {
       return this.generateEmailSequenceFallback(input);
     }
 
     try {
-      const prompt = this.buildSequencePrompt(topic, audience, businessType, sequenceLength, tone, goals, industry);
-      
+      const prompt = this.buildSequencePrompt(
+        topic,
+        audience,
+        businessType,
+        sequenceLength,
+        tone,
+        goals,
+        industry
+      );
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert email marketing strategist. Create compelling email sequences that drive engagement and conversions while maintaining authenticity and value."
+            role: 'system',
+            content:
+              'You are an expert email marketing strategist. Create compelling email sequences that drive engagement and conversions while maintaining authenticity and value.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.7,
         max_tokens: 2000,
@@ -319,7 +356,11 @@ export class EmailMarketingAgent extends AbstractAgent {
       return this.parseSequenceOutput(aiOutput, input);
     } catch (error) {
       await this.logAIFallback('email_sequence_generation', error);
-      logger.error('OpenAI email sequence generation failed, using fallback', { error }, 'EmailMarketingAgent');
+      logger.error(
+        'OpenAI email sequence generation failed, using fallback',
+        { error },
+        'EmailMarketingAgent'
+      );
       return this.generateEmailSequenceFallback(input);
     }
   }
@@ -329,25 +370,31 @@ export class EmailMarketingAgent extends AbstractAgent {
    */
   async personalizeEmail(input: PersonalizationInput): Promise<PersonalizationOutput> {
     const { baseEmail, userTraits, segmentData, businessContext } = input;
-    
+
     if (!this.openai) {
       return this.personalizeEmailFallback(input);
     }
 
     try {
-      const prompt = this.buildPersonalizationPrompt(baseEmail, userTraits, segmentData, businessContext);
-      
+      const prompt = this.buildPersonalizationPrompt(
+        baseEmail,
+        userTraits,
+        segmentData,
+        businessContext
+      );
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert email personalization specialist. Personalize email content to increase relevance and engagement for specific user segments."
+            role: 'system',
+            content:
+              'You are an expert email personalization specialist. Personalize email content to increase relevance and engagement for specific user segments.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.6,
         max_tokens: 1500,
@@ -361,7 +408,11 @@ export class EmailMarketingAgent extends AbstractAgent {
       return this.parsePersonalizationOutput(aiOutput, input);
     } catch (error) {
       await this.logAIFallback('email_personalization', error);
-      logger.error('OpenAI email personalization failed, using fallback', { error }, 'EmailMarketingAgent');
+      logger.error(
+        'OpenAI email personalization failed, using fallback',
+        { error },
+        'EmailMarketingAgent'
+      );
       return this.personalizeEmailFallback(input);
     }
   }
@@ -371,25 +422,26 @@ export class EmailMarketingAgent extends AbstractAgent {
    */
   async analyzeEmailPerformance(data: EmailPerformanceData): Promise<PerformanceAnalysis> {
     const metrics = this.calculateEmailMetrics(data);
-    
+
     if (!this.openai) {
       return this.analyzePerformanceFallback(data, metrics);
     }
 
     try {
       const prompt = this.buildPerformanceAnalysisPrompt(data, metrics);
-      
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert email marketing analyst. Provide deep insights and actionable recommendations based on email performance data."
+            role: 'system',
+            content:
+              'You are an expert email marketing analyst. Provide deep insights and actionable recommendations based on email performance data.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.3,
         max_tokens: 1200,
@@ -403,7 +455,11 @@ export class EmailMarketingAgent extends AbstractAgent {
       return this.parsePerformanceAnalysis(aiOutput, data, metrics);
     } catch (error) {
       await this.logAIFallback('performance_analysis', error);
-      logger.error('OpenAI performance analysis failed, using fallback', { error }, 'EmailMarketingAgent');
+      logger.error(
+        'OpenAI performance analysis failed, using fallback',
+        { error },
+        'EmailMarketingAgent'
+      );
       return this.analyzePerformanceFallback(data, metrics);
     }
   }
@@ -413,14 +469,14 @@ export class EmailMarketingAgent extends AbstractAgent {
    */
   async createABTest(input: ABTestInput): Promise<ABTestResult> {
     const { name, variants, testMetric, sampleSize, duration, audience } = input;
-    
+
     if (variants.length < 2) {
       throw new Error('A/B test requires at least 2 variants');
     }
 
     const testId = `ab_test_${Date.now()}`;
     const audiencePerVariant = Math.floor(sampleSize / variants.length);
-    
+
     const testResult: ABTestResult = {
       testId,
       status: 'running',
@@ -434,30 +490,38 @@ export class EmailMarketingAgent extends AbstractAgent {
           conversions: 0,
           openRate: 0,
           clickRate: 0,
-          conversionRate: 0
+          conversionRate: 0,
         },
-        confidence: 0
+        confidence: 0,
       })),
       insights: [],
-      recommendations: []
+      recommendations: [],
     };
 
     // Calculate performance metrics for each variant
     testResult.variants.forEach(variant => {
-      variant.performance.clicks = Math.floor(variant.performance.opens * (0.1 + Math.random() * 0.15)); // 10-25% CTR
-      variant.performance.conversions = Math.floor(variant.performance.clicks * (0.05 + Math.random() * 0.1)); // 5-15% conversion
-      
+      variant.performance.clicks = Math.floor(
+        variant.performance.opens * (0.1 + Math.random() * 0.15)
+      ); // 10-25% CTR
+      variant.performance.conversions = Math.floor(
+        variant.performance.clicks * (0.05 + Math.random() * 0.1)
+      ); // 5-15% conversion
+
       variant.performance.openRate = (variant.performance.opens / variant.performance.sent) * 100;
-      variant.performance.clickRate = (variant.performance.clicks / variant.performance.opens) * 100;
-      variant.performance.conversionRate = (variant.performance.conversions / variant.performance.clicks) * 100;
-      
+      variant.performance.clickRate =
+        (variant.performance.clicks / variant.performance.opens) * 100;
+      variant.performance.conversionRate =
+        (variant.performance.conversions / variant.performance.clicks) * 100;
+
       variant.confidence = Math.min(95, Math.max(50, 70 + Math.random() * 20));
     });
 
     // Determine winner based on test metric
     const sortedVariants = [...testResult.variants].sort((a, b) => {
-      const aMetric = a.performance[testMetric.replace('_rate', 'Rate') as keyof typeof a.performance];
-      const bMetric = b.performance[testMetric.replace('_rate', 'Rate') as keyof typeof b.performance];
+      const aMetric =
+        a.performance[testMetric.replace('_rate', 'Rate') as keyof typeof a.performance];
+      const bMetric =
+        b.performance[testMetric.replace('_rate', 'Rate') as keyof typeof b.performance];
       return (bMetric as number) - (aMetric as number);
     });
 
@@ -469,19 +533,19 @@ export class EmailMarketingAgent extends AbstractAgent {
     testResult.recommendations = this.generateABTestRecommendations(testResult);
 
     this.activeTests.set(testId, testResult);
-    
+
     return testResult;
   }
 
   // Private helper methods for AI integration
 
   private buildSequencePrompt(
-    topic: string, 
-    audience: string, 
-    businessType?: string, 
-    sequenceLength?: number, 
-    tone?: string, 
-    goals?: string[], 
+    topic: string,
+    audience: string,
+    businessType?: string,
+    sequenceLength?: number,
+    tone?: string,
+    goals?: string[],
     industry?: string
   ): string {
     return `
@@ -524,9 +588,9 @@ Focus on building trust, providing value, and guiding the audience toward the de
   }
 
   private buildPersonalizationPrompt(
-    baseEmail: string, 
-    userTraits: Record<string, any>, 
-    segmentData?: any, 
+    baseEmail: string,
+    userTraits: Record<string, any>,
+    segmentData?: any,
     businessContext?: string
   ): string {
     return `
@@ -612,9 +676,9 @@ Format as JSON with insights array and recommendations array.
           estimatedPerformance: {
             openRate: '25.3%',
             clickRate: '8.7%',
-            conversionRate: '3.2%'
+            conversionRate: '3.2%',
           },
-          recommendations: parsed.recommendations || []
+          recommendations: parsed.recommendations || [],
         };
       }
     } catch (error) {
@@ -624,7 +688,10 @@ Format as JSON with insights array and recommendations array.
     return this.generateEmailSequenceFallback(input);
   }
 
-  private parsePersonalizationOutput(aiOutput: string, input: PersonalizationInput): PersonalizationOutput {
+  private parsePersonalizationOutput(
+    aiOutput: string,
+    input: PersonalizationInput
+  ): PersonalizationOutput {
     try {
       const jsonMatch = aiOutput.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -634,7 +701,7 @@ Format as JSON with insights array and recommendations array.
           personalizedContent: parsed.personalizedContent || input.baseEmail,
           personalizationScore: parsed.personalizationScore || 70,
           appliedPersonalizations: parsed.appliedPersonalizations || [],
-          recommendations: parsed.recommendations || []
+          recommendations: parsed.recommendations || [],
         };
       }
     } catch (error) {
@@ -644,9 +711,13 @@ Format as JSON with insights array and recommendations array.
     return this.personalizeEmailFallback(input);
   }
 
-  private parsePerformanceAnalysis(aiOutput: string, data: EmailPerformanceData, metrics: any): PerformanceAnalysis {
+  private parsePerformanceAnalysis(
+    aiOutput: string,
+    data: EmailPerformanceData,
+    metrics: any
+  ): PerformanceAnalysis {
     const score = this.calculatePerformanceScore(metrics);
-    
+
     try {
       const jsonMatch = aiOutput.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -660,9 +731,10 @@ Format as JSON with insights array and recommendations array.
             industry: 'General',
             openRateBenchmark: 21.3,
             clickRateBenchmark: 2.6,
-            performance: metrics.openRate > 21.3 ? 'above' : metrics.openRate < 18 ? 'below' : 'average'
+            performance:
+              metrics.openRate > 21.3 ? 'above' : metrics.openRate < 18 ? 'below' : 'average',
           },
-          optimizationSuggestions: this.generateOptimizationSuggestions(metrics)
+          optimizationSuggestions: this.generateOptimizationSuggestions(metrics),
         };
       }
     } catch (error) {
@@ -676,7 +748,7 @@ Format as JSON with insights array and recommendations array.
 
   private generateEmailSequenceFallback(input: EmailSequenceInput): EmailSequenceOutput {
     const { topic, audience, sequenceLength = 3 } = input;
-    
+
     const emails = [];
     for (let i = 0; i < sequenceLength; i++) {
       emails.push({
@@ -685,7 +757,7 @@ Format as JSON with insights array and recommendations array.
         content: `Hi there!\n\nThank you for your interest in ${topic}. This email provides valuable information for ${audience}.\n\nBest regards,\nThe Team`,
         delayDays: i * 3,
         purpose: ['Introduction', 'Education', 'Conversion'][i] || 'Follow-up',
-        keyPoints: [`Key point about ${topic}`, `Relevant tip for ${audience}`]
+        keyPoints: [`Key point about ${topic}`, `Relevant tip for ${audience}`],
       });
     }
 
@@ -697,20 +769,20 @@ Format as JSON with insights array and recommendations array.
       estimatedPerformance: {
         openRate: '23.1%',
         clickRate: '7.4%',
-        conversionRate: '2.8%'
+        conversionRate: '2.8%',
       },
       recommendations: [
         'Test different subject lines',
         'Personalize content based on user behavior',
-        'Optimize send times for better engagement'
-      ]
+        'Optimize send times for better engagement',
+      ],
     };
   }
 
   private personalizeEmailFallback(input: PersonalizationInput): PersonalizationOutput {
     const { baseEmail, userTraits } = input;
     const firstName = userTraits.firstName || 'there';
-    
+
     return {
       personalizedSubject: `Hi ${firstName}! Your personalized update`,
       personalizedContent: baseEmail.replace(/Hi there/g, `Hi ${firstName}`),
@@ -720,54 +792,58 @@ Format as JSON with insights array and recommendations array.
           type: 'Name-based',
           field: 'greeting',
           originalValue: 'Hi there',
-          personalizedValue: `Hi ${firstName}`
-        }
+          personalizedValue: `Hi ${firstName}`,
+        },
       ],
       recommendations: [
         'Add more behavioral personalization',
         'Include location-based content',
-        'Reference user preferences'
-      ]
+        'Reference user preferences',
+      ],
     };
   }
 
-  private analyzePerformanceFallback(data: EmailPerformanceData, metrics: any): PerformanceAnalysis {
+  private analyzePerformanceFallback(
+    data: EmailPerformanceData,
+    metrics: any
+  ): PerformanceAnalysis {
     const score = this.calculatePerformanceScore(metrics);
-    
+
     return {
       score,
       metrics,
       insights: [
         'Open rates are within industry standards',
         'Click-through rates could be improved',
-        'Mobile optimization opportunities exist'
+        'Mobile optimization opportunities exist',
       ],
       recommendations: [
         'Test different subject lines',
         'Improve email design for mobile',
         'Segment audience for better targeting',
-        'Optimize send times'
+        'Optimize send times',
       ],
       benchmarks: {
         industry: 'General',
         openRateBenchmark: 21.3,
         clickRateBenchmark: 2.6,
-        performance: metrics.openRate > 21.3 ? 'above' : metrics.openRate < 18 ? 'below' : 'average'
+        performance:
+          metrics.openRate > 21.3 ? 'above' : metrics.openRate < 18 ? 'below' : 'average',
       },
-      optimizationSuggestions: this.generateOptimizationSuggestions(metrics)
+      optimizationSuggestions: this.generateOptimizationSuggestions(metrics),
     };
   }
 
   // Helper methods
 
   private calculateEmailMetrics(data: EmailPerformanceData) {
-    const deliveryRate = data.delivered / data.sent * 100;
-    const openRate = data.opens / data.delivered * 100;
-    const clickRate = data.clicks / data.opens * 100;
-    const conversionRate = (data.conversions || 0) / data.clicks * 100;
-    const unsubscribeRate = (data.unsubscribes || 0) / data.delivered * 100;
-    const bounceRate = (data.bounces || 0) / data.sent * 100;
-    const engagementScore = (openRate * 0.4) + (clickRate * 0.6);
+    const deliveryRate = (data.delivered / data.sent) * 100;
+    const openRate = (data.opens / data.delivered) * 100;
+    const clickRate = (data.clicks / data.opens) * 100;
+    const conversionRate = ((data.conversions || 0) / data.clicks) * 100;
+    const unsubscribeRate = ((data.unsubscribes || 0) / data.delivered) * 100;
+    const bounceRate = ((data.bounces || 0) / data.sent) * 100;
+    const engagementScore = openRate * 0.4 + clickRate * 0.6;
 
     return {
       deliveryRate,
@@ -776,22 +852,22 @@ Format as JSON with insights array and recommendations array.
       conversionRate,
       unsubscribeRate,
       bounceRate,
-      engagementScore
+      engagementScore,
     };
   }
 
   private calculatePerformanceScore(metrics: any): number {
     let score = 0;
-    
+
     // Delivery rate (20 points max)
     score += Math.min(20, metrics.deliveryRate * 0.2);
-    
+
     // Open rate (30 points max, benchmark 20%)
     score += Math.min(30, (metrics.openRate / 20) * 30);
-    
+
     // Click rate (30 points max, benchmark 3%)
     score += Math.min(30, (metrics.clickRate / 3) * 30);
-    
+
     // Conversion rate (20 points max, benchmark 2%)
     score += Math.min(20, (metrics.conversionRate / 2) * 20);
 
@@ -813,7 +889,7 @@ Format as JSON with insights array and recommendations array.
         suggestion: 'Test shorter, more compelling subject lines',
         impact: 'high' as const,
         effort: 'easy' as const,
-        priority: 1
+        priority: 1,
       });
     }
 
@@ -823,7 +899,7 @@ Format as JSON with insights array and recommendations array.
         suggestion: 'Make CTA buttons more prominent and compelling',
         impact: 'medium' as const,
         effort: 'medium' as const,
-        priority: 2
+        priority: 2,
       });
     }
 
@@ -833,7 +909,7 @@ Format as JSON with insights array and recommendations array.
         suggestion: 'Review content relevance and frequency',
         impact: 'high' as const,
         effort: 'hard' as const,
-        priority: 1
+        priority: 1,
       });
     }
 
@@ -843,15 +919,19 @@ Format as JSON with insights array and recommendations array.
   private generateABTestInsights(testResult: ABTestResult): string[] {
     const winner = testResult.variants.find(v => v.isWinner);
     const insights = [];
-    
+
     if (winner) {
-      insights.push(`Variant ${winner.name} performed best with ${winner.performance.openRate.toFixed(1)}% open rate`);
-      insights.push(`Winner showed ${Math.abs(winner.performance.openRate - testResult.variants[1].performance.openRate).toFixed(1)}% improvement over other variants`);
+      insights.push(
+        `Variant ${winner.name} performed best with ${winner.performance.openRate.toFixed(1)}% open rate`
+      );
+      insights.push(
+        `Winner showed ${Math.abs(winner.performance.openRate - testResult.variants[1].performance.openRate).toFixed(1)}% improvement over other variants`
+      );
     }
-    
+
     insights.push('Test reached statistical significance');
     insights.push('Results are actionable for future campaigns');
-    
+
     return insights;
   }
 
@@ -860,7 +940,7 @@ Format as JSON with insights array and recommendations array.
       'Apply winning variant to similar campaigns',
       'Test additional elements like send time and from name',
       'Scale successful patterns to larger audience segments',
-      'Continue iterating on high-performing elements'
+      'Continue iterating on high-performing elements',
     ];
   }
 
@@ -873,7 +953,9 @@ Format as JSON with insights array and recommendations array.
     return this.personalizeEmail(input);
   }
 
-  private async analyzeEmailPerformanceAI(data: EmailPerformanceData): Promise<PerformanceAnalysis> {
+  private async analyzeEmailPerformanceAI(
+    data: EmailPerformanceData
+  ): Promise<PerformanceAnalysis> {
     return this.analyzeEmailPerformance(data);
   }
 
@@ -889,7 +971,7 @@ Format as JSON with insights array and recommendations array.
         subject,
         content,
         htmlContent,
-        personalizations: recipient.personalizations || {}
+        personalizations: recipient.personalizations || {},
       });
       results.push(result);
     }
@@ -898,17 +980,23 @@ Format as JSON with insights array and recommendations array.
       success: true,
       campaignId: `campaign_${Date.now()}`,
       results,
-      message: 'Campaign sent successfully'
+      message: 'Campaign sent successfully',
     };
   }
 
-  async sendEmail(data: { to: string; subject: string; content: string; htmlContent?: string; personalizations?: Record<string, any> }): Promise<any> {
+  async sendEmail(data: {
+    to: string;
+    subject: string;
+    content: string;
+    htmlContent?: string;
+    personalizations?: Record<string, any>;
+  }): Promise<any> {
     const logEntry = {
       timestamp: new Date().toISOString(),
       recipient: data.to,
       subject: data.subject,
       status: 'pending',
-      service: 'sendgrid'
+      service: 'sendgrid',
     };
 
     try {
@@ -918,16 +1006,16 @@ Format as JSON with insights array and recommendations array.
           from: process.env.SENDGRID_FROM_EMAIL,
           subject: data.subject,
           text: data.content,
-          html: data.htmlContent || data.content.replace(/\n/g, '<br>')
+          html: data.htmlContent || data.content.replace(/\n/g, '<br>'),
         };
 
         const [response] = await sendGridClient.send(emailData);
-        
+
         logEntry.status = 'sent';
         await this.logEmailEvent({
           ...logEntry,
           messageId: response.headers['x-message-id'] || 'unknown',
-          sendgridStatus: response.statusCode
+          sendgridStatus: response.statusCode,
         });
 
         return {
@@ -936,17 +1024,17 @@ Format as JSON with insights array and recommendations array.
           status: 'sent',
           recipient: data.to,
           service: 'sendgrid',
-          deliveryStatus: response.statusCode === 202 ? 'accepted' : 'unknown'
+          deliveryStatus: response.statusCode === 202 ? 'accepted' : 'unknown',
         };
       } else {
         // Fallback mock mode
         logEntry.status = 'mock_sent';
         logEntry.service = 'mock';
-        
+
         await this.logEmailEvent({
           ...logEntry,
           messageId: `mock_${Date.now()}`,
-          note: 'SendGrid credentials not configured, using mock mode'
+          note: 'SendGrid credentials not configured, using mock mode',
         });
 
         return {
@@ -955,14 +1043,14 @@ Format as JSON with insights array and recommendations array.
           status: 'mock_sent',
           recipient: data.to,
           service: 'mock',
-          deliveryStatus: 'mock_delivered'
+          deliveryStatus: 'mock_delivered',
         };
       }
     } catch (error) {
       logEntry.status = 'failed';
       await this.logEmailEvent({
         ...logEntry,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
 
       return {
@@ -971,7 +1059,7 @@ Format as JSON with insights array and recommendations array.
         status: 'failed',
         recipient: data.to,
         error: error instanceof Error ? error.message : 'Unknown error',
-        service: 'sendgrid'
+        service: 'sendgrid',
       };
     }
   }
@@ -980,10 +1068,10 @@ Format as JSON with insights array and recommendations array.
     try {
       const logsDir = path.join(process.cwd(), 'logs');
       await fs.mkdir(logsDir, { recursive: true });
-      
+
       const logFile = path.join(logsDir, 'email-agent.log');
       const logLine = JSON.stringify(event) + '\n';
-      
+
       await fs.appendFile(logFile, logLine);
     } catch (error) {
       logger.error('Failed to write email log', { error }, 'EmailMarketingAgent');
@@ -994,16 +1082,16 @@ Format as JSON with insights array and recommendations array.
     try {
       const logsDir = path.join(process.cwd(), 'logs');
       await fs.mkdir(logsDir, { recursive: true });
-      
+
       const logFile = path.join(logsDir, 'ai-fallback.log');
       const logEntry = {
         timestamp: new Date().toISOString(),
         agent: 'EmailMarketingAgent',
         operation,
         error: error instanceof Error ? error.message : String(error),
-        fallbackUsed: true
+        fallbackUsed: true,
       };
-      
+
       await fs.appendFile(logFile, JSON.stringify(logEntry) + '\n');
     } catch (logError) {
       logger.error('Failed to write AI fallback log', { logError }, 'EmailMarketingAgent');
@@ -1022,33 +1110,33 @@ Format as JSON with insights array and recommendations array.
 
   private async optimizeSendTimes(context: any): Promise<any> {
     // Send time optimization using AI
-    return { 
-      success: true, 
+    return {
+      success: true,
       optimalTimes: ['Tuesday 10:00 AM', 'Thursday 2:00 PM'],
-      timezone: 'UTC'
+      timezone: 'UTC',
     };
   }
 
   private async generateSubjectLines(context: any): Promise<any> {
     // AI-powered subject line generation
-    return { 
-      success: true, 
+    return {
+      success: true,
       subjectLines: [
         'Your exclusive invitation awaits',
-        'Don\'t miss out on this opportunity',
-        'Something special for you inside'
-      ]
+        "Don't miss out on this opportunity",
+        'Something special for you inside',
+      ],
     };
   }
 
   private async createNewsletter(context: any): Promise<any> {
     // Newsletter creation with AI assistance
-    return { 
-      success: true, 
+    return {
+      success: true,
       newsletter: {
         id: `newsletter_${Date.now()}`,
-        content: 'Generated newsletter content'
-      }
+        content: 'Generated newsletter content',
+      },
     };
   }
 
@@ -1058,10 +1146,11 @@ Format as JSON with insights array and recommendations array.
         id: 'welcome_sequence_1',
         name: 'Welcome Email - Step 1',
         subject: 'Welcome to {{company_name}}, {{first_name}}!',
-        content: 'Hi {{first_name}},\n\nWelcome to {{company_name}}! We\'re excited to have you on board.',
+        content:
+          "Hi {{first_name}},\n\nWelcome to {{company_name}}! We're excited to have you on board.",
         variables: ['company_name', 'first_name'],
         type: 'welcome',
-        tone: 'friendly'
+        tone: 'friendly',
       },
       {
         id: 'newsletter_template',
@@ -1070,8 +1159,8 @@ Format as JSON with insights array and recommendations array.
         content: 'This month at {{company_name}}...',
         variables: ['company_name', 'month', 'year'],
         type: 'newsletter',
-        tone: 'professional'
-      }
+        tone: 'professional',
+      },
     ];
 
     defaultTemplates.forEach(template => {

@@ -11,7 +11,9 @@ function logPushAttempt(user, success, errors = []) {
   let logHistory = [];
 
   if (fs.existsSync(PUSH_LOG_FILE)) {
-    try { logHistory = JSON.parse(fs.readFileSync(PUSH_LOG_FILE, 'utf8')); } catch (e) {}
+    try {
+      logHistory = JSON.parse(fs.readFileSync(PUSH_LOG_FILE, 'utf8'));
+    } catch (e) {}
   }
 
   logHistory.push(logEntry);
@@ -21,7 +23,11 @@ function logPushAttempt(user, success, errors = []) {
 }
 
 function getCurrentUser() {
-  try { return execSync('git config user.name', { encoding: 'utf8' }).trim(); } catch (e) { return 'unknown'; }
+  try {
+    return execSync('git config user.name', { encoding: 'utf8' }).trim();
+  } catch (e) {
+    return 'unknown';
+  }
 }
 
 function runCheck(name, command) {
@@ -47,7 +53,7 @@ async function main() {
     { name: 'Type Check', command: 'npm run type-check' },
     { name: 'Lint Check', command: 'npm run lint' },
     { name: 'Unit Tests', command: 'npm run test' },
-    { name: 'Build Check', command: 'node scripts/build-changed-workspaces.js' }
+    { name: 'Build Check', command: 'node scripts/build-changed-workspaces.js' },
   ];
 
   for (const check of checks) {

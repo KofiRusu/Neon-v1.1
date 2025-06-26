@@ -65,4 +65,4 @@ export class SocialApiClient {
       updatedAt: new Date().toISOString(),
     };
   }
-} 
+}

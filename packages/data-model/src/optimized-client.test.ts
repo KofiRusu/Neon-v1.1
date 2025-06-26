@@ -30,10 +30,10 @@ describe('OptimizedPrismaClient', () => {
 
     it('should track cache hit rate', async () => {
       const testUserId = 'test-user-id';
-      
+
       // First call - should execute query
       await client.getCampaignsByUserAndStatus(testUserId);
-      
+
       // Second call - should hit cache
       await client.getCampaignsByUserAndStatus(testUserId);
 
@@ -58,7 +58,7 @@ describe('OptimizedPrismaClient', () => {
 
       // Results should be identical
       expect(result1).toEqual(result2);
-      
+
       // Second call should be faster (though this might be flaky in fast systems)
       expect(duration2).toBeLessThanOrEqual(duration1 + 10); // Allow 10ms tolerance
     });
@@ -71,10 +71,10 @@ describe('OptimizedPrismaClient', () => {
       (client as any).DEFAULT_CACHE_TTL = 1; // 1ms
 
       await client.getCampaignsByUserAndStatus(testUserId);
-      
+
       // Wait for cache to expire
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       await client.getCampaignsByUserAndStatus(testUserId);
 
       // Restore original TTL
@@ -94,7 +94,7 @@ describe('OptimizedPrismaClient', () => {
     it('should execute getAgentPerformanceMetrics with date range', async () => {
       const startDate = new Date('2024-01-01');
       const endDate = new Date('2024-12-31');
-      
+
       const result = await client.getAgentPerformanceMetrics('agent-123', startDate, endDate);
       expect(Array.isArray(result)).toBe(true);
     });
@@ -125,14 +125,14 @@ describe('OptimizedPrismaClient', () => {
       const campaignData = {
         name: 'Test Campaign',
         type: 'SOCIAL_MEDIA',
-        userId: 'test-user-batch'
+        userId: 'test-user-batch',
       };
 
       const initialAnalytics = [
         {
           type: 'ENGAGEMENT',
-          data: { views: 1000 }
-        }
+          data: { views: 1000 },
+        },
       ];
 
       const result = await client.createCampaignWithAnalytics(campaignData, initialAnalytics);
@@ -144,7 +144,7 @@ describe('OptimizedPrismaClient', () => {
       const campaignData = {
         name: 'Simple Campaign',
         type: 'EMAIL',
-        userId: 'test-user-simple'
+        userId: 'test-user-simple',
       };
 
       const result = await client.createCampaignWithAnalytics(campaignData);
@@ -161,11 +161,11 @@ describe('OptimizedPrismaClient', () => {
         client.getAgentPerformanceMetrics('agent-1'),
         client.getCampaignAnalytics('campaign-1'),
         client.getHighValueLeads(),
-        client.getTrendingKeywords()
+        client.getTrendingKeywords(),
       ]);
 
       const metrics = client.getQueryMetrics();
-      
+
       expect(metrics.totalQueries).toBeGreaterThan(0);
       expect(metrics.avgDuration).toBeGreaterThanOrEqual(0);
       expect(Array.isArray(metrics.slowQueries)).toBe(true);
@@ -176,7 +176,7 @@ describe('OptimizedPrismaClient', () => {
 
     it('should clear metrics and cache', async () => {
       await client.getCampaignsByUserAndStatus('test-user');
-      
+
       let metrics = client.getQueryMetrics();
       expect(metrics.totalQueries).toBeGreaterThan(0);
 
@@ -199,16 +199,16 @@ describe('OptimizedPrismaClient', () => {
   describe('Index-Optimized Queries Performance', () => {
     it('should leverage user role and creation date index', async () => {
       const startTime = Date.now();
-      
+
       // This query should use the new index on [role, createdAt]
       await client.prisma.user.findMany({
         where: {
-          role: 'USER'
+          role: 'USER',
         },
         orderBy: {
-          createdAt: 'desc'
+          createdAt: 'desc',
         },
-        take: 10
+        take: 10,
       });
 
       const duration = Date.now() - startTime;
@@ -217,14 +217,14 @@ describe('OptimizedPrismaClient', () => {
 
     it('should leverage campaign status and type index', async () => {
       const startTime = Date.now();
-      
+
       // This query should use the new index on [status, type]
       await client.prisma.campaign.findMany({
         where: {
           status: 'ACTIVE',
-          type: 'SOCIAL_MEDIA'
+          type: 'SOCIAL_MEDIA',
         },
-        take: 10
+        take: 10,
       });
 
       const duration = Date.now() - startTime;
@@ -233,17 +233,17 @@ describe('OptimizedPrismaClient', () => {
 
     it('should leverage agent execution performance index', async () => {
       const startTime = Date.now();
-      
+
       // This query should use the new index on [agentId, status, startedAt]
       await client.prisma.agentExecution.findMany({
         where: {
           agentId: 'test-agent',
-          status: 'COMPLETED'
+          status: 'COMPLETED',
         },
         orderBy: {
-          startedAt: 'desc'
+          startedAt: 'desc',
         },
-        take: 10
+        take: 10,
       });
 
       const duration = Date.now() - startTime;
@@ -261,7 +261,7 @@ describe('OptimizedPrismaClient', () => {
         client.getCampaignsByUserAndStatus(userId, 'ACTIVE'),
         client.getCampaignAnalytics('campaign-123', 'ENGAGEMENT'),
         client.getHighValueLeads(7.0),
-        client.getTrendingKeywords('INSTAGRAM', 5.0)
+        client.getTrendingKeywords('INSTAGRAM', 5.0),
       ]);
 
       const totalTime = Date.now() - startTime;
@@ -276,12 +276,12 @@ describe('OptimizedPrismaClient', () => {
 
       // First load
       await client.getCampaignsByUserAndStatus(userId);
-      
+
       // Subsequent loads should hit cache
       await Promise.all([
         client.getCampaignsByUserAndStatus(userId),
         client.getCampaignsByUserAndStatus(userId),
-        client.getCampaignsByUserAndStatus(userId)
+        client.getCampaignsByUserAndStatus(userId),
       ]);
 
       const metrics = client.getQueryMetrics();

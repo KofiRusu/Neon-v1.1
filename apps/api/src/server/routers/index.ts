@@ -11,7 +11,7 @@ import { userRouter } from './user';
 import { brandVoiceRouter } from './brand-voice';
 import { trendsRouter } from './trends';
 import { outreachRouter } from './outreach';
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * This is the primary router for your server.
@@ -41,7 +41,7 @@ export const fallbackRouter = createTRPCRouter({
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      message: 'NeonHub API is running'
+      message: 'NeonHub API is running',
     };
   }),
 
@@ -51,7 +51,7 @@ export const fallbackRouter = createTRPCRouter({
       return {
         active: 12,
         completed: 8,
-        total: 20
+        total: 20,
       };
     }),
   }),

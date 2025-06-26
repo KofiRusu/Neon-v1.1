@@ -37,7 +37,13 @@ export class Logger {
     this.maxLogs = maxLogs;
   }
 
-  private log(level: LogLevel, message: string, context?: Record<string, unknown>, agentId?: string, agentName?: string): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: Record<string, unknown>,
+    agentId?: string,
+    agentName?: string
+  ): void {
     if (level < this.logLevel) {
       return;
     }
@@ -85,19 +91,39 @@ export class Logger {
     }
   }
 
-  debug(message: string, context?: Record<string, unknown>, agentId?: string, agentName?: string): void {
+  debug(
+    message: string,
+    context?: Record<string, unknown>,
+    agentId?: string,
+    agentName?: string
+  ): void {
     this.log(LogLevel.DEBUG, message, context, agentId, agentName);
   }
 
-  info(message: string, context?: Record<string, unknown>, agentId?: string, agentName?: string): void {
+  info(
+    message: string,
+    context?: Record<string, unknown>,
+    agentId?: string,
+    agentName?: string
+  ): void {
     this.log(LogLevel.INFO, message, context, agentId, agentName);
   }
 
-  warn(message: string, context?: Record<string, unknown>, agentId?: string, agentName?: string): void {
+  warn(
+    message: string,
+    context?: Record<string, unknown>,
+    agentId?: string,
+    agentName?: string
+  ): void {
     this.log(LogLevel.WARN, message, context, agentId, agentName);
   }
 
-  error(message: string, context?: Record<string, unknown>, agentId?: string, agentName?: string): void {
+  error(
+    message: string,
+    context?: Record<string, unknown>,
+    agentId?: string,
+    agentName?: string
+  ): void {
     this.log(LogLevel.ERROR, message, context, agentId, agentName);
   }
 
@@ -119,7 +145,11 @@ export class Logger {
     this.logs = [];
   }
 
-  getLogStats(): { total: number; byLevel: Record<string, number>; byAgent: Record<string, number> } {
+  getLogStats(): {
+    total: number;
+    byLevel: Record<string, number>;
+    byAgent: Record<string, number>;
+  } {
     const byLevel: Record<string, number> = {};
     const byAgent: Record<string, number> = {};
 

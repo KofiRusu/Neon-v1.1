@@ -8,7 +8,7 @@ function getChangedFiles() {
     const staged = execSync('git diff --cached --name-only', { encoding: 'utf8' }).trim();
     // Get modified files not yet staged
     const modified = execSync('git diff --name-only', { encoding: 'utf8' }).trim();
-    
+
     const allFiles = [...new Set([...staged.split('\n'), ...modified.split('\n')])].filter(f => f);
     return allFiles.join('\n');
   } catch {
@@ -24,23 +24,23 @@ function getAffectedWorkspaces(changedFiles) {
 
   files.forEach(file => {
     console.log(`   ${file}`);
-    
+
     // Dashboard workspace
     if (file.startsWith('apps/dashboard/')) {
       workspaces.add('dashboard');
     }
-    
+
     // API workspace
     if (file.startsWith('apps/api/')) {
       workspaces.add('api');
     }
-    
+
     // Package changes affect both apps
     if (file.startsWith('packages/')) {
       workspaces.add('dashboard');
       workspaces.add('api');
     }
-    
+
     // Root config changes affect all workspaces
     if (file.match(/^(package\.json|tsconfig\.json|jest\.config\.js|\.eslintrc|\.prettierrc)/)) {
       workspaces.add('dashboard');
@@ -70,7 +70,7 @@ function main() {
   console.log('======================================');
 
   const changed = getChangedFiles();
-  
+
   if (!changed) {
     console.log('✅ No changes detected. Skipping builds.');
     return;

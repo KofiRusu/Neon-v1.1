@@ -28,7 +28,7 @@ function analyzeLogs(logs) {
     blocked,
     passRate,
     users,
-    recentBlocks
+    recentBlocks,
   };
 }
 
@@ -69,18 +69,23 @@ function main() {
   }
 
   console.log(`\n📋 Recent activity (last 10):`);
-  logs.slice(-10).reverse().forEach((log, i) => {
-    const status = log.success ? '✅' : '❌';
-    console.log(`   ${status} ${log.user} - ${formatTimestamp(log.timestamp)}`);
-    if (!log.success && log.errors.length > 0) {
-      console.log(`      → ${log.errors[0].split(':')[0]}`);
-    }
-  });
+  logs
+    .slice(-10)
+    .reverse()
+    .forEach((log, i) => {
+      const status = log.success ? '✅' : '❌';
+      console.log(`   ${status} ${log.user} - ${formatTimestamp(log.timestamp)}`);
+      if (!log.success && log.errors.length > 0) {
+        console.log(`      → ${log.errors[0].split(':')[0]}`);
+      }
+    });
 
   if (process.argv.includes('--detailed')) {
     console.log('\n📝 Full log:');
     logs.forEach((log, i) => {
-      console.log(`\n${i + 1}. ${log.success ? '✅' : '❌'} ${log.user} - ${formatTimestamp(log.timestamp)}`);
+      console.log(
+        `\n${i + 1}. ${log.success ? '✅' : '❌'} ${log.user} - ${formatTimestamp(log.timestamp)}`
+      );
       if (log.errors.length > 0) {
         log.errors.forEach(error => console.log(`   → ${error}`));
       }

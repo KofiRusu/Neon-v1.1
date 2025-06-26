@@ -10,20 +10,20 @@ class TestAgent extends AbstractAgent {
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const _context = payload.context as ContentContext;
-      
+
       if (payload.task === 'fail') {
         throw new Error('Test error');
       }
-      
+
       const result: ContentResult = {
         content: 'Test content',
         metadata: {
           wordCount: 100,
           tone: 'test',
-          keywords: ['test']
-        }
+          keywords: ['test'],
+        },
       };
-      
+
       return result;
     });
   }
@@ -48,7 +48,7 @@ describe('AbstractAgent', () => {
   describe('getStatus', () => {
     it('should return agent status', async () => {
       const status = await agent.getStatus();
-      
+
       expect(status).toEqual({
         id: 'test-1',
         name: 'Test Agent',
@@ -56,7 +56,7 @@ describe('AbstractAgent', () => {
         status: 'idle',
         capabilities: ['test_capability'],
         lastExecution: undefined,
-        performance: undefined
+        performance: undefined,
       });
     });
   });
@@ -66,18 +66,18 @@ describe('AbstractAgent', () => {
       const payload: AgentPayload = {
         task: 'test_task',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       };
-      
+
       expect(agent.validatePayload(payload)).toBe(true);
     });
 
     it('should reject invalid payload', () => {
       const invalidPayload = {
         task: 123, // Should be string
-        priority: 'invalid'
+        priority: 'invalid',
       } as unknown as AgentPayload;
-      
+
       expect(agent.validatePayload(invalidPayload)).toBe(false);
     });
   });
@@ -93,17 +93,17 @@ describe('AbstractAgent', () => {
       const payload: AgentPayload = {
         task: 'test_task',
         context: { platform: 'instagram' },
-        priority: 'high'
+        priority: 'high',
       };
-      
+
       const result = await agent.execute(payload);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.metadata?.duration).toBeGreaterThan(0);
       expect(result.metadata).toMatchObject({
         agentId: 'test-1',
-        agentName: 'Test Agent'
+        agentName: 'Test Agent',
       });
     });
 
@@ -111,11 +111,11 @@ describe('AbstractAgent', () => {
       const payload: AgentPayload = {
         task: 'fail',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       };
-      
+
       const result = await agent.execute(payload);
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('Test error');
       expect(result.metadata?.duration).toBeGreaterThan(0);
@@ -123,11 +123,11 @@ describe('AbstractAgent', () => {
 
     it('should handle invalid payload', async () => {
       const invalidPayload = {
-        task: 123
+        task: 123,
       } as unknown as AgentPayload;
-      
+
       const result = await agent.execute(invalidPayload);
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('Invalid payload');
     });
@@ -143,7 +143,7 @@ describe('AgentFactory', () => {
   describe('registerAgent', () => {
     it('should register agent class', () => {
       AgentFactory.registerAgent('test', TestAgent);
-      
+
       expect(AgentFactory.getAvailableTypes()).toContain('test');
     });
   });
@@ -151,9 +151,9 @@ describe('AgentFactory', () => {
   describe('createAgent', () => {
     it('should create agent instance', () => {
       AgentFactory.registerAgent('test', TestAgent);
-      
+
       const agent = AgentFactory.createAgent('test', 'test-1', 'Test Agent');
-      
+
       expect(agent).toBeInstanceOf(TestAgent);
       expect(agent.id).toBe('test-1');
       expect(agent.name).toBe('Test Agent');
@@ -174,7 +174,7 @@ describe('AgentFactory', () => {
     it('should return registered agent types', () => {
       AgentFactory.registerAgent('test1', TestAgent);
       AgentFactory.registerAgent('test2', TestAgent);
-      
+
       const types = AgentFactory.getAvailableTypes();
       expect(types).toContain('test1');
       expect(types).toContain('test2');
@@ -195,7 +195,7 @@ describe('AgentManager', () => {
   describe('registerAgent', () => {
     it('should register agent', () => {
       manager.registerAgent(agent);
-      
+
       expect(manager.getAgent('test-1')).toBe(agent);
     });
   });
@@ -203,7 +203,7 @@ describe('AgentManager', () => {
   describe('getAgent', () => {
     it('should return registered agent', () => {
       manager.registerAgent(agent);
-      
+
       expect(manager.getAgent('test-1')).toBe(agent);
     });
 
@@ -215,10 +215,10 @@ describe('AgentManager', () => {
   describe('getAllAgents', () => {
     it('should return all registered agents', () => {
       const agent2 = new TestAgent('test-2', 'Test Agent 2');
-      
+
       manager.registerAgent(agent);
       manager.registerAgent(agent2);
-      
+
       const agents = manager.getAllAgents();
       expect(agents).toHaveLength(2);
       expect(agents).toContain(agent);
@@ -229,15 +229,15 @@ describe('AgentManager', () => {
   describe('executeAgent', () => {
     it('should execute agent by id', async () => {
       manager.registerAgent(agent);
-      
+
       const payload: AgentPayload = {
         task: 'test_task',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       };
-      
+
       const result = await manager.executeAgent('test-1', payload);
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -245,27 +245,28 @@ describe('AgentManager', () => {
       const payload: AgentPayload = {
         task: 'test_task',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       };
-      
-      await expect(manager.executeAgent('non-existent', payload))
-        .rejects.toThrow('Agent not found: non-existent');
+
+      await expect(manager.executeAgent('non-existent', payload)).rejects.toThrow(
+        'Agent not found: non-existent'
+      );
     });
   });
 
   describe('getAgentStatus', () => {
     it('should return agent status', async () => {
       manager.registerAgent(agent);
-      
+
       const status = await manager.getAgentStatus('test-1');
-      
+
       expect(status).toBeDefined();
       expect(status?.id).toBe('test-1');
     });
 
     it('should return null for non-existent agent', async () => {
       const status = await manager.getAgentStatus('non-existent');
-      
+
       expect(status).toBeNull();
     });
   });
@@ -273,12 +274,12 @@ describe('AgentManager', () => {
   describe('getAllAgentStatuses', () => {
     it('should return all agent statuses', async () => {
       const agent2 = new TestAgent('test-2', 'Test Agent 2');
-      
+
       manager.registerAgent(agent);
       manager.registerAgent(agent2);
-      
+
       const statuses = await manager.getAllAgentStatuses();
-      
+
       expect(statuses).toHaveLength(2);
       expect(statuses[0]?.id).toBe('test-1');
       expect(statuses[1]?.id).toBe('test-2');
@@ -288,12 +289,12 @@ describe('AgentManager', () => {
   describe('getAgentsByType', () => {
     it('should return agents by type', () => {
       const agent2 = new TestAgent('test-2', 'Test Agent 2');
-      
+
       manager.registerAgent(agent);
       manager.registerAgent(agent2);
-      
+
       const testAgents = manager.getAgentsByType('test');
-      
+
       expect(testAgents).toHaveLength(2);
       expect(testAgents).toContain(agent);
       expect(testAgents).toContain(agent2);
@@ -301,9 +302,9 @@ describe('AgentManager', () => {
 
     it('should return empty array for non-existent type', () => {
       manager.registerAgent(agent);
-      
+
       const nonExistentAgents = manager.getAgentsByType('non-existent');
-      
+
       expect(nonExistentAgents).toEqual([]);
     });
   });
@@ -311,18 +312,18 @@ describe('AgentManager', () => {
   describe('getAgentsByCapability', () => {
     it('should return agents by capability', () => {
       manager.registerAgent(agent);
-      
+
       const capableAgents = manager.getAgentsByCapability('test_capability');
-      
+
       expect(capableAgents).toHaveLength(1);
       expect(capableAgents[0]).toBe(agent);
     });
 
     it('should return empty array for non-existent capability', () => {
       manager.registerAgent(agent);
-      
+
       const capableAgents = manager.getAgentsByCapability('non-existent');
-      
+
       expect(capableAgents).toEqual([]);
     });
   });

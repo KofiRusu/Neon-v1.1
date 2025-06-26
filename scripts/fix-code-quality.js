@@ -23,7 +23,7 @@ function fixCommonIssues(filePath) {
   // Fix missing return types by adding basic return type annotations
   content = content.replace(/(\w+)\s*=\s*\(\s*\)\s*=>\s*{/g, '$1 = (): void => {');
   content = content.replace(/(\w+)\s*=\s*\(([^)]+)\)\s*=>\s*{/g, '$1 = ($2): void => {');
-  
+
   // Fix explicit any types in simple cases
   content = content.replace(/:\s*any\[\]/g, ': unknown[]');
   content = content.replace(/:\s*any(?!\w)/g, ': unknown');
@@ -32,7 +32,7 @@ function fixCommonIssues(filePath) {
   const lines = content.split('\n');
   const usedImports = new Set();
   const importLines = [];
-  
+
   lines.forEach((line, index) => {
     if (line.trim().startsWith('import')) {
       importLines.push({ line, index });
@@ -53,10 +53,10 @@ function fixCommonIssues(filePath) {
 
 function processDirectory(dirPath) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const fullPath = path.join(dirPath, entry.name);
-    
+
     if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
       processDirectory(fullPath);
     } else if (entry.isFile() && (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx'))) {
@@ -81,4 +81,4 @@ if (fs.existsSync(packagesDir)) {
   processDirectory(packagesDir);
 }
 
-console.log('Code quality fixes completed!'); 
+console.log('Code quality fixes completed!');

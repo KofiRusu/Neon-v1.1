@@ -1,91 +1,83 @@
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-      tsconfig: {
-        module: 'esnext'
-      }
-    }
-  },
-  moduleNameMapping: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
+  roots: ['<rootDir>'],
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      useESM: true,
-      tsconfig: {
-        module: 'esnext',
-      },
-    }],
+    '^.+\\.tsx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testMatch: [
-    '**/__tests__/**/*.(ts|js)',
-    '**/*.(test|spec).(ts|js)'
-  ],
+  testMatch: ['**/__tests__/**/*.(ts|js)', '**/*.(test|spec).(ts|js)'],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.test.{ts,tsx}',
-    '!src/**/__tests__/**',
+    'packages/*/src/**/*.{ts,tsx}',
+    'apps/*/src/**/*.{ts,tsx}',
+    '!**/*.d.ts',
+    '!**/*.test.{ts,tsx}',
+    '!**/__tests__/**',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/coverage/**',
   ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'clover', 'json'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testTimeout: 30000,
-  maxWorkers: 1,
+  maxWorkers: '50%',
   verbose: true,
+  clearMocks: true,
+  restoreMocks: true,
   projects: [
     {
       displayName: 'core-agents',
       testMatch: ['<rootDir>/packages/core-agents/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest/presets/default-esm',
+      preset: 'ts-jest',
       testEnvironment: 'node',
-      extensionsToTreatAsEsm: ['.ts'],
-      globals: {
-        'ts-jest': {
-          useESM: true,
-          tsconfig: {
-            module: 'esnext'
-          }
-        }
-      },
-      moduleNameMapping: {
-        '^(\\.{1,2}/.*)\\.js$': '$1',
-      },
       transform: {
-        '^.+\\.tsx?$': ['ts-jest', {
-          useESM: true,
-          tsconfig: {
-            module: 'esnext',
-          },
-        }],
+        '^.+\\.tsx?$': 'ts-jest',
+      },
+      modulePathIgnorePatterns: ['<rootDir>/packages/core-agents/dist/'],
+    },
+    {
+      displayName: 'data-model',
+      testMatch: ['<rootDir>/packages/data-model/**/*.(test|spec).(ts|js)'],
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+      transform: {
+        '^.+\\.tsx?$': 'ts-jest',
       },
     },
     {
       displayName: 'reasoning-engine',
       testMatch: ['<rootDir>/packages/reasoning-engine/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest/presets/default-esm',
+      preset: 'ts-jest',
       testEnvironment: 'node',
-      extensionsToTreatAsEsm: ['.ts'],
-      globals: {
-        'ts-jest': {
-          useESM: true
-        }
-      }
+      transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+      },
     },
     {
       displayName: 'utils',
       testMatch: ['<rootDir>/packages/utils/**/*.(test|spec).(ts|js)'],
-      preset: 'ts-jest/presets/default-esm',
+      preset: 'ts-jest',
       testEnvironment: 'node',
-      extensionsToTreatAsEsm: ['.ts'],
-      globals: {
-        'ts-jest': {
-          useESM: true
-        }
-      }
+      transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+      },
+    },
+    {
+      displayName: 'types',
+      testMatch: ['<rootDir>/packages/types/**/*.(test|spec).(ts|js)'],
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+      transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+      },
     },
   ],
+  // Global settings that apply to all projects
+  globalSetup: undefined,
+  globalTeardown: undefined,
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/packages/$1/src',
+    '^@neon/(.*)$': '<rootDir>/packages/$1/src',
+  },
 };

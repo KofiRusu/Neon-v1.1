@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   SparklesIcon,
   MagnifyingGlassIcon,
   Cog6ToothIcon,
   EnvelopeIcon,
   GlobeAltIcon,
   ChatBubbleLeftIcon,
-  ArrowTopRightOnSquareIcon
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import ContentEditor from '../app/agents/content-editor';
@@ -47,7 +47,7 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
         <div className="px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">AI Agents</h2>
           <div className="flex space-x-1">
-            {agentTabs.map((tab) => {
+            {agentTabs.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
@@ -65,7 +65,7 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
               );
             })}
           </div>
-          
+
           {/* Active Agent Description */}
           <div className="mt-3 text-sm text-gray-600">
             {agentTabs.find(tab => tab.id === activeTab)?.description}
@@ -82,10 +82,14 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
         {/* Phase 2 Agents */}
         <div className="border-t border-gray-200 pt-8">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Phase 2: Marketing Automation</h3>
-            <p className="text-sm text-gray-600">Advanced AI agents for email, social media, and customer support</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Phase 2: Marketing Automation
+            </h3>
+            <p className="text-sm text-gray-600">
+              Advanced AI agents for email, social media, and customer support
+            </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link href="/email" className="group">
               <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
@@ -96,7 +100,9 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
                   <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-blue-600" />
                 </div>
                 <h4 className="font-medium text-gray-900 mb-1">Email Marketing</h4>
-                <p className="text-sm text-gray-600">Create campaigns, manage sequences, and track analytics</p>
+                <p className="text-sm text-gray-600">
+                  Create campaigns, manage sequences, and track analytics
+                </p>
                 <div className="mt-3">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Live
@@ -114,7 +120,9 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
                   <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-pink-600" />
                 </div>
                 <h4 className="font-medium text-gray-900 mb-1">Social Media</h4>
-                <p className="text-sm text-gray-600">Schedule posts, manage platforms, and analyze engagement</p>
+                <p className="text-sm text-gray-600">
+                  Schedule posts, manage platforms, and analyze engagement
+                </p>
                 <div className="mt-3">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Live
@@ -132,7 +140,9 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
                   <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-purple-600" />
                 </div>
                 <h4 className="font-medium text-gray-900 mb-1">Customer Support</h4>
-                <p className="text-sm text-gray-600">AI-powered chat, WhatsApp integration, and ticket management</p>
+                <p className="text-sm text-gray-600">
+                  AI-powered chat, WhatsApp integration, and ticket management
+                </p>
                 <div className="mt-3">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Live
@@ -151,7 +161,7 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
             <div className="h-2 w-2 bg-green-500 rounded-full"></div>
             <span>AI Agents Online</span>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-500">
               Phase 1 & 2: Complete | 24 API endpoints active
@@ -164,4 +174,4 @@ export default function AgentPanel({ className = '' }: AgentPanelProps) {
       </div>
     </div>
   );
-} 
+}

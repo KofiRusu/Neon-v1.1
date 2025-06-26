@@ -12,20 +12,20 @@ class APIContractValidator {
       endpoints: {},
       schemas: {},
       validation: {},
-      errors: []
+      errors: [],
     };
   }
 
   async validateAll() {
     console.log('🔍 Starting API Contract Validation...\n');
-    
+
     try {
       await this.discoverEndpoints();
       await this.validateSchemas();
       await this.testEndpointAccessibility();
       await this.generateOpenAPISpec();
       await this.generateReport();
-      
+
       console.log('✅ API Contract validation completed!');
     } catch (error) {
       console.error('❌ Validation failed:', error.message);
@@ -36,127 +36,131 @@ class APIContractValidator {
 
   async discoverEndpoints() {
     console.log('🔍 Discovering tRPC endpoints...');
-    
+
     const routersPath = path.join(this.apiPath, 'src/server/routers');
-    const routerFiles = fs.readdirSync(routersPath)
+    const routerFiles = fs
+      .readdirSync(routersPath)
       .filter(file => file.endsWith('.ts') && !file.endsWith('.test.ts'));
-    
+
     this.results.endpoints = {};
-    
+
     for (const routerFile of routerFiles) {
       const routerName = path.basename(routerFile, '.ts');
       const routerPath = path.join(routersPath, routerFile);
       const routerContent = fs.readFileSync(routerPath, 'utf8');
-      
+
       // Parse tRPC procedures (basic regex parsing)
       const procedures = this.extractProcedures(routerContent);
-      
+
       this.results.endpoints[routerName] = {
         file: routerFile,
         procedures,
-        path: routerPath
+        path: routerPath,
       };
     }
-    
-    console.log(`📊 Found ${Object.keys(this.results.endpoints).length} routers with ${
-      Object.values(this.results.endpoints).reduce((acc, router) => acc + router.procedures.length, 0)
-    } procedures\n`);
+
+    console.log(
+      `📊 Found ${Object.keys(this.results.endpoints).length} routers with ${Object.values(
+        this.results.endpoints
+      ).reduce((acc, router) => acc + router.procedures.length, 0)} procedures\n`
+    );
   }
 
   extractProcedures(content) {
     const procedures = [];
-    
+
     // Match tRPC procedure definitions
-    const procedureRegex = /(\w+):\s*(publicProcedure|protectedProcedure)(?:\.input\([^)]+\))?(?:\.query|\.mutation)\(/g;
+    const procedureRegex =
+      /(\w+):\s*(publicProcedure|protectedProcedure)(?:\.input\([^)]+\))?(?:\.query|\.mutation)\(/g;
     let match;
-    
+
     while ((match = procedureRegex.exec(content)) !== null) {
       const [, name, type] = match;
       const isQuery = content.includes(`.query(`);
       const isProtected = type === 'protectedProcedure';
-      
+
       procedures.push({
         name,
         type: isQuery ? 'query' : 'mutation',
         protected: isProtected,
-        hasInput: content.includes('.input(')
+        hasInput: content.includes('.input('),
       });
     }
-    
+
     return procedures;
   }
 
   async validateSchemas() {
     console.log('🔍 Validating Zod schemas...');
-    
+
     try {
       // Compile TypeScript to validate schemas
       const tscResult = execSync('npx tsc --noEmit --project apps/api/tsconfig.json', {
         encoding: 'utf8',
-        stdio: 'pipe'
+        stdio: 'pipe',
       });
-      
+
       this.results.schemas = {
         status: 'valid',
         output: tscResult,
-        errors: []
+        errors: [],
       };
-      
+
       console.log('✅ All schemas are valid\n');
     } catch (error) {
       this.results.schemas = {
         status: 'invalid',
         output: error.stdout || '',
-        errors: [error.message]
+        errors: [error.message],
       };
-      
+
       console.log('❌ Schema validation failed\n');
     }
   }
 
   async testEndpointAccessibility() {
     console.log('🌐 Testing endpoint accessibility...');
-    
+
     // This would ideally start a test server and make actual HTTP calls
     // For now, we'll simulate based on tRPC setup
-    
+
     for (const [routerName, router] of Object.entries(this.results.endpoints)) {
       console.log(`Testing ${routerName} router...`);
-      
+
       this.results.validation[routerName] = {
         accessible: true,
-        procedures: {}
+        procedures: {},
       };
-      
+
       for (const procedure of router.procedures) {
         // Simulate endpoint testing
         this.results.validation[routerName].procedures[procedure.name] = {
           accessible: true,
           requiresAuth: procedure.protected,
           type: procedure.type,
-          tested: false // Would be true if we actually tested it
+          tested: false, // Would be true if we actually tested it
         };
       }
     }
-    
+
     console.log('✅ Endpoint accessibility check completed\n');
   }
 
   async generateOpenAPISpec() {
     console.log('📖 Generating OpenAPI specification...');
-    
+
     const spec = {
       openapi: '3.0.0',
       info: {
         title: 'NeonHub API',
         version: '0.2.0',
-        description: 'AI Marketing Ecosystem API'
+        description: 'AI Marketing Ecosystem API',
       },
       servers: [
         {
           url: '/api/trpc',
-          description: 'tRPC API Server'
-        }
+          description: 'tRPC API Server',
+        },
       ],
       paths: {},
       components: {
@@ -164,17 +168,17 @@ class APIContractValidator {
         securitySchemes: {
           bearerAuth: {
             type: 'http',
-            scheme: 'bearer'
-          }
-        }
-      }
+            scheme: 'bearer',
+          },
+        },
+      },
     };
 
     // Generate paths for each endpoint
     for (const [routerName, router] of Object.entries(this.results.endpoints)) {
       for (const procedure of router.procedures) {
         const path = `/api/trpc/${routerName}.${procedure.name}`;
-        
+
         spec.paths[path] = {
           [procedure.type === 'query' ? 'get' : 'post']: {
             summary: `${procedure.name} - ${routerName}`,
@@ -186,40 +190,44 @@ class APIContractValidator {
                 content: {
                   'application/json': {
                     schema: {
-                      type: 'object'
-                    }
-                  }
-                }
+                      type: 'object',
+                    },
+                  },
+                },
               },
               400: {
-                description: 'Bad Request'
+                description: 'Bad Request',
               },
               401: {
-                description: 'Unauthorized'
+                description: 'Unauthorized',
               },
               500: {
-                description: 'Internal Server Error'
-              }
-            }
-          }
+                description: 'Internal Server Error',
+              },
+            },
+          },
         };
       }
     }
 
     const specPath = path.join(process.cwd(), 'docs/api-spec.json');
     fs.writeFileSync(specPath, JSON.stringify(spec, null, 2));
-    
+
     console.log(`✅ OpenAPI spec generated: ${specPath}\n`);
   }
 
   async generateReport() {
     console.log('📝 Generating validation report...');
-    
-    const totalEndpoints = Object.values(this.results.endpoints)
-      .reduce((acc, router) => acc + router.procedures.length, 0);
-    
-    const protectedEndpoints = Object.values(this.results.endpoints)
-      .reduce((acc, router) => acc + router.procedures.filter(p => p.protected).length, 0);
+
+    const totalEndpoints = Object.values(this.results.endpoints).reduce(
+      (acc, router) => acc + router.procedures.length,
+      0
+    );
+
+    const protectedEndpoints = Object.values(this.results.endpoints).reduce(
+      (acc, router) => acc + router.procedures.filter(p => p.protected).length,
+      0
+    );
 
     const report = `# API Contract Validation Report
 
@@ -234,38 +242,58 @@ Generated: ${this.results.timestamp}
 
 ## 🛠️ Router Details
 
-${Object.entries(this.results.endpoints).map(([name, router]) => `
+${Object.entries(this.results.endpoints)
+  .map(
+    ([name, router]) => `
 ### ${name.charAt(0).toUpperCase() + name.slice(1)} Router
 - **File**: \`${router.file}\`
 - **Procedures**: ${router.procedures.length}
 
-${router.procedures.map(proc => `
+${router.procedures
+  .map(
+    proc => `
 - **${proc.name}** (${proc.type})
   - Protection: ${proc.protected ? '🔒 Protected' : '🌐 Public'}
   - Input Validation: ${proc.hasInput ? '✅ Yes' : '❌ No'}
-`).join('')}
-`).join('')}
+`
+  )
+  .join('')}
+`
+  )
+  .join('')}
 
 ## ✅ Validation Results
 
 ### Schema Validation
 - **Status**: ${this.results.schemas.status === 'valid' ? '✅ Valid' : '❌ Invalid'}
-${this.results.schemas.errors?.length > 0 ? `
+${
+  this.results.schemas.errors?.length > 0
+    ? `
 - **Errors**: 
 ${this.results.schemas.errors.map(error => `  - ${error}`).join('\n')}
-` : ''}
+`
+    : ''
+}
 
 ### Endpoint Accessibility
-${Object.entries(this.results.validation).map(([router, validation]) => `
+${Object.entries(this.results.validation)
+  .map(
+    ([router, validation]) => `
 - **${router}**: ${validation.accessible ? '✅ Accessible' : '❌ Not Accessible'}
-`).join('')}
+`
+  )
+  .join('')}
 
 ## 🚨 Issues Found
 
-${this.results.errors.length > 0 ? `
+${
+  this.results.errors.length > 0
+    ? `
 ### Validation Errors
 ${this.results.errors.map(error => `- ${error}`).join('\n')}
-` : 'No critical issues found.'}
+`
+    : 'No critical issues found.'
+}
 
 ## 💡 Recommendations
 
@@ -313,7 +341,7 @@ ${this.results.errors.map(error => `- ${error}`).join('\n')}
 
     const reportPath = path.join(process.cwd(), 'api-contract-validation-report.md');
     fs.writeFileSync(reportPath, report);
-    
+
     console.log(`✅ Validation report generated: ${reportPath}\n`);
   }
 }

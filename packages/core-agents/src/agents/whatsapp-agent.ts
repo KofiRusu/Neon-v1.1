@@ -37,7 +37,7 @@ export class WhatsAppAgent extends AbstractAgent {
   private contacts: Map<string, WhatsAppContact> = new Map();
   private activeTickets: Map<string, SupportTicket> = new Map();
   private messageTemplates: Map<string, string> = new Map();
-  
+
   constructor(id: string, name: string) {
     super(id, name, 'whatsapp', [
       'send_message',
@@ -46,16 +46,16 @@ export class WhatsAppAgent extends AbstractAgent {
       'create_ticket',
       'automated_response',
       'bulk_message',
-      'status_update'
+      'status_update',
     ]);
-    
+
     this.initializeTemplates();
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'send_message':
           return await this.sendMessage(context || {});
@@ -78,14 +78,7 @@ export class WhatsAppAgent extends AbstractAgent {
   }
 
   private async sendMessage(context: any): Promise<any> {
-    const {
-      to,
-      content,
-      type = 'text',
-      templateId,
-      variables = {},
-      priority = 'normal'
-    } = context;
+    const { to, content, type = 'text', templateId, variables = {}, priority = 'normal' } = context;
 
     if (!to || !content) {
       throw new Error('Recipient and content are required');
@@ -108,7 +101,7 @@ export class WhatsAppAgent extends AbstractAgent {
       content: messageContent,
       timestamp: new Date(),
       type,
-      status: 'sent'
+      status: 'sent',
     };
 
     // Simulate message delivery
@@ -120,7 +113,7 @@ export class WhatsAppAgent extends AbstractAgent {
       this.contacts.set(to, {
         phone: to,
         name: `Customer ${to.slice(-4)}`,
-        lastSeen: new Date()
+        lastSeen: new Date(),
       });
     }
 
@@ -133,8 +126,8 @@ export class WhatsAppAgent extends AbstractAgent {
       metadata: {
         templateUsed: templateId || null,
         priority,
-        agentId: this.id
-      }
+        agentId: this.id,
+      },
     };
   }
 
@@ -147,27 +140,27 @@ export class WhatsAppAgent extends AbstractAgent {
       content: 'Hello, I need help with my neon sign order',
       timestamp: new Date(),
       type: 'text',
-      status: 'delivered'
+      status: 'delivered',
     };
 
     // Analyze intent
     const intent = this.analyzeIntent(incomingMessage.content);
-    
+
     // Check for existing ticket
     const existingTicket = this.findTicketByCustomer(incomingMessage.from);
-    
+
     if (existingTicket) {
       // Add to existing ticket
       existingTicket.messages.push(incomingMessage);
       existingTicket.updatedAt = new Date();
-      
+
       return {
         action: 'ticket_updated',
         ticketId: existingTicket.id,
         message: incomingMessage,
         intent,
         suggestedResponse: this.generateResponse(intent, existingTicket),
-        requiresHumanIntervention: intent.confidence < 0.7
+        requiresHumanIntervention: intent.confidence < 0.7,
       };
     } else {
       // Create new ticket if support-related
@@ -176,16 +169,16 @@ export class WhatsAppAgent extends AbstractAgent {
           customerId: incomingMessage.from,
           subject: intent.subject,
           priority: intent.priority,
-          initialMessage: incomingMessage
+          initialMessage: incomingMessage,
         });
-        
+
         return {
           action: 'ticket_created',
           ticketId: ticket.id,
           message: incomingMessage,
           intent,
           suggestedResponse: this.generateResponse(intent),
-          autoResponse: intent.confidence > 0.8
+          autoResponse: intent.confidence > 0.8,
         };
       } else {
         // Handle as general inquiry
@@ -194,7 +187,7 @@ export class WhatsAppAgent extends AbstractAgent {
           message: incomingMessage,
           intent,
           suggestedResponse: this.generateResponse(intent),
-          autoResponse: true
+          autoResponse: true,
         };
       }
     }
@@ -227,7 +220,7 @@ export class WhatsAppAgent extends AbstractAgent {
       subject,
       priority = 'medium',
       initialMessage,
-      category = 'general'
+      category = 'general',
     } = context;
 
     const ticket: SupportTicket = {
@@ -238,7 +231,7 @@ export class WhatsAppAgent extends AbstractAgent {
       priority,
       messages: initialMessage ? [initialMessage] : [],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.activeTickets.set(ticket.id, ticket);
@@ -256,29 +249,25 @@ export class WhatsAppAgent extends AbstractAgent {
       suggestedActions: [
         'Send acknowledgment message',
         'Gather customer information',
-        'Escalate if high priority'
+        'Escalate if high priority',
       ],
       metadata: {
         category,
         createdBy: this.id,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
   private async generateAutomatedResponse(context: any): Promise<any> {
-    const {
-      message,
-      intent,
-      customerHistory = []
-    } = context;
+    const { message, intent, customerHistory = [] } = context;
 
     // Generate contextual response
     const responseTemplate = this.selectResponseTemplate(intent.type);
     const personalizedResponse = this.personalizeResponse(responseTemplate, {
       customerName: this.getCustomerName(message.from),
       intent: intent.type,
-      ...intent.entities
+      ...intent.entities,
     });
 
     return {
@@ -287,23 +276,19 @@ export class WhatsAppAgent extends AbstractAgent {
       sendImmediately: intent.confidence > 0.8,
       requiresApproval: intent.confidence < 0.6,
       followUpActions: this.suggestFollowUpActions(intent),
-      escalation: intent.urgency === 'high' ? {
-        reason: 'High urgency detected',
-        department: 'customer_service',
-        eta: '15 minutes'
-      } : null
+      escalation:
+        intent.urgency === 'high'
+          ? {
+              reason: 'High urgency detected',
+              department: 'customer_service',
+              eta: '15 minutes',
+            }
+          : null,
     };
   }
 
   private async sendBulkMessage(context: any): Promise<any> {
-    const {
-      recipients,
-      content,
-      templateId,
-      variables = {},
-      sendTime,
-      batchSize = 100
-    } = context;
+    const { recipients, content, templateId, variables = {}, sendTime, batchSize = 100 } = context;
 
     if (!recipients || recipients.length === 0) {
       throw new Error('No recipients specified');
@@ -316,27 +301,27 @@ export class WhatsAppAgent extends AbstractAgent {
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
       const batchResults = await Promise.all(
-        batch.map(async (recipient) => {
+        batch.map(async recipient => {
           try {
             const result = await this.sendMessage({
               to: recipient,
               content,
               templateId,
-              variables: { ...variables, customerName: this.getCustomerName(recipient) }
+              variables: { ...variables, customerName: this.getCustomerName(recipient) },
             });
             return { recipient, status: 'success', messageId: result.message.id };
           } catch (error) {
-            return { 
-              recipient, 
-              status: 'failed', 
-              error: error instanceof Error ? error.message : 'Unknown error' 
+            return {
+              recipient,
+              status: 'failed',
+              error: error instanceof Error ? error.message : 'Unknown error',
             };
           }
         })
       );
-      
+
       results.push(...batchResults);
-      
+
       // Rate limiting delay between batches
       if (i < batches.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -350,7 +335,7 @@ export class WhatsAppAgent extends AbstractAgent {
       totalRecipients: recipients.length,
       successful,
       failed,
-      successRate: `${(successful / recipients.length * 100).toFixed(2)  }%`,
+      successRate: `${((successful / recipients.length) * 100).toFixed(2)}%`,
       results: results.slice(0, 50), // Return first 50 for preview
       batchCount: batches.length,
       estimatedCost: successful * 0.05, // Estimated cost per message
@@ -358,8 +343,8 @@ export class WhatsAppAgent extends AbstractAgent {
       metadata: {
         templateUsed: templateId,
         batchSize,
-        sendTime: sendTime || 'immediate'
-      }
+        sendTime: sendTime || 'immediate',
+      },
     };
   }
 
@@ -375,8 +360,8 @@ export class WhatsAppAgent extends AbstractAgent {
       webhook: {
         delivered: status === 'delivered',
         read: status === 'read',
-        readTimestamp: status === 'read' ? new Date() : null
-      }
+        readTimestamp: status === 'read' ? new Date() : null,
+      },
     };
   }
 
@@ -386,7 +371,7 @@ export class WhatsAppAgent extends AbstractAgent {
       ticketId,
       ticket: _ticket,
       priority = 'medium',
-      category = 'general'
+      category = 'general',
     } = context;
 
     switch (action) {
@@ -407,17 +392,25 @@ export class WhatsAppAgent extends AbstractAgent {
 
   // Helper methods
   private initializeTemplates(): void {
-    this.messageTemplates.set('welcome', 
-      'Hello {{customerName}}! Welcome to NeonHub. How can we help you today?');
-    
-    this.messageTemplates.set('order_confirmation', 
-      'Hi {{customerName}}, your neon sign order #{{orderNumber}} has been confirmed. Estimated delivery: {{deliveryDate}}');
-    
-    this.messageTemplates.set('support_received', 
-      'Thank you for contacting NeonHub support. We\'ve received your message and will respond within {{responseTime}}.');
-    
-    this.messageTemplates.set('order_shipped', 
-      'Great news {{customerName}}! Your order #{{orderNumber}} has shipped. Track it here: {{trackingUrl}}');
+    this.messageTemplates.set(
+      'welcome',
+      'Hello {{customerName}}! Welcome to NeonHub. How can we help you today?'
+    );
+
+    this.messageTemplates.set(
+      'order_confirmation',
+      'Hi {{customerName}}, your neon sign order #{{orderNumber}} has been confirmed. Estimated delivery: {{deliveryDate}}'
+    );
+
+    this.messageTemplates.set(
+      'support_received',
+      "Thank you for contacting NeonHub support. We've received your message and will respond within {{responseTime}}."
+    );
+
+    this.messageTemplates.set(
+      'order_shipped',
+      'Great news {{customerName}}! Your order #{{orderNumber}} has shipped. Track it here: {{trackingUrl}}'
+    );
   }
 
   private processTemplate(template: string, variables: Record<string, any>): string {
@@ -436,9 +429,9 @@ export class WhatsAppAgent extends AbstractAgent {
       image: 2,
       video: 3,
       audio: 2,
-      document: 1.5
+      document: 1.5,
     };
-    
+
     const lengthMultiplier = length > 160 ? Math.ceil(length / 160) : 1;
     return baseCost * (multipliers[type as keyof typeof multipliers] || 1) * lengthMultiplier;
   }
@@ -446,23 +439,27 @@ export class WhatsAppAgent extends AbstractAgent {
   private analyzeIntent(content: string): any {
     // Simple intent analysis (would use NLP service in production)
     const keywords = content.toLowerCase();
-    
+
     if (keywords.includes('order') || keywords.includes('purchase')) {
       return {
         type: 'order_inquiry',
         confidence: 0.9,
         entities: { orderNumber: this.extractOrderNumber(content) },
         urgency: 'medium',
-        subject: 'Order Inquiry'
+        subject: 'Order Inquiry',
       };
-    } else if (keywords.includes('problem') || keywords.includes('issue') || keywords.includes('complaint')) {
+    } else if (
+      keywords.includes('problem') ||
+      keywords.includes('issue') ||
+      keywords.includes('complaint')
+    ) {
       return {
         type: 'complaint',
         confidence: 0.85,
         entities: {},
         urgency: 'high',
         priority: 'high',
-        subject: 'Customer Complaint'
+        subject: 'Customer Complaint',
       };
     } else if (keywords.includes('help') || keywords.includes('support')) {
       return {
@@ -471,7 +468,7 @@ export class WhatsAppAgent extends AbstractAgent {
         entities: {},
         urgency: 'medium',
         priority: 'medium',
-        subject: 'Support Request'
+        subject: 'Support Request',
       };
     } else {
       return {
@@ -479,24 +476,26 @@ export class WhatsAppAgent extends AbstractAgent {
         confidence: 0.6,
         entities: {},
         urgency: 'low',
-        subject: 'General Inquiry'
+        subject: 'General Inquiry',
       };
     }
   }
 
   private findTicketByCustomer(customerId: string): SupportTicket | undefined {
-    return Array.from(this.activeTickets.values())
-      .find(ticket => ticket.customerId === customerId && ticket.status !== 'closed');
+    return Array.from(this.activeTickets.values()).find(
+      ticket => ticket.customerId === customerId && ticket.status !== 'closed'
+    );
   }
 
   private generateResponse(intent: any, ticket?: SupportTicket): string {
     const responses = {
       order_inquiry: 'I can help you with your order. Could you please provide your order number?',
-      support: 'I\'m here to help! Could you please describe the issue you\'re experiencing?',
-      complaint: 'I sincerely apologize for any inconvenience. Let me help resolve this issue for you immediately.',
-      general: 'Hello! Thanks for reaching out to NeonHub. How can I assist you today?'
+      support: "I'm here to help! Could you please describe the issue you're experiencing?",
+      complaint:
+        'I sincerely apologize for any inconvenience. Let me help resolve this issue for you immediately.',
+      general: 'Hello! Thanks for reaching out to NeonHub. How can I assist you today?',
     };
-    
+
     return responses[intent.type as keyof typeof responses] || responses.general;
   }
 
@@ -505,10 +504,13 @@ export class WhatsAppAgent extends AbstractAgent {
       order_inquiry: 'order_status',
       support: 'support_received',
       complaint: 'urgent_response',
-      general: 'welcome'
+      general: 'welcome',
     };
-    
-    return this.messageTemplates.get(templates[intentType as keyof typeof templates] || 'welcome') || 'Hello! How can I help you?';
+
+    return (
+      this.messageTemplates.get(templates[intentType as keyof typeof templates] || 'welcome') ||
+      'Hello! How can I help you?'
+    );
   }
 
   private personalizeResponse(template: string, variables: Record<string, any>): string {
@@ -517,12 +519,16 @@ export class WhatsAppAgent extends AbstractAgent {
 
   private suggestFollowUpActions(intent: any): string[] {
     const actions = {
-      order_inquiry: ['Check order status', 'Provide tracking information', 'Update delivery estimate'],
+      order_inquiry: [
+        'Check order status',
+        'Provide tracking information',
+        'Update delivery estimate',
+      ],
       support: ['Gather more details', 'Provide troubleshooting steps', 'Schedule callback'],
       complaint: ['Escalate to supervisor', 'Offer compensation', 'Schedule urgent call'],
-      general: ['Provide product information', 'Share catalog', 'Offer consultation']
+      general: ['Provide product information', 'Share catalog', 'Offer consultation'],
     };
-    
+
     return actions[intent.type as keyof typeof actions] || ['Provide general assistance'];
   }
 
@@ -542,9 +548,9 @@ export class WhatsAppAgent extends AbstractAgent {
       urgent: '5 minutes',
       high: '15 minutes',
       medium: '1 hour',
-      low: '4 hours'
+      low: '4 hours',
     };
-    
+
     return times[priority as keyof typeof times] || '1 hour';
   }
 
@@ -568,36 +574,36 @@ export class WhatsAppAgent extends AbstractAgent {
 
   private addContact(contactData: any): any {
     const { phone, name, tags = [] } = contactData;
-    
+
     const contact: WhatsAppContact = {
       phone,
       name,
       tags,
-      lastSeen: new Date()
+      lastSeen: new Date(),
     };
-    
+
     this.contacts.set(phone, contact);
-    
+
     return {
       contact,
-      message: 'Contact added successfully'
+      message: 'Contact added successfully',
     };
   }
 
   private updateContact(contactData: any): any {
     const { phone, ...updates } = contactData;
     const existingContact = this.contacts.get(phone);
-    
+
     if (!existingContact) {
       throw new Error('Contact not found');
     }
-    
+
     const updatedContact = { ...existingContact, ...updates };
     this.contacts.set(phone, updatedContact);
-    
+
     return {
       contact: updatedContact,
-      message: 'Contact updated successfully'
+      message: 'Contact updated successfully',
     };
   }
 
@@ -607,11 +613,11 @@ export class WhatsAppAgent extends AbstractAgent {
       contact.isBlocked = true;
       this.contacts.set(phone, contact);
     }
-    
+
     return {
       phone,
       blocked: true,
-      message: 'Contact blocked successfully'
+      message: 'Contact blocked successfully',
     };
   }
 
@@ -621,11 +627,11 @@ export class WhatsAppAgent extends AbstractAgent {
       contact.isBlocked = false;
       this.contacts.set(phone, contact);
     }
-    
+
     return {
       phone,
       blocked: false,
-      message: 'Contact unblocked successfully'
+      message: 'Contact unblocked successfully',
     };
   }
 
@@ -635,21 +641,21 @@ export class WhatsAppAgent extends AbstractAgent {
       contact.tags = [...(contact.tags || []), ...tags];
       this.contacts.set(phone, contact);
     }
-    
+
     return {
       phone,
       tags: contact?.tags || [],
-      message: 'Tags added successfully'
+      message: 'Tags added successfully',
     };
   }
 
   private listContacts(_filters: any): any {
     const contacts = Array.from(this.contacts.values());
-    
+
     return {
       contacts: contacts.slice(0, 50), // Limit to 50 for performance
       totalCount: contacts.length,
-      blockedCount: contacts.filter(c => c.isBlocked).length
+      blockedCount: contacts.filter(c => c.isBlocked).length,
     };
   }
 
@@ -658,10 +664,10 @@ export class WhatsAppAgent extends AbstractAgent {
     if (!_ticket) {
       throw new Error('Ticket not found');
     }
-    
+
     return {
       ticketId,
-      message: 'Priority updated successfully'
+      message: 'Priority updated successfully',
     };
   }
 
@@ -670,13 +676,13 @@ export class WhatsAppAgent extends AbstractAgent {
     if (!ticket) {
       throw new Error('Ticket not found');
     }
-    
+
     ticket.assignedAgent = agentId;
-    
+
     return {
       ticketId,
       agentId,
-      message: 'Ticket assigned successfully'
+      message: 'Ticket assigned successfully',
     };
   }
 
@@ -685,12 +691,12 @@ export class WhatsAppAgent extends AbstractAgent {
     if (!ticket) {
       throw new Error('Ticket not found');
     }
-    
+
     return {
       ticketId,
       note,
       addedAt: new Date(),
-      message: 'Note added successfully'
+      message: 'Note added successfully',
     };
   }
 
@@ -699,16 +705,16 @@ export class WhatsAppAgent extends AbstractAgent {
     if (!ticket) {
       throw new Error('Ticket not found');
     }
-    
+
     ticket.status = 'closed';
     ticket.updatedAt = new Date();
-    
+
     return {
       ticketId,
       status: 'closed',
       resolution,
       closedAt: new Date(),
-      message: 'Ticket closed successfully'
+      message: 'Ticket closed successfully',
     };
   }
 
@@ -717,19 +723,17 @@ export class WhatsAppAgent extends AbstractAgent {
     if (!ticket) {
       throw new Error('Ticket not found');
     }
-    
+
     ticket.priority = 'urgent';
     ticket.updatedAt = new Date();
-    
+
     return {
       ticketId,
       escalated: true,
       reason,
       newPriority: 'urgent',
       escalatedAt: new Date(),
-      message: 'Ticket escalated successfully'
+      message: 'Ticket escalated successfully',
     };
   }
-
-
-} 
+}

@@ -8,12 +8,7 @@ export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Tabs({ className, ...props }: TabsProps) {
-  return (
-    <div
-      className={cn('w-full', className)}
-      {...props}
-    />
-  );
+  return <div className={cn('w-full', className)} {...props} />;
 }
 
 export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -21,10 +16,7 @@ export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function TabsList({ className, ...props }: TabsListProps) {
   return (
     <div
-      className={cn(
-        'glass inline-flex h-10 items-center justify-center rounded-xl p-1',
-        className
-      )}
+      className={cn('glass inline-flex h-10 items-center justify-center rounded-xl p-1', className)}
       {...props}
     />
   );
@@ -60,4 +52,4 @@ export function TabsContent({ className, ...props }: TabsContentProps) {
       {...props}
     />
   );
-} 
+}

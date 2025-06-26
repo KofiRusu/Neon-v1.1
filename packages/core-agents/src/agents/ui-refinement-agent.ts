@@ -38,7 +38,7 @@ export interface UIRefinementContext {
 
 export class UIRefinementAgent extends AbstractAgent {
   private readonly logPath = path.join(process.cwd(), 'logs', 'ui-refinements.log');
-  
+
   // Common contrast-safe color mappings
   private readonly CONTRAST_FIXES = {
     'bg-neutral-900': {
@@ -57,7 +57,7 @@ export class UIRefinementAgent extends AbstractAgent {
       'text-slate-700': 'text-slate-100',
       'text-slate-600': 'text-slate-100',
       'text-slate-500': 'text-slate-200',
-    }
+    },
   };
 
   constructor(id: string, name: string) {
@@ -68,14 +68,14 @@ export class UIRefinementAgent extends AbstractAgent {
       'check_responsive_layout',
       'fix_theme_consistency',
       'audit_ui_patterns',
-      'auto_fix_ui_issues'
+      'auto_fix_ui_issues',
     ]);
   }
 
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'check_contrast':
           return await this.checkContrast(context as UIRefinementContext);
@@ -100,13 +100,13 @@ export class UIRefinementAgent extends AbstractAgent {
   private async checkContrast(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
-    
+
     const tsxFiles = await this.findTSXFiles(targetDir);
-    
+
     for (const filePath of tsxFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
       const lines = content.split('\n');
-      
+
       lines.forEach((line, index) => {
         const contrastIssues = this.detectContrastIssues(line, filePath, index + 1);
         issues.push(...contrastIssues);
@@ -114,12 +114,12 @@ export class UIRefinementAgent extends AbstractAgent {
     }
 
     await this.logActivity(`Contrast check completed. Found ${issues.length} issues.`);
-    
+
     return {
       issues,
       fixedIssues: [],
       warnings: [],
-      filesModified: []
+      filesModified: [],
     };
   }
 
@@ -128,31 +128,33 @@ export class UIRefinementAgent extends AbstractAgent {
     const issues: UIIssue[] = [];
     const fixedIssues: UIIssue[] = [];
     const filesModified: string[] = [];
-    
+
     const tsxFiles = await this.findTSXFiles(targetDir);
-    
+
     for (const filePath of tsxFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
       const originalContent = content;
       const lines = content.split('\n');
-      
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const contrastIssues = this.detectContrastIssues(line, filePath, i + 1);
         issues.push(...contrastIssues);
-        
+
         if (autoFix && contrastIssues.length > 0) {
           const fixedLine = this.applyContrastFixes(line);
           if (fixedLine !== line) {
             lines[i] = fixedLine;
-            fixedIssues.push(...contrastIssues.map(issue => ({
-              ...issue,
-              suggestedValue: fixedLine.trim()
-            })));
+            fixedIssues.push(
+              ...contrastIssues.map(issue => ({
+                ...issue,
+                suggestedValue: fixedLine.trim(),
+              }))
+            );
           }
         }
       }
-      
+
       const newContent = lines.join('\n');
       if (newContent !== originalContent) {
         if (autoFix) {
@@ -163,27 +165,29 @@ export class UIRefinementAgent extends AbstractAgent {
     }
 
     if (filesModified.length > 0) {
-      await this.logActivity(`Fixed contrast issues in ${filesModified.length} files: ${filesModified.join(', ')}`);
+      await this.logActivity(
+        `Fixed contrast issues in ${filesModified.length} files: ${filesModified.join(', ')}`
+      );
     }
-    
+
     return {
       issues,
       fixedIssues,
       warnings: [],
-      filesModified
+      filesModified,
     };
   }
 
   private async validateAccessibility(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
-    
+
     const tsxFiles = await this.findTSXFiles(targetDir);
-    
+
     for (const filePath of tsxFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
       const lines = content.split('\n');
-      
+
       lines.forEach((line, index) => {
         // Check for missing alt attributes on images
         if (line.includes('<img') && !line.includes('alt=')) {
@@ -194,10 +198,10 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Image missing alt attribute',
             currentValue: line.trim(),
             suggestedValue: line.replace('<img', '<img alt=""'),
-            severity: 'medium'
+            severity: 'medium',
           });
         }
-        
+
         // Check for buttons without accessible text
         if (line.includes('<button') && !line.includes('aria-label') && !line.includes('>')) {
           issues.push({
@@ -207,10 +211,10 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Button may need aria-label or visible text',
             currentValue: line.trim(),
             suggestedValue: line.replace('<button', '<button aria-label="Button description"'),
-            severity: 'medium'
+            severity: 'medium',
           });
         }
-        
+
         // Check for form inputs without labels
         if (line.includes('<input') && !line.includes('aria-label') && !line.includes('id=')) {
           issues.push({
@@ -220,32 +224,32 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Input should have label or aria-label',
             currentValue: line.trim(),
             suggestedValue: line.replace('<input', '<input aria-label="Input description"'),
-            severity: 'high'
+            severity: 'high',
           });
         }
       });
     }
 
     await this.logActivity(`Accessibility validation completed. Found ${issues.length} issues.`);
-    
+
     return {
       issues,
       fixedIssues: [],
       warnings: [],
-      filesModified: []
+      filesModified: [],
     };
   }
 
   private async checkResponsiveLayout(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
-    
+
     const tsxFiles = await this.findTSXFiles(targetDir);
-    
+
     for (const filePath of tsxFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
       const lines = content.split('\n');
-      
+
       lines.forEach((line, index) => {
         // Check for fixed widths that might not be responsive
         if (line.includes('w-[') && /w-\[\d+px\]/.test(line)) {
@@ -256,10 +260,10 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Fixed pixel width may not be responsive',
             currentValue: line.trim(),
             suggestedValue: 'Consider using responsive width classes like w-full, w-1/2, etc.',
-            severity: 'low'
+            severity: 'low',
           });
         }
-        
+
         // Check for potential overflow issues
         if (line.includes('overflow-hidden') && !line.includes('text-ellipsis')) {
           issues.push({
@@ -269,19 +273,19 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Hidden overflow without text-ellipsis may cut off content',
             currentValue: line.trim(),
             suggestedValue: line.replace('overflow-hidden', 'overflow-hidden text-ellipsis'),
-            severity: 'medium'
+            severity: 'medium',
           });
         }
       });
     }
 
     await this.logActivity(`Responsive layout check completed. Found ${issues.length} issues.`);
-    
+
     return {
       issues,
       fixedIssues: [],
       warnings: [],
-      filesModified: []
+      filesModified: [],
     };
   }
 
@@ -290,13 +294,13 @@ export class UIRefinementAgent extends AbstractAgent {
     const issues: UIIssue[] = [];
     const fixedIssues: UIIssue[] = [];
     const filesModified: string[] = [];
-    
+
     const tsxFiles = await this.findTSXFiles(targetDir);
-    
+
     for (const filePath of tsxFiles) {
       let content = await fs.readFile(filePath, 'utf-8');
       const originalContent = content;
-      
+
       // Replace inconsistent color usage with theme tokens
       const colorFixes = {
         'bg-gray-900': 'bg-dark-900',
@@ -308,12 +312,12 @@ export class UIRefinementAgent extends AbstractAgent {
         'border-gray-700': 'border-dark-700',
         'border-gray-600': 'border-dark-600',
       };
-      
+
       Object.entries(colorFixes).forEach(([oldColor, newColor]) => {
         if (content.includes(oldColor)) {
           const regex = new RegExp(oldColor, 'g');
           content = content.replace(regex, newColor);
-          
+
           issues.push({
             file: filePath,
             line: 0,
@@ -321,9 +325,9 @@ export class UIRefinementAgent extends AbstractAgent {
             description: `Replaced inconsistent color ${oldColor} with theme color ${newColor}`,
             currentValue: oldColor,
             suggestedValue: newColor,
-            severity: 'low'
+            severity: 'low',
           });
-          
+
           fixedIssues.push({
             file: filePath,
             line: 0,
@@ -331,11 +335,11 @@ export class UIRefinementAgent extends AbstractAgent {
             description: `Fixed theme consistency: ${oldColor} → ${newColor}`,
             currentValue: oldColor,
             suggestedValue: newColor,
-            severity: 'low'
+            severity: 'low',
           });
         }
       });
-      
+
       if (content !== originalContent) {
         await fs.writeFile(filePath, content, 'utf-8');
         filesModified.push(filePath);
@@ -343,32 +347,38 @@ export class UIRefinementAgent extends AbstractAgent {
     }
 
     if (fixedIssues.length > 0) {
-      await this.logActivity(`Fixed ${fixedIssues.length} theme consistency issues in ${filesModified.length} files.`);
+      await this.logActivity(
+        `Fixed ${fixedIssues.length} theme consistency issues in ${filesModified.length} files.`
+      );
     }
-    
+
     return {
       issues,
       fixedIssues,
       warnings: [],
-      filesModified
+      filesModified,
     };
   }
 
   private async auditUIPatterns(context: UIRefinementContext): Promise<UIRefinementResult> {
     const { targetDir = 'apps/dashboard/src' } = context;
     const issues: UIIssue[] = [];
-    
+
     const tsxFiles = await this.findTSXFiles(targetDir);
-    
+
     for (const filePath of tsxFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
       const lines = content.split('\n');
-      
+
       lines.forEach((line, index) => {
         // Check for inconsistent card patterns
-        if (line.includes('className=') && 
-            (line.includes('bg-') && line.includes('rounded-') && line.includes('p-')) &&
-            !line.includes('card')) {
+        if (
+          line.includes('className=') &&
+          line.includes('bg-') &&
+          line.includes('rounded-') &&
+          line.includes('p-') &&
+          !line.includes('card')
+        ) {
           issues.push({
             file: filePath,
             line: index + 1,
@@ -376,10 +386,10 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Consider using card component class for consistency',
             currentValue: line.trim(),
             suggestedValue: 'Replace with card or card-glow class',
-            severity: 'low'
+            severity: 'low',
           });
         }
-        
+
         // Check for inconsistent button patterns
         if (line.includes('<button') && !line.includes('btn-')) {
           issues.push({
@@ -389,19 +399,21 @@ export class UIRefinementAgent extends AbstractAgent {
             description: 'Consider using btn-primary or btn-secondary classes',
             currentValue: line.trim(),
             suggestedValue: 'Use btn-primary, btn-secondary, or btn-pill classes',
-            severity: 'low'
+            severity: 'low',
           });
         }
       });
     }
 
-    await this.logActivity(`UI pattern audit completed. Found ${issues.length} pattern inconsistencies.`);
-    
+    await this.logActivity(
+      `UI pattern audit completed. Found ${issues.length} pattern inconsistencies.`
+    );
+
     return {
       issues,
       fixedIssues: [],
       warnings: [],
-      filesModified: []
+      filesModified: [],
     };
   }
 
@@ -411,38 +423,36 @@ export class UIRefinementAgent extends AbstractAgent {
     const themeResult = await this.fixThemeConsistency(context);
     const accessibilityResult = await this.validateAccessibility(context);
     const responsiveResult = await this.checkResponsiveLayout(context);
-    
+
     const allIssues = [
       ...contrastResult.issues,
       ...themeResult.issues,
       ...accessibilityResult.issues,
-      ...responsiveResult.issues
+      ...responsiveResult.issues,
     ];
-    
-    const allFixedIssues = [
-      ...contrastResult.fixedIssues,
-      ...themeResult.fixedIssues
-    ];
-    
-    // Combine and deduplicate modified files
-    const allFilesModified = Array.from(new Set([
-      ...contrastResult.filesModified,
-      ...themeResult.filesModified
-    ]));
 
-    await this.logActivity(`Auto-fix completed. Fixed ${allFixedIssues.length} issues across ${allFilesModified.length} files.`);
-    
+    const allFixedIssues = [...contrastResult.fixedIssues, ...themeResult.fixedIssues];
+
+    // Combine and deduplicate modified files
+    const allFilesModified = Array.from(
+      new Set([...contrastResult.filesModified, ...themeResult.filesModified])
+    );
+
+    await this.logActivity(
+      `Auto-fix completed. Fixed ${allFixedIssues.length} issues across ${allFilesModified.length} files.`
+    );
+
     return {
       issues: allIssues,
       fixedIssues: allFixedIssues,
       warnings: [],
-      filesModified: allFilesModified
+      filesModified: allFilesModified,
     };
   }
 
   private detectContrastIssues(line: string, file: string, lineNumber: number): UIIssue[] {
     const issues: UIIssue[] = [];
-    
+
     // Check for common contrast problems
     Object.entries(this.CONTRAST_FIXES).forEach(([bg, textFixes]) => {
       if (line.includes(bg)) {
@@ -455,19 +465,19 @@ export class UIRefinementAgent extends AbstractAgent {
               description: `Poor contrast: ${problematicText} on ${bg}`,
               currentValue: line.trim(),
               suggestedValue: line.replace(problematicText, fixedText),
-              severity: 'high'
+              severity: 'high',
             });
           }
         });
       }
     });
-    
+
     return issues;
   }
 
   private applyContrastFixes(line: string): string {
     let fixedLine = line;
-    
+
     Object.entries(this.CONTRAST_FIXES).forEach(([bg, textFixes]) => {
       if (fixedLine.includes(bg)) {
         Object.entries(textFixes).forEach(([problematicText, fixedText]) => {
@@ -477,24 +487,23 @@ export class UIRefinementAgent extends AbstractAgent {
         });
       }
     });
-    
+
     return fixedLine;
   }
 
   private async findTSXFiles(dir: string): Promise<string[]> {
     const files: string[] = [];
-    
+
     try {
       const entries = await fs.readdir(dir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
-        
+
         if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
           const subFiles = await this.findTSXFiles(fullPath);
           files.push(...subFiles);
-        } else if (entry.isFile() && 
-                   (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
+        } else if (entry.isFile() && (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
           files.push(fullPath);
         }
       }
@@ -502,14 +511,14 @@ export class UIRefinementAgent extends AbstractAgent {
       // Directory might not exist, skip silently
       void _error; // Acknowledge error is intentionally unused
     }
-    
+
     return files;
   }
 
   private async logActivity(message: string): Promise<void> {
     const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] UIRefinementAgent: ${message}\n`;
-    
+
     try {
       // Ensure logs directory exists
       await fs.mkdir(path.dirname(this.logPath), { recursive: true });

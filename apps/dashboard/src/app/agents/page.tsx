@@ -51,7 +51,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '2 min ago',
       description: 'AI-powered content generation and optimization',
       icon: DocumentTextIcon,
-      color: 'text-blue-400'
+      color: 'text-blue-400',
     },
     {
       id: 'email',
@@ -62,7 +62,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '1 min ago',
       description: 'Automated email campaigns and sequences',
       icon: EnvelopeIcon,
-      color: 'text-purple-400'
+      color: 'text-purple-400',
     },
     {
       id: 'social',
@@ -73,7 +73,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '3 min ago',
       description: 'Multi-platform social media management',
       icon: GlobeAltIcon,
-      color: 'text-green-400'
+      color: 'text-green-400',
     },
     {
       id: 'support',
@@ -84,7 +84,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '4 min ago',
       description: 'AI-powered customer support automation',
       icon: ChatBubbleLeftIcon,
-      color: 'text-pink-400'
+      color: 'text-pink-400',
     },
     {
       id: 'seo',
@@ -95,7 +95,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '5 min ago',
       description: 'Search engine optimization and keyword targeting',
       icon: MagnifyingGlassIcon,
-      color: 'text-indigo-400'
+      color: 'text-indigo-400',
     },
     {
       id: 'insight',
@@ -106,7 +106,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '6 min ago',
       description: 'Advanced analytics and performance insights',
       icon: ChartBarIcon,
-      color: 'text-cyan-400'
+      color: 'text-cyan-400',
     },
     {
       id: 'design',
@@ -117,7 +117,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '8 min ago',
       description: 'AI-powered creative asset generation',
       icon: PaintBrushIcon,
-      color: 'text-orange-400'
+      color: 'text-orange-400',
     },
     {
       id: 'ad',
@@ -128,7 +128,7 @@ export default function AgentsPage(): JSX.Element {
       lastAction: '7 min ago',
       description: 'Automated ad optimization and bidding',
       icon: BoltIcon,
-      color: 'text-yellow-400'
+      color: 'text-yellow-400',
     },
   ];
 
@@ -180,10 +180,10 @@ export default function AgentsPage(): JSX.Element {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Agents Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {agents.map((agent) => {
+          {agents.map(agent => {
             const Icon = agent.icon;
             const StatusIcon = getStatusIcon(agent.status);
-            
+
             return (
               <div
                 key={agent.id}
@@ -196,7 +196,9 @@ export default function AgentsPage(): JSX.Element {
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${getStatusColor(agent.status)}`}>
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center ${getStatusColor(agent.status)}`}
+                  >
                     <StatusIcon className="h-4 w-4" />
                   </div>
                 </div>
@@ -212,7 +214,7 @@ export default function AgentsPage(): JSX.Element {
                     <span className="text-gray-400">Performance</span>
                     <span className={`font-semibold ${agent.color}`}>{agent.performance}%</span>
                   </div>
-                  
+
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div
                       className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
@@ -261,7 +263,7 @@ export default function AgentsPage(): JSX.Element {
                   ))}
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3">Performance Metrics</h3>
                 <div className="space-y-4">

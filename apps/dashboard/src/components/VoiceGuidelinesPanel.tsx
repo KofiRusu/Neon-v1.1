@@ -15,27 +15,27 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
     tone: {
       primary: 'professional',
       secondary: 'friendly',
-      avoid: ['overly casual', 'jargon-heavy', 'aggressive']
+      avoid: ['overly casual', 'jargon-heavy', 'aggressive'],
     },
     vocabulary: {
       preferred: ['innovative', 'efficient', 'solution', 'growth'],
       prohibited: ['cheap', 'basic', 'simple'],
-      brandTerms: ['NeonHub', 'AI-powered', 'automation']
+      brandTerms: ['NeonHub', 'AI-powered', 'automation'],
     },
     style: {
       sentenceLength: 'medium',
       paragraphLength: 'short-to-medium',
       readingLevel: 'college',
-      punctuation: 'standard'
+      punctuation: 'standard',
     },
     messaging: {
       valueProposition: 'Empowering businesses through intelligent automation',
       keyMessages: [
         'Transform your marketing with AI',
         'Achieve consistent brand voice',
-        'Scale your content creation'
-      ]
-    }
+        'Scale your content creation',
+      ],
+    },
   };
 
   useEffect(() => {
@@ -118,7 +118,10 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
               <span className="font-medium text-sm block mb-2">Preferred Words:</span>
               <div className="flex flex-wrap gap-1">
                 {guidelines.vocabulary.preferred.map((word: string, index: number) => (
-                  <span key={index} className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm">
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm"
+                  >
                     {word}
                   </span>
                 ))}
@@ -199,9 +202,7 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
 
       {/* Action Buttons */}
       <div className="flex justify-end space-x-3">
-        <button className="px-4 py-2 border rounded-md hover:bg-gray-50">
-          Export Guidelines
-        </button>
+        <button className="px-4 py-2 border rounded-md hover:bg-gray-50">Export Guidelines</button>
         <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
           Edit Guidelines
         </button>

@@ -74,12 +74,7 @@ export function createCustomerSupportAgent(): CustomerSupportAgent {
  * Agent capabilities mapping for frontend
  */
 export const AGENT_CAPABILITIES = {
-  content: [
-    'generate_content',
-    'generate_blog', 
-    'generate_caption',
-    'generate_post'
-  ],
+  content: ['generate_content', 'generate_blog', 'generate_caption', 'generate_post'],
   seo: [
     'optimize_keywords',
     'analyze_content',
@@ -87,33 +82,13 @@ export const AGENT_CAPABILITIES = {
     'analyze_competitors',
     'recommend_keywords',
     'generate_schema',
-    'audit_technical_seo'
+    'audit_technical_seo',
   ],
-  ad: [
-    'create_campaign',
-    'optimize_budget',
-    'analyze_performance'
-  ],
-  outreach: [
-    'send_email',
-    'manage_followup',
-    'personalize_message'
-  ],
-  trend: [
-    'detect_trends',
-    'analyze_engagement',
-    'predict_viral_content'
-  ],
-  insight: [
-    'analyze_metrics',
-    'generate_insights',
-    'recommend_strategies'
-  ],
-  design: [
-    'create_visual',
-    'optimize_design',
-    'generate_mockup'
-  ],
+  ad: ['create_campaign', 'optimize_budget', 'analyze_performance'],
+  outreach: ['send_email', 'manage_followup', 'personalize_message'],
+  trend: ['detect_trends', 'analyze_engagement', 'predict_viral_content'],
+  insight: ['analyze_metrics', 'generate_insights', 'recommend_strategies'],
+  design: ['create_visual', 'optimize_design', 'generate_mockup'],
   email: [
     'generate_email_sequence',
     'personalize_email',
@@ -124,7 +99,7 @@ export const AGENT_CAPABILITIES = {
     'segment_audience',
     'optimize_send_times',
     'generate_subject_lines',
-    'create_newsletter'
+    'create_newsletter',
   ],
   support: [
     'classify_message',
@@ -138,6 +113,6 @@ export const AGENT_CAPABILITIES = {
     'manage_knowledge_base',
     'generate_summary',
     'track_satisfaction',
-    'manage_queue'
-  ]
+    'manage_queue',
+  ],
 } as const;

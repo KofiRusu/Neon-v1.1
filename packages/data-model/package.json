@@ -16,14 +16,29 @@
     "db:seed": "tsx src/seed.ts",
     "db:reset": "prisma migrate reset --force",
     "db:format": "prisma format",
-    "db:validate": "prisma validate"
+    "db:validate": "prisma validate",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings 0",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json}\" \"prisma/**/*.prisma\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json}\" \"prisma/**/*.prisma\"",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.0.0",
+    "jest": "^30.0.2",
+    "prettier": "^3.6.0",
+    "prettier-plugin-prisma": "^5.0.0",
     "prisma": "^5.19.1",
+    "ts-jest": "^29.1.0",
     "tsx": "^4.19.1",
     "typescript": "^5.8.3"
   },

@@ -102,12 +102,12 @@ export class SEOAgent extends AbstractAgent {
   constructor() {
     super('seo-agent', 'SEOAgent', 'seo', [
       'optimize_keywords',
-      'analyze_content', 
+      'analyze_content',
       'generate_meta_tags',
       'analyze_competitors',
       'recommend_keywords',
       'generate_schema',
-      'audit_technical_seo'
+      'audit_technical_seo',
     ]);
 
     this.openai = new OpenAI({
@@ -122,7 +122,7 @@ export class SEOAgent extends AbstractAgent {
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'optimize_keywords':
           return await this.optimizeForSEO(context as SEOOptimizationContext);
@@ -131,9 +131,13 @@ export class SEOAgent extends AbstractAgent {
         case 'generate_meta_tags':
           return await this.generateMetaTagsAI(context as MetaTagsInput);
         case 'recommend_keywords':
-          return await this.recommendKeywords(context as { topic: string; businessContext?: string });
+          return await this.recommendKeywords(
+            context as { topic: string; businessContext?: string }
+          );
         case 'analyze_competitors':
-          return await this.analyzeCompetitors(context as { keywords: string[]; industry?: string });
+          return await this.analyzeCompetitors(
+            context as { keywords: string[]; industry?: string }
+          );
         case 'generate_schema':
           return await this.generateSchemaMarkup(context as SEOOptimizationContext);
         case 'audit_technical_seo':
@@ -148,26 +152,41 @@ export class SEOAgent extends AbstractAgent {
    * Generate meta tags using OpenAI
    */
   async generateMetaTags(input: MetaTagsInput): Promise<MetaTagsOutput> {
-    const { topic, content, keywords = [], businessContext, targetAudience, contentType = 'article' } = input;
-    
+    const {
+      topic,
+      content,
+      keywords = [],
+      businessContext,
+      targetAudience,
+      contentType = 'article',
+    } = input;
+
     if (!this.openai) {
       return this.generateMetaTagsFallback(input);
     }
 
     try {
-      const prompt = this.buildMetaTagsPrompt(topic, content, keywords, businessContext, targetAudience, contentType);
-      
+      const prompt = this.buildMetaTagsPrompt(
+        topic,
+        content,
+        keywords,
+        businessContext,
+        targetAudience,
+        contentType
+      );
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert SEO specialist. Generate optimal meta tags that will improve search rankings and click-through rates."
+            role: 'system',
+            content:
+              'You are an expert SEO specialist. Generate optimal meta tags that will improve search rankings and click-through rates.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.7,
         max_tokens: 800,
@@ -188,7 +207,10 @@ export class SEOAgent extends AbstractAgent {
   /**
    * Recommend keywords using AI
    */
-  async recommendKeywords(context: { topic: string; businessContext?: string }): Promise<KeywordRecommendation[]> {
+  async recommendKeywords(context: {
+    topic: string;
+    businessContext?: string;
+  }): Promise<KeywordRecommendation[]> {
     const { topic, businessContext } = context;
 
     if (!this.openai) {
@@ -222,8 +244,8 @@ Focus on a mix of head terms and long-tail keywords. Include variations and sema
 `;
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [{ role: "user", content: prompt }],
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: prompt }],
         temperature: 0.6,
         max_tokens: 1500,
       });
@@ -248,9 +270,9 @@ Focus on a mix of head terms and long-tail keywords. Include variations and sema
     const suggestions = await this.generateSEOSuggestions(context, keywords);
     const optimizedContent = await this.optimizeContentWithAI(context);
     const meta = await this.optimizeMetadata(context);
-    const keywordRecommendations = await this.recommendKeywords({ 
+    const keywordRecommendations = await this.recommendKeywords({
       topic: context.focusKeyword || context.targetKeywords[0] || 'content',
-      ...(context.businessContext && { businessContext: context.businessContext })
+      ...(context.businessContext && { businessContext: context.businessContext }),
     });
     const seoScore = this.calculateSEOScore(context, keywords, suggestions);
 
@@ -261,7 +283,7 @@ Focus on a mix of head terms and long-tail keywords. Include variations and sema
       keywords,
       meta,
       keywordRecommendations,
-      success: true
+      success: true,
     };
   }
 
@@ -288,10 +310,10 @@ Focus on a mix of head terms and long-tail keywords. Include variations and sema
    * Build prompt for meta tags generation
    */
   private buildMetaTagsPrompt(
-    topic: string, 
-    content: string, 
-    keywords: string[], 
-    businessContext?: string, 
+    topic: string,
+    content: string,
+    keywords: string[],
+    businessContext?: string,
     targetAudience?: string,
     contentType?: string
   ): string {
@@ -343,7 +365,9 @@ Format as JSON:
         const parsed = JSON.parse(jsonMatch[0]);
         return {
           title: parsed.title || `${fallbackTopic} | Professional Guide`,
-          description: parsed.description || `Comprehensive guide to ${fallbackTopic}. Expert insights and actionable strategies.`,
+          description:
+            parsed.description ||
+            `Comprehensive guide to ${fallbackTopic}. Expert insights and actionable strategies.`,
           slug: parsed.slug || this.generateSEOFriendlyUrl(fallbackTopic, 'article'),
           openGraphTitle: parsed.openGraphTitle,
           openGraphDescription: parsed.openGraphDescription,
@@ -372,7 +396,9 @@ Format as JSON:
 
     return {
       title: titleMatch?.[1]?.trim() || `${fallbackTopic} | Expert Guide`,
-      description: descMatch?.[1]?.trim() || `Discover everything about ${fallbackTopic}. Professional insights and proven strategies.`,
+      description:
+        descMatch?.[1]?.trim() ||
+        `Discover everything about ${fallbackTopic}. Professional insights and proven strategies.`,
       slug: slugMatch?.[1]?.trim() || this.generateSEOFriendlyUrl(fallbackTopic, 'article'),
     };
   }
@@ -437,9 +463,9 @@ Format as JSON:
 
     return baseKeywords.map((keyword, index) => ({
       keyword,
-      relevanceScore: 85 - (index * 2),
-      difficulty: 40 + (index * 3),
-      opportunity: 75 - (index * 2),
+      relevanceScore: 85 - index * 2,
+      difficulty: 40 + index * 3,
+      opportunity: 75 - index * 2,
       searchVolume: index < 3 ? 'high' : index < 6 ? 'medium' : 'low',
       intent: index < 2 ? 'informational' : index < 5 ? 'commercial' : 'informational',
       reason: `Relevant long-tail keyword for ${topic}`,
@@ -477,8 +503,8 @@ Return the optimized content maintaining the original structure and tone.
 `;
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [{ role: "user", content: prompt }],
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: prompt }],
         temperature: 0.3,
         max_tokens: 2000,
       });
@@ -493,13 +519,16 @@ Return the optimized content maintaining the original structure and tone.
   /**
    * Generate competitors analysis
    */
-  private async analyzeCompetitors(context: { keywords: string[]; industry?: string }): Promise<CompetitorInsight[]> {
+  private async analyzeCompetitors(context: {
+    keywords: string[];
+    industry?: string;
+  }): Promise<CompetitorInsight[]> {
     // This would integrate with tools like SEMrush, Ahrefs, or SimilarWeb in production
     // For now, return mock data structure
     return [
       {
         domain: 'competitor1.com',
-        title: `Leading Platform for ${  context.keywords[0]}`,
+        title: `Leading Platform for ${context.keywords[0]}`,
         description: 'Comprehensive solution for modern businesses',
         strengths: ['Strong brand authority', 'High-quality content', 'Good technical SEO'],
         weaknesses: ['Limited social media presence', 'Slow page speed'],
@@ -511,7 +540,9 @@ Return the optimized content maintaining the original structure and tone.
   /**
    * Generate schema markup
    */
-  private async generateSchemaMarkup(context: SEOOptimizationContext): Promise<Record<string, any>> {
+  private async generateSchemaMarkup(
+    context: SEOOptimizationContext
+  ): Promise<Record<string, any>> {
     const schemaTypes = {
       blog: 'BlogPosting',
       article: 'Article',
@@ -541,7 +572,10 @@ Return the optimized content maintaining the original structure and tone.
   /**
    * Audit technical SEO
    */
-  private async auditTechnicalSEO(context: { url: string; content: string }): Promise<SEOSuggestion[]> {
+  private async auditTechnicalSEO(context: {
+    url: string;
+    content: string;
+  }): Promise<SEOSuggestion[]> {
     const suggestions: SEOSuggestion[] = [];
     const { content } = context;
 
@@ -562,7 +596,7 @@ Return the optimized content maintaining the original structure and tone.
     const imgRegex = /<img[^>]+>/gi;
     const images = content.match(imgRegex) || [];
     const imagesWithoutAlt = images.filter(img => !img.includes('alt='));
-    
+
     if (imagesWithoutAlt.length > 0) {
       suggestions.push({
         type: 'technical',
@@ -578,7 +612,10 @@ Return the optimized content maintaining the original structure and tone.
     return suggestions;
   }
 
-  private async analyzeKeywords(content: string, targetKeywords: string[]): Promise<KeywordAnalysis[]> {
+  private async analyzeKeywords(
+    content: string,
+    targetKeywords: string[]
+  ): Promise<KeywordAnalysis[]> {
     const contentLower = content.toLowerCase();
     const wordCount = content.split(/\s+/).length;
 
@@ -586,13 +623,16 @@ Return the optimized content maintaining the original structure and tone.
       const keywordLower = keyword.toLowerCase();
       const frequency = (contentLower.match(new RegExp(keywordLower, 'g')) || []).length;
       const density = (frequency / wordCount) * 100;
-      
+
       // Enhanced position analysis
       let position: KeywordAnalysis['position'] = 'none';
       if (contentLower.includes(keywordLower)) {
         if (contentLower.indexOf(keywordLower) < 100) position = 'title';
-        else if (content.includes('#') && content.split('#').some(section => 
-          section.toLowerCase().includes(keywordLower))) position = 'headers';
+        else if (
+          content.includes('#') &&
+          content.split('#').some(section => section.toLowerCase().includes(keywordLower))
+        )
+          position = 'headers';
         else position = 'content';
       }
 
@@ -650,13 +690,13 @@ Return the optimized content maintaining the original structure and tone.
 
     // Add plurals
     words.forEach(word => {
-      if (!word.endsWith('s')) variants.push(`${word  }s`);
+      if (!word.endsWith('s')) variants.push(`${word}s`);
     });
 
     // Add common variations
-    variants.push(`${keyword  } guide`);
-    variants.push(`${keyword  } tips`);
-    variants.push(`best ${  keyword}`);
+    variants.push(`${keyword} guide`);
+    variants.push(`${keyword} tips`);
+    variants.push(`best ${keyword}`);
 
     return variants.slice(0, 5);
   }
@@ -669,16 +709,25 @@ Return the optimized content maintaining the original structure and tone.
   }
 
   private estimateSearchVolume(keyword: string): 'low' | 'medium' | 'high' {
-    const highVolumeWords = ['marketing', 'business', 'online', 'digital', 'strategy', 'tips', 'guide', 'best'];
+    const highVolumeWords = [
+      'marketing',
+      'business',
+      'online',
+      'digital',
+      'strategy',
+      'tips',
+      'guide',
+      'best',
+    ];
     const hasHighVolumeWord = highVolumeWords.some(word => keyword.toLowerCase().includes(word));
-    
+
     if (hasHighVolumeWord) return 'high';
     if (keyword.split(' ').length <= 2) return 'medium';
     return 'low';
   }
 
   private async generateSEOSuggestions(
-    context: SEOOptimizationContext, 
+    context: SEOOptimizationContext,
     keywords: KeywordAnalysis[]
   ): Promise<SEOSuggestion[]> {
     const suggestions: SEOSuggestion[] = [];
@@ -789,7 +838,10 @@ Return the optimized content maintaining the original structure and tone.
     const { targetKeywords, focusKeyword } = context;
 
     // Ensure focus keyword appears in first paragraph
-    if (focusKeyword && !optimizedContent.substring(0, 200).toLowerCase().includes(focusKeyword.toLowerCase())) {
+    if (
+      focusKeyword &&
+      !optimizedContent.substring(0, 200).toLowerCase().includes(focusKeyword.toLowerCase())
+    ) {
       const firstParagraph = optimizedContent.split('\n\n')[0];
       if (firstParagraph) {
         const optimizedFirstParagraph = `${firstParagraph} Understanding ${focusKeyword} is crucial for success.`;
@@ -799,8 +851,9 @@ Return the optimized content maintaining the original structure and tone.
 
     // Add internal linking suggestions
     if (!optimizedContent.includes('[') && !optimizedContent.includes('(')) {
-      optimizedContent += `\n\n*Internal linking opportunities: Consider linking to related content about ${  
-                          targetKeywords.slice(0, 2).join(', ')  }.*`;
+      optimizedContent += `\n\n*Internal linking opportunities: Consider linking to related content about ${targetKeywords
+        .slice(0, 2)
+        .join(', ')}.*`;
     }
 
     return optimizedContent;
@@ -808,21 +861,24 @@ Return the optimized content maintaining the original structure and tone.
 
   private async optimizeMetadata(context: SEOOptimizationContext) {
     const keywords = await this.analyzeKeywords(context.content, context.targetKeywords);
-    
+
     return {
       optimizedTitle: await this.generateOptimalTitle(context, keywords),
       optimizedDescription: await this.generateOptimalDescription(context, keywords),
       suggestedUrl: this.generateSEOFriendlyUrl(
-        context.title || context.focusKeyword || context.targetKeywords[0] || 'content', 
+        context.title || context.focusKeyword || context.targetKeywords[0] || 'content',
         context.contentType
       ),
     };
   }
 
-  private async generateOptimalTitle(context: SEOOptimizationContext, keywords: KeywordAnalysis[]): Promise<string> {
+  private async generateOptimalTitle(
+    context: SEOOptimizationContext,
+    keywords: KeywordAnalysis[]
+  ): Promise<string> {
     const { title, focusKeyword, contentType } = context;
     const highPriorityKeyword = focusKeyword || keywords[0]?.keyword || 'Guide';
-    
+
     if (title && title.length >= 30 && title.length <= 60) {
       return title; // Already optimal
     }
@@ -831,30 +887,36 @@ Return the optimized content maintaining the original structure and tone.
       blog: `${highPriorityKeyword}: Complete Guide & Best Practices`,
       page: `${highPriorityKeyword} Solutions | Professional Services`,
       product: `Best ${highPriorityKeyword} | Premium Quality & Value`,
-      article: `${highPriorityKeyword}: Expert Tips & Strategies`
+      article: `${highPriorityKeyword}: Expert Tips & Strategies`,
     };
 
     const generatedTitle = titleTemplates[contentType] || titleTemplates.article;
-    
+
     // Ensure it's within optimal length
-    return generatedTitle.length <= 60 ? generatedTitle : `${generatedTitle.substring(0, 57)  }...`;
+    return generatedTitle.length <= 60 ? generatedTitle : `${generatedTitle.substring(0, 57)}...`;
   }
 
-  private async generateOptimalDescription(context: SEOOptimizationContext, keywords: KeywordAnalysis[]): Promise<string> {
+  private async generateOptimalDescription(
+    context: SEOOptimizationContext,
+    keywords: KeywordAnalysis[]
+  ): Promise<string> {
     const { description, focusKeyword, targetKeywords } = context;
     const primaryKeyword = focusKeyword || keywords[0]?.keyword || 'solution';
     const secondaryKeywords = targetKeywords.slice(0, 2).join(', ');
-    
+
     if (description && description.length >= 120 && description.length <= 160) {
       return description; // Already optimal
     }
 
-    const metaDescription = `Discover comprehensive ${primaryKeyword} strategies and tips. ` +
-                           `Learn about ${secondaryKeywords} with our expert guidance. ` +
-                           `Get actionable insights and proven results today.`;
-    
+    const metaDescription =
+      `Discover comprehensive ${primaryKeyword} strategies and tips. ` +
+      `Learn about ${secondaryKeywords} with our expert guidance. ` +
+      `Get actionable insights and proven results today.`;
+
     // Ensure it's within optimal length
-    return metaDescription.length <= 160 ? metaDescription : `${metaDescription.substring(0, 157)  }...`;
+    return metaDescription.length <= 160
+      ? metaDescription
+      : `${metaDescription.substring(0, 157)}...`;
   }
 
   private generateSEOFriendlyUrl(title: string, contentType: string): string {
@@ -869,7 +931,7 @@ Return the optimized content maintaining the original structure and tone.
       blog: 'blog',
       page: '',
       product: 'products',
-      article: 'articles'
+      article: 'articles',
     };
 
     const prefix = typePrefix[contentType as keyof typeof typePrefix] || '';
@@ -877,8 +939,8 @@ Return the optimized content maintaining the original structure and tone.
   }
 
   private calculateSEOScore(
-    context: SEOOptimizationContext, 
-    keywords: KeywordAnalysis[], 
+    context: SEOOptimizationContext,
+    keywords: KeywordAnalysis[],
     suggestions: SEOSuggestion[]
   ): number {
     let score = 100;
@@ -892,7 +954,7 @@ Return the optimized content maintaining the original structure and tone.
         medium: 10,
         low: 5,
       };
-      
+
       score -= severityMultiplier[suggestion.severity] * (suggestion.priority / 10);
     });
 
@@ -901,7 +963,7 @@ Return the optimized content maintaining the original structure and tone.
     if (description && description.length >= 120 && description.length <= 160) score += 10;
     if (content.includes('#') || content.includes('<h')) score += 5; // Has headers
     if (content.split(/\s+/).length >= 300) score += 10; // Good length
-    
+
     // Enhanced keyword optimization bonus
     const wellOptimizedKeywords = keywords.filter(k => k.density >= 0.5 && k.density <= 2.5);
     score += wellOptimizedKeywords.length * 5;
@@ -915,14 +977,14 @@ Return the optimized content maintaining the original structure and tone.
 
   // Public methods for Phase 1 integration
   async optimizeKeywords(context: SEOOptimizationContext): Promise<AgentResult> {
-    return this.execute({ 
+    return this.execute({
       task: 'optimize_keywords',
       context,
-      priority: 'medium'
+      priority: 'medium',
     });
   }
 
   async analyzeContent(content: string, keywords: string[]): Promise<KeywordAnalysis[]> {
     return this.analyzeKeywords(content, keywords);
   }
-} 
+}

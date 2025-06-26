@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { trpc } from '../../lib/trpc';
-import {
-  PlayIcon,
-  PauseIcon,
-  PencilIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { PlayIcon, PauseIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Campaign {
   id: string;

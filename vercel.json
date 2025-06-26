@@ -13,12 +13,7 @@
       "src": "apps/api/package.json",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": [
-          "src/**",
-          "prisma/**",
-          "package.json",
-          "tsconfig.json"
-        ]
+        "includeFiles": ["src/**", "prisma/**", "package.json", "tsconfig.json"]
       }
     }
   ],
@@ -88,4 +83,4 @@
   "outputDirectory": "apps/dashboard/.next",
   "framework": "nextjs",
   "regions": ["iad1"]
-} 
+}

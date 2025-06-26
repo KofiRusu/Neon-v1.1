@@ -1,8 +1,0 @@
-# 🚫 GIT HOOKS DISABLED
-
-All Git hooks in this repository have been disabled.
-
-Active Git automation moved to: `/Neon-v0.2`
-
-Date: $(date)
-Reason: CI isolation and conflict prevention 

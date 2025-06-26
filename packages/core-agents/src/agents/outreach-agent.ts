@@ -35,22 +35,57 @@ export class OutreachAgent extends AbstractAgent {
       name: 'Marketing Campaign Proposal',
       type: 'marketing',
       sections: [
-        { title: 'Executive Summary', content: 'Our marketing strategy for {{clientName}} focuses on...', variables: ['clientName'], required: true },
-        { title: 'Campaign Strategy', content: 'We propose a multi-channel approach including...', variables: [], required: true },
-        { title: 'Timeline & Deliverables', content: 'Project timeline spanning {{duration}} with key milestones...', variables: ['duration'], required: true },
-        { title: 'Investment & ROI', content: 'Total investment of {{budget}} with projected ROI of {{roi}}%', variables: ['budget', 'roi'], required: true },
-      ]
+        {
+          title: 'Executive Summary',
+          content: 'Our marketing strategy for {{clientName}} focuses on...',
+          variables: ['clientName'],
+          required: true,
+        },
+        {
+          title: 'Campaign Strategy',
+          content: 'We propose a multi-channel approach including...',
+          variables: [],
+          required: true,
+        },
+        {
+          title: 'Timeline & Deliverables',
+          content: 'Project timeline spanning {{duration}} with key milestones...',
+          variables: ['duration'],
+          required: true,
+        },
+        {
+          title: 'Investment & ROI',
+          content: 'Total investment of {{budget}} with projected ROI of {{roi}}%',
+          variables: ['budget', 'roi'],
+          required: true,
+        },
+      ],
     },
     {
       id: 'partnership_proposal',
       name: 'Strategic Partnership Proposal',
       type: 'partnership',
       sections: [
-        { title: 'Partnership Overview', content: 'Strategic alliance between {{companyName}} and {{clientName}}...', variables: ['companyName', 'clientName'], required: true },
-        { title: 'Mutual Benefits', content: 'This partnership will provide mutual benefits including...', variables: [], required: true },
-        { title: 'Implementation Plan', content: 'Partnership rollout over {{timeline}} phases...', variables: ['timeline'], required: true },
-      ]
-    }
+        {
+          title: 'Partnership Overview',
+          content: 'Strategic alliance between {{companyName}} and {{clientName}}...',
+          variables: ['companyName', 'clientName'],
+          required: true,
+        },
+        {
+          title: 'Mutual Benefits',
+          content: 'This partnership will provide mutual benefits including...',
+          variables: [],
+          required: true,
+        },
+        {
+          title: 'Implementation Plan',
+          content: 'Partnership rollout over {{timeline}} phases...',
+          variables: ['timeline'],
+          required: true,
+        },
+      ],
+    },
   ];
 
   constructor(id: string, name: string) {
@@ -98,8 +133,10 @@ export class OutreachAgent extends AbstractAgent {
 
   private async sendEmails(context: AgentContextOrUndefined): Promise<OutreachResult> {
     const emailData = context?.emailData || {};
-    const recipients = (Array.isArray(context?.recipients) ? context.recipients : ['example@email.com']) as string[];
-    
+    const recipients = (
+      Array.isArray(context?.recipients) ? context.recipients : ['example@email.com']
+    ) as string[];
+
     return {
       campaigns: recipients.map((recipient, index) => ({
         id: `email_${Date.now()}_${index}`,
@@ -113,8 +150,10 @@ export class OutreachAgent extends AbstractAgent {
   }
 
   private async socialOutreach(context: AgentContextOrUndefined): Promise<OutreachResult> {
-    const platforms = (Array.isArray(context?.platforms) ? context.platforms : ['linkedin', 'twitter']) as string[];
-    
+    const platforms = (
+      Array.isArray(context?.platforms) ? context.platforms : ['linkedin', 'twitter']
+    ) as string[];
+
     return {
       campaigns: platforms.map(platform => ({
         id: `social_${platform}_${Date.now()}`,
@@ -129,55 +168,65 @@ export class OutreachAgent extends AbstractAgent {
   private async generateLeads(context: AgentContextOrUndefined): Promise<OutreachResult> {
     const targetCriteria = context?.targetCriteria || {};
     const leadCount = Math.floor(Math.random() * 50) + 10;
-    
+
     return {
-      campaigns: [{
-        id: crypto.randomUUID(),
-        type: 'lead_generation',
-        status: 'completed',
-        generatedLeads: leadCount,
-        metadata: {
-          searchQuery: (targetCriteria as any).searchQuery || '',
-          platform: (targetCriteria as any).platform || '',
-          leadCount,
-          estimatedReach: leadCount * 3
-        }
-      }],
+      campaigns: [
+        {
+          id: crypto.randomUUID(),
+          type: 'lead_generation',
+          status: 'completed',
+          generatedLeads: leadCount,
+          metadata: {
+            searchQuery: (targetCriteria as any).searchQuery || '',
+            platform: (targetCriteria as any).platform || '',
+            leadCount,
+            estimatedReach: leadCount * 3,
+          },
+        },
+      ],
     };
   }
 
   private async followUp(context: AgentContextOrUndefined): Promise<OutreachResult> {
-    const followUpType = (typeof context?.followUpType === 'string' ? context.followUpType : 'email') as string;
-    
+    const followUpType = (
+      typeof context?.followUpType === 'string' ? context.followUpType : 'email'
+    ) as string;
+
     return {
-      campaigns: [{
-        id: crypto.randomUUID(), 
-        type: 'follow_up',
-        status: 'completed',
-        followUpType,
-        metadata: {
-          leadId: context?.leadId || '',
+      campaigns: [
+        {
+          id: crypto.randomUUID(),
+          type: 'follow_up',
+          status: 'completed',
           followUpType,
-          scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
-        }
-      }],
+          metadata: {
+            leadId: context?.leadId || '',
+            followUpType,
+            scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          },
+        },
+      ],
     };
   }
 
   private async manageCampaign(context: AgentContextOrUndefined): Promise<OutreachResult> {
-    const campaignId = (typeof context?.campaignId === 'string' ? context.campaignId : 'default_campaign') as string;
-    
+    const campaignId = (
+      typeof context?.campaignId === 'string' ? context.campaignId : 'default_campaign'
+    ) as string;
+
     return {
-      campaigns: [{
-        id: campaignId,
-        type: 'multi_channel',
-        status: 'active',
-        metrics: {
-          emailsSent: Math.floor(Math.random() * 1000) + 100,
-          socialPosts: Math.floor(Math.random() * 50) + 10,
-          leadsGenerated: Math.floor(Math.random() * 20) + 5,
+      campaigns: [
+        {
+          id: campaignId,
+          type: 'multi_channel',
+          status: 'active',
+          metrics: {
+            emailsSent: Math.floor(Math.random() * 1000) + 100,
+            socialPosts: Math.floor(Math.random() * 50) + 10,
+            leadsGenerated: Math.floor(Math.random() * 20) + 5,
+          },
         },
-      }],
+      ],
     };
   }
 
@@ -185,23 +234,25 @@ export class OutreachAgent extends AbstractAgent {
   private async generatePdfProposal(context: AgentContextOrUndefined): Promise<OutreachResult> {
     const proposalData = this.extractProposalData(context);
     const template = this.getTemplate(proposalData.templateId || 'marketing_proposal');
-    
+
     const pdfContent = this.generatePdfContent(template, proposalData);
-    
+
     return {
-      campaigns: [{
-        id: `pdf_proposal_${Date.now()}`,
-        type: 'proposal_generation',
-        status: 'completed',
-        format: 'pdf',
-        proposal: {
-          title: proposalData.proposalTitle,
-          client: proposalData.clientName,
-          pages: template.sections.length + 2, // +2 for cover and conclusion
-          downloadUrl: `/proposals/pdf/${Date.now()}.pdf`,
-          content: pdfContent,
+      campaigns: [
+        {
+          id: `pdf_proposal_${Date.now()}`,
+          type: 'proposal_generation',
+          status: 'completed',
+          format: 'pdf',
+          proposal: {
+            title: proposalData.proposalTitle,
+            client: proposalData.clientName,
+            pages: template.sections.length + 2, // +2 for cover and conclusion
+            downloadUrl: `/proposals/pdf/${Date.now()}.pdf`,
+            content: pdfContent,
+          },
         },
-      }],
+      ],
     };
   }
 
@@ -209,76 +260,96 @@ export class OutreachAgent extends AbstractAgent {
   private async generateHtmlProposal(context: AgentContextOrUndefined): Promise<OutreachResult> {
     const proposalData = this.extractProposalData(context);
     const template = this.getTemplate(proposalData.templateId || 'marketing_proposal');
-    
+
     const htmlContent = this.generateHtmlContent(template, proposalData);
-    
+
     return {
-      campaigns: [{
-        id: `html_proposal_${Date.now()}`,
-        type: 'proposal_generation',
-        status: 'completed',
-        format: 'html',
-        proposal: {
-          title: proposalData.proposalTitle,
-          client: proposalData.clientName,
-          responsive: true,
-          previewUrl: `/proposals/html/${Date.now()}.html`,
-          content: htmlContent,
+      campaigns: [
+        {
+          id: `html_proposal_${Date.now()}`,
+          type: 'proposal_generation',
+          status: 'completed',
+          format: 'html',
+          proposal: {
+            title: proposalData.proposalTitle,
+            client: proposalData.clientName,
+            responsive: true,
+            previewUrl: `/proposals/html/${Date.now()}.html`,
+            content: htmlContent,
+          },
         },
-      }],
+      ],
     };
   }
 
   private async customizeProposal(context: AgentContextOrUndefined): Promise<OutreachResult> {
     const customizations = context?.customizations || {};
-    const proposalId = (typeof context?.proposalId === 'string' ? context.proposalId : 'default') as string;
-    
+    const proposalId = (
+      typeof context?.proposalId === 'string' ? context.proposalId : 'default'
+    ) as string;
+
     return {
-      campaigns: [{
-        id: `custom_proposal_${Date.now()}`,
-        type: 'proposal_customization',
-        status: 'completed',
-        originalProposalId: proposalId,
-        customizations: {
-          brandColors: (customizations as any).brandColors || { primary: '#007bff', secondary: '#6c757d' },
-          typography: (customizations as any).typography || 'modern',
-          layout: (customizations as any).layout || 'standard',
-          sections: (customizations as any).sections || [],
+      campaigns: [
+        {
+          id: `custom_proposal_${Date.now()}`,
+          type: 'proposal_customization',
+          status: 'completed',
+          originalProposalId: proposalId,
+          customizations: {
+            brandColors: (customizations as any).brandColors || {
+              primary: '#007bff',
+              secondary: '#6c757d',
+            },
+            typography: (customizations as any).typography || 'modern',
+            layout: (customizations as any).layout || 'standard',
+            sections: (customizations as any).sections || [],
+          },
         },
-      }],
+      ],
     };
   }
 
   private async getProposalTemplates(context: AgentContextOrUndefined): Promise<OutreachResult> {
-    const templateType = (typeof context?.templateType === 'string' ? context.templateType : 'all') as string;
-    
-    const filteredTemplates = templateType === 'all' 
-      ? this.templates 
-      : this.templates.filter(t => t.type === templateType);
-    
+    const templateType = (
+      typeof context?.templateType === 'string' ? context.templateType : 'all'
+    ) as string;
+
+    const filteredTemplates =
+      templateType === 'all' ? this.templates : this.templates.filter(t => t.type === templateType);
+
     return {
-      campaigns: [{
-        id: `templates_${Date.now()}`,
-        type: 'template_library',
-        status: 'active',
-        templates: filteredTemplates.map(t => ({
-          id: t.id,
-          name: t.name,
-          type: t.type,
-          sectionCount: t.sections.length,
-          variables: t.sections.flatMap(s => s.variables),
-        })),
-      }],
+      campaigns: [
+        {
+          id: `templates_${Date.now()}`,
+          type: 'template_library',
+          status: 'active',
+          templates: filteredTemplates.map(t => ({
+            id: t.id,
+            name: t.name,
+            type: t.type,
+            sectionCount: t.sections.length,
+            variables: t.sections.flatMap(s => s.variables),
+          })),
+        },
+      ],
     };
   }
 
   // Helper methods for proposal generation
   private extractProposalData(context: AgentContextOrUndefined): any {
     return {
-      clientName: (typeof context?.clientName === 'string' ? context.clientName : 'Valued Client') as string,
-      companyName: (typeof context?.companyName === 'string' ? context.companyName : 'NeonHub') as string,
-      proposalTitle: (typeof context?.proposalTitle === 'string' ? context.proposalTitle : 'Business Proposal') as string,
-      templateId: (typeof context?.templateId === 'string' ? context.templateId : 'marketing_proposal') as string,
+      clientName: (typeof context?.clientName === 'string'
+        ? context.clientName
+        : 'Valued Client') as string,
+      companyName: (typeof context?.companyName === 'string'
+        ? context.companyName
+        : 'NeonHub') as string,
+      proposalTitle: (typeof context?.proposalTitle === 'string'
+        ? context.proposalTitle
+        : 'Business Proposal') as string,
+      templateId: (typeof context?.templateId === 'string'
+        ? context.templateId
+        : 'marketing_proposal') as string,
       variables: context?.variables || {},
       customizations: context?.customizations || {
         brandColors: { primary: '#007bff', secondary: '#6c757d' },
@@ -297,22 +368,22 @@ export class OutreachAgent extends AbstractAgent {
     content += `**Prepared for:** ${data.clientName}\n`;
     content += `**Prepared by:** ${data.companyName}\n`;
     content += `**Date:** ${new Date().toLocaleDateString()}\n\n`;
-    
+
     template.sections.forEach(section => {
       content += `## ${section.title}\n\n`;
       let sectionContent = section.content;
-      
+
       // Replace variables with actual data
       section.variables.forEach(variable => {
         const value = data.variables[variable] || `{{${variable}}}`;
         sectionContent = sectionContent.replace(new RegExp(`{{${variable}}}`, 'g'), value);
       });
-      
+
       content += `${sectionContent}\n\n`;
     });
-    
+
     content += `---\n*This proposal is valid for 30 days from the date of issue.*`;
-    
+
     return content;
   }
 
@@ -320,7 +391,7 @@ export class OutreachAgent extends AbstractAgent {
     const theme = data.customizations?.theme || 'modern';
     const primaryColor = data.customizations?.brandColors?.primary || '#007bff';
     const secondaryColor = data.customizations?.brandColors?.secondary || '#6c757d';
-    
+
     let html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -353,13 +424,13 @@ export class OutreachAgent extends AbstractAgent {
         <div class="section">
             <h2 class="section-title">${section.title}</h2>
             <div class="content">`;
-      
+
       let sectionContent = section.content;
       section.variables.forEach(variable => {
         const value = data.variables[variable] || `<em>[${variable}]</em>`;
         sectionContent = sectionContent.replace(new RegExp(`{{${variable}}}`, 'g'), value);
       });
-      
+
       html += `<p>${sectionContent}</p>`;
       html += `
             </div>

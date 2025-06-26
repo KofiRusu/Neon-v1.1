@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   MagnifyingGlassIcon,
   PhoneIcon,
   EnvelopeIcon,
   ChatBubbleLeftIcon,
   Cog6ToothIcon,
-  PlusIcon
+  PlusIcon,
 } from '@heroicons/react/24/outline';
 
 // Mock contacts data
@@ -51,18 +51,19 @@ export default function ContactPanel() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'contacts' | 'sync'>('contacts');
 
-  const filteredContacts = mockContacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.phone.includes(searchQuery)
+  const filteredContacts = mockContacts.filter(
+    contact =>
+      contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      contact.phone.includes(searchQuery)
   );
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -93,7 +94,7 @@ export default function ContactPanel() {
               WhatsApp Sync
             </button>
           </div>
-          
+
           {activeTab === 'contacts' && (
             <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               <PlusIcon className="h-4 w-4" />
@@ -109,7 +110,7 @@ export default function ContactPanel() {
               type="text"
               placeholder="Search contacts..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -126,13 +127,17 @@ export default function ContactPanel() {
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                       <span className="text-lg font-medium text-gray-600">
-                        {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        {contact.name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')
+                          .toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900 mb-1">{contact.name}</h3>
-                      
+
                       <div className="space-y-1 mb-3">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <EnvelopeIcon className="h-4 w-4" />
@@ -149,15 +154,15 @@ export default function ContactPanel() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
                         <span>Last contact: {formatDate(contact.lastContact)}</span>
                         <span>{contact.totalTickets} tickets</span>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         {contact.tags.map(tag => (
-                          <span 
+                          <span
                             key={tag}
                             className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
                           >
@@ -167,7 +172,7 @@ export default function ContactPanel() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
                       <ChatBubbleLeftIcon className="h-4 w-4" />
@@ -184,7 +189,7 @@ export default function ContactPanel() {
           <div className="max-w-2xl">
             <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">WhatsApp Integration</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div>
@@ -203,7 +208,9 @@ export default function ContactPanel() {
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div>
                     <h4 className="font-medium text-gray-900">Auto-sync Messages</h4>
-                    <p className="text-sm text-gray-600">Automatically create tickets from WhatsApp messages</p>
+                    <p className="text-sm text-gray-600">
+                      Automatically create tickets from WhatsApp messages
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" className="sr-only peer" defaultChecked />
@@ -226,7 +233,7 @@ export default function ContactPanel() {
 
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Response Templates</h3>
-              
+
               <div className="space-y-3">
                 <div className="p-3 border border-gray-200 rounded-lg">
                   <h4 className="font-medium text-gray-900 text-sm">Welcome Message</h4>
@@ -234,14 +241,15 @@ export default function ContactPanel() {
                     Hi! Thanks for contacting NeonHub support. How can I help you today?
                   </p>
                 </div>
-                
+
                 <div className="p-3 border border-gray-200 rounded-lg">
                   <h4 className="font-medium text-gray-900 text-sm">Escalation Notice</h4>
                   <p className="text-sm text-gray-600 mt-1">
-                    I'm connecting you with a human agent who can better assist you. Please hold on...
+                    I'm connecting you with a human agent who can better assist you. Please hold
+                    on...
                   </p>
                 </div>
-                
+
                 <button className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-600 hover:border-gray-400">
                   + Add New Template
                 </button>
@@ -252,4 +260,4 @@ export default function ContactPanel() {
       </div>
     </div>
   );
-} 
+}

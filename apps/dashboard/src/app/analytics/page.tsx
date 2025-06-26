@@ -56,7 +56,7 @@ export default function AnalyticsPage(): JSX.Element {
       change: '+12%',
       changeType: 'positive',
       icon: RocketLaunchIcon,
-      color: 'neon-blue'
+      color: 'neon-blue',
     },
     {
       title: 'Active AI Agents',
@@ -64,7 +64,7 @@ export default function AnalyticsPage(): JSX.Element {
       change: '+2',
       changeType: 'positive',
       icon: CpuChipIcon,
-      color: 'neon-purple'
+      color: 'neon-purple',
     },
     {
       title: 'Conversion Rate',
@@ -72,7 +72,7 @@ export default function AnalyticsPage(): JSX.Element {
       change: '+4.2%',
       changeType: 'positive',
       icon: TrendingUpIcon,
-      color: 'neon-green'
+      color: 'neon-green',
     },
     {
       title: 'Revenue Generated',
@@ -80,7 +80,7 @@ export default function AnalyticsPage(): JSX.Element {
       change: '+23.1%',
       changeType: 'positive',
       icon: ArrowTrendingUpIcon,
-      color: 'neon-pink'
+      color: 'neon-pink',
     },
   ];
 
@@ -99,10 +99,10 @@ export default function AnalyticsPage(): JSX.Element {
             <div className="flex items-center space-x-3">
               <select
                 value={selectedTimeRange}
-                onChange={(e) => setSelectedTimeRange(e.target.value)}
+                onChange={e => setSelectedTimeRange(e.target.value)}
                 className="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                {timeRanges.map((range) => (
+                {timeRanges.map(range => (
                   <option key={range.value} value={range.value}>
                     {range.label}
                   </option>
@@ -116,21 +116,25 @@ export default function AnalyticsPage(): JSX.Element {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {metrics.map((metric) => {
+          {metrics.map(metric => {
             const Icon = metric.icon;
             return (
               <div key={metric.title} className="stat-card">
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 bg-${metric.color} rounded-xl flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 bg-${metric.color} rounded-xl flex items-center justify-center`}
+                  >
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    metric.changeType === 'positive'
-                      ? 'bg-green-500 text-white'
-                      : metric.changeType === 'negative'
-                      ? 'bg-red-500 text-white'
-                      : 'bg-gray-500 text-white'
-                  }`}>
+                  <div
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      metric.changeType === 'positive'
+                        ? 'bg-green-500 text-white'
+                        : metric.changeType === 'negative'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-500 text-white'
+                    }`}
+                  >
                     {metric.change}
                   </div>
                 </div>
@@ -186,8 +190,11 @@ export default function AnalyticsPage(): JSX.Element {
                 { name: 'EmailAgent', performance: '94%', color: 'text-purple-400' },
                 { name: 'SocialAgent', performance: '92%', color: 'text-green-400' },
                 { name: 'SEOAgent', performance: '89%', color: 'text-pink-400' },
-              ].map((agent) => (
-                <div key={agent.name} className="flex items-center justify-between p-3 glass rounded-lg">
+              ].map(agent => (
+                <div
+                  key={agent.name}
+                  className="flex items-center justify-between p-3 glass rounded-lg"
+                >
                   <span className={`font-medium ${agent.color}`}>{agent.name}</span>
                   <span className="text-white font-bold">{agent.performance}</span>
                 </div>

@@ -2,12 +2,17 @@
 
 ## 📊 **Centralized Data Hub for Production Deployment**
 
-This directory contains all business data, metrics, and configurations used throughout the NeonHub AI Marketing Ecosystem. **This is the single source of truth for all data** that needs to be replaced with client-specific information before production deployment.
+This directory contains all business data, metrics, and configurations used
+throughout the NeonHub AI Marketing Ecosystem. **This is the single source of
+truth for all data** that needs to be replaced with client-specific information
+before production deployment.
 
 ## 🎯 **Purpose**
 
-- **Centralized Data Management**: All mock/sample data consolidated in one location
-- **Easy Client Onboarding**: Replace this entire folder with client's actual data
+- **Centralized Data Management**: All mock/sample data consolidated in one
+  location
+- **Easy Client Onboarding**: Replace this entire folder with client's actual
+  data
 - **Agent Integration**: All AI agents source their data from here
 - **Metrics & Analytics**: All dashboard metrics calculated from this data
 - **Production Ready**: Seamless transition from mock to live data
@@ -47,28 +52,36 @@ data/
 ## 🚀 **Client Data Migration Process**
 
 ### Step 1: Business Profile Setup
+
 Replace `config/business-profile.json` with:
+
 - Company information
 - Brand guidelines
 - Target audience data
 - Marketing objectives
 
 ### Step 2: Platform Integration
+
 Update `integrations/platforms.json` with:
+
 - Social media account credentials
 - Marketing platform API keys
 - Analytics tracking codes
 - Webhook endpoints
 
 ### Step 3: Historical Data Import
+
 Replace metric files with:
+
 - Past campaign performance
 - Customer interaction history
 - Lead qualification data
 - Competitor analysis results
 
 ### Step 4: Content Library Migration
+
 Transfer existing content to:
+
 - Social media post archives
 - Email template library
 - SEO keyword research
@@ -77,6 +90,7 @@ Transfer existing content to:
 ## 🤖 **Agent Data Integration**
 
 All AI agents are configured to:
+
 - ✅ **Source data** from this directory
 - ✅ **Log activities** to the logs/ subdirectory
 - ✅ **Update metrics** in real-time
@@ -86,6 +100,7 @@ All AI agents are configured to:
 ## 📈 **Metrics & Analytics Integration**
 
 The dashboard automatically calculates:
+
 - **Campaign ROI** from metrics/campaigns.json
 - **Agent Performance** from logs/agent-executions/
 - **Lead Quality Scores** from customers/leads.json
@@ -103,11 +118,13 @@ The dashboard automatically calculates:
 ## 🛠 **Development vs Production**
 
 ### Development Environment
+
 - Uses sample/mock data for testing
 - Safe to experiment with agent configurations
 - No real customer data exposure
 
 ### Production Environment
+
 - Replace entire data/ directory with client data
 - Verify all integrations work with live APIs
 - Monitor agent performance on real data
@@ -116,6 +133,7 @@ The dashboard automatically calculates:
 ## 📝 **Data Format Standards**
 
 All data files follow consistent JSON schemas:
+
 - **Timestamps**: ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ)
 - **IDs**: Consistent UUID format across all entities
 - **Metrics**: Standardized units and naming conventions
@@ -124,6 +142,7 @@ All data files follow consistent JSON schemas:
 ## 🔄 **Real-time Updates**
 
 The system supports:
+
 - **Live Data Sync**: Agents update metrics in real-time
 - **Performance Monitoring**: Continuous tracking of all KPIs
 - **Automated Alerts**: Threshold-based notifications
@@ -132,6 +151,7 @@ The system supports:
 ## 📞 **Support & Maintenance**
 
 For client data migration assistance:
+
 1. Contact technical support team
 2. Provide data export from current systems
 3. Schedule migration and testing phase
@@ -140,4 +160,6 @@ For client data migration assistance:
 
 ---
 
-**⚠️ IMPORTANT**: Never commit real client data to version control. Use environment variables for sensitive information and ensure proper backup procedures are in place. 
+**⚠️ IMPORTANT**: Never commit real client data to version control. Use
+environment variables for sensitive information and ensure proper backup
+procedures are in place.

@@ -1,7 +1,12 @@
 import OpenAI from 'openai';
 import { AbstractAgent } from '../base-agent';
 import type { AgentPayload, AgentResult } from '../base-agent';
-import type { DesignAsset, BrandGuidelines, CreativeSpecification, DesignOptimization } from '../types';
+import type {
+  DesignAsset,
+  BrandGuidelines,
+  CreativeSpecification,
+  DesignOptimization,
+} from '../types';
 import { logger } from '@neon/utils';
 
 export interface DesignContext {
@@ -15,7 +20,15 @@ export interface DesignContext {
     aspectRatio?: string;
     dpi?: number;
   };
-  contentType: 'logo' | 'banner' | 'social_post' | 'infographic' | 'brochure' | 'website' | 'app_ui' | 'presentation';
+  contentType:
+    | 'logo'
+    | 'banner'
+    | 'social_post'
+    | 'infographic'
+    | 'brochure'
+    | 'website'
+    | 'app_ui'
+    | 'presentation';
   targetAudience: {
     demographics: Record<string, any>;
     preferences: string[];
@@ -146,7 +159,7 @@ export class DesignAgent extends AbstractAgent {
       'optimize_assets',
       'validate_accessibility',
       'generate_style_guide',
-      'create_interactive_prototype'
+      'create_interactive_prototype',
     ]);
 
     this.openai = new OpenAI({
@@ -157,7 +170,11 @@ export class DesignAgent extends AbstractAgent {
     this.aiImageApiEndpoint = process.env.AI_IMAGE_API_ENDPOINT;
 
     if (!process.env.OPENAI_API_KEY) {
-      logger.warn('OPENAI_API_KEY not found. DesignAgent will run in limited mode.', {}, 'DesignAgent');
+      logger.warn(
+        'OPENAI_API_KEY not found. DesignAgent will run in limited mode.',
+        {},
+        'DesignAgent'
+      );
     }
 
     this.initializeDesignTemplates();
@@ -167,26 +184,34 @@ export class DesignAgent extends AbstractAgent {
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'generate_creative':
           return await this.generateCreativeAssets(context as DesignContext);
         case 'optimize_design':
           return await this.optimizeDesignAssets(context as DesignOptimizationContext);
         case 'ensure_brand_consistency':
-          return await this.validateBrandConsistency(context as { assets: DesignAsset[]; guidelines: BrandGuidelines });
+          return await this.validateBrandConsistency(
+            context as { assets: DesignAsset[]; guidelines: BrandGuidelines }
+          );
         case 'create_variations':
           return await this.createDesignVariations(context as AssetGenerationContext);
         case 'analyze_visual_performance':
-          return await this.analyzeVisualPerformance(context as { assets: DesignAsset[]; metrics: any[] });
+          return await this.analyzeVisualPerformance(
+            context as { assets: DesignAsset[]; metrics: any[] }
+          );
         case 'generate_ui_mockup':
           return await this.generateUIMockup(context as DesignContext);
         case 'optimize_assets':
-          return await this.optimizeAssetPerformance(context as { assets: DesignAsset[]; targetMetrics: string[] });
+          return await this.optimizeAssetPerformance(
+            context as { assets: DesignAsset[]; targetMetrics: string[] }
+          );
         case 'validate_accessibility':
           return await this.validateDesignAccessibility(context as { designs: DesignAsset[] });
         case 'generate_style_guide':
-          return await this.generateStyleGuide(context as { brand: BrandGuidelines; examples: DesignAsset[] });
+          return await this.generateStyleGuide(
+            context as { brand: BrandGuidelines; examples: DesignAsset[] }
+          );
         case 'create_interactive_prototype':
           return await this.createInteractivePrototype(context as DesignContext);
         default:
@@ -202,13 +227,13 @@ export class DesignAgent extends AbstractAgent {
     try {
       const designBrief = await this.createDesignBrief(context);
       const aiPrompts = await this.generateAIPrompts(context, designBrief);
-      
+
       const assets = await Promise.all(
         aiPrompts.map(async (prompt, index) => {
           const asset = await this.generateAssetWithAI(prompt, context, index);
           const brandCompliance = await this.checkBrandCompliance(asset, context.brandGuidelines);
           const optimizationScore = await this.calculateOptimizationScore(asset, context);
-          
+
           return {
             id: `asset_${Date.now()}_${index}`,
             type: context.contentType,
@@ -217,16 +242,19 @@ export class DesignAgent extends AbstractAgent {
               dimensions: context.dimensions,
               fileSize: this.estimateFileSize(context.dimensions, context.contentType),
               colorProfile: 'sRGB',
-              brandCompliance
+              brandCompliance,
             },
             variations: await this.generateVariationIds(asset, 3),
             optimizationScore,
-            ...asset
+            ...asset,
           };
         })
       );
 
-      const overallBrandCompliance = await this.assessOverallBrandCompliance(assets, context.brandGuidelines);
+      const overallBrandCompliance = await this.assessOverallBrandCompliance(
+        assets,
+        context.brandGuidelines
+      );
       const recommendations = await this.generateDesignRecommendations(assets, context);
       const alternatives = await this.suggestAlternativeApproaches(context, assets);
 
@@ -235,7 +263,7 @@ export class DesignAgent extends AbstractAgent {
         brandCompliance: overallBrandCompliance,
         recommendations,
         alternatives,
-        success: true
+        success: true,
       };
     } catch (error) {
       logger.error('Creative asset generation failed', { error }, 'DesignAgent');
@@ -249,23 +277,30 @@ export class DesignAgent extends AbstractAgent {
   private async optimizeDesignAssets(context: DesignOptimizationContext): Promise<AgentResult> {
     try {
       const optimizations = await Promise.all(
-        context.existingAssets.map(async (asset) => {
+        context.existingAssets.map(async asset => {
           const analysis = await this.analyzeAssetPerformance(asset, context.performanceData);
-          const optimizationSuggestions = await this.generateOptimizationSuggestions(asset, analysis);
+          const optimizationSuggestions = await this.generateOptimizationSuggestions(
+            asset,
+            analysis
+          );
           const optimizedAsset = await this.applyOptimizations(asset, optimizationSuggestions);
-          
+
           return {
             original: asset,
             optimized: optimizedAsset,
             improvements: optimizationSuggestions,
             expectedImpact: this.calculateExpectedImpact(optimizationSuggestions),
-            confidence: analysis.confidence
+            confidence: analysis.confidence,
           };
         })
       );
 
-      const overallImpact = optimizations.reduce((sum, opt) => sum + opt.expectedImpact, 0) / optimizations.length;
-      const prioritizedOptimizations = this.prioritizeOptimizations(optimizations, context.optimizationGoals);
+      const overallImpact =
+        optimizations.reduce((sum, opt) => sum + opt.expectedImpact, 0) / optimizations.length;
+      const prioritizedOptimizations = this.prioritizeOptimizations(
+        optimizations,
+        context.optimizationGoals
+      );
 
       return {
         success: true,
@@ -273,8 +308,9 @@ export class DesignAgent extends AbstractAgent {
           optimizations: prioritizedOptimizations,
           overallImpact,
           recommendations: await this.generateOptimizationRecommendations(optimizations),
-          implementationPlan: await this.createOptimizationImplementationPlan(prioritizedOptimizations)
-        }
+          implementationPlan:
+            await this.createOptimizationImplementationPlan(prioritizedOptimizations),
+        },
       };
     } catch (error) {
       logger.error('Design optimization failed', { error }, 'DesignAgent');
@@ -285,50 +321,64 @@ export class DesignAgent extends AbstractAgent {
   /**
    * Brand consistency validation
    */
-  private async validateBrandConsistency(context: { assets: DesignAsset[]; guidelines: BrandGuidelines }): Promise<BrandConsistencyResult> {
+  private async validateBrandConsistency(context: {
+    assets: DesignAsset[];
+    guidelines: BrandGuidelines;
+  }): Promise<BrandConsistencyResult> {
     try {
       const violations: any[] = [];
       const suggestions: string[] = [];
       let totalScore = 0;
 
       const assessments = await Promise.all(
-        context.assets.map(async (asset) => {
+        context.assets.map(async asset => {
           const colorCompliance = await this.validateColorCompliance(asset, context.guidelines);
-          const typographyCompliance = await this.validateTypographyCompliance(asset, context.guidelines);
+          const typographyCompliance = await this.validateTypographyCompliance(
+            asset,
+            context.guidelines
+          );
           const logoUsageCompliance = await this.validateLogoUsage(asset, context.guidelines);
-          const overallCompliance = await this.validateOverallBrandConsistency(asset, context.guidelines);
+          const overallCompliance = await this.validateOverallBrandConsistency(
+            asset,
+            context.guidelines
+          );
 
           const assetViolations = [
             ...colorCompliance.violations,
             ...typographyCompliance.violations,
             ...logoUsageCompliance.violations,
-            ...overallCompliance.violations
+            ...overallCompliance.violations,
           ];
 
-          const assetScore = (
-            colorCompliance.score +
-            typographyCompliance.score +
-            logoUsageCompliance.score +
-            overallCompliance.score
-          ) / 4;
+          const assetScore =
+            (colorCompliance.score +
+              typographyCompliance.score +
+              logoUsageCompliance.score +
+              overallCompliance.score) /
+            4;
 
           violations.push(...assetViolations);
           suggestions.push(...this.generateComplianceSuggestions(assetViolations, asset));
-          
+
           return {
             asset,
             score: assetScore,
-            violations: assetViolations
+            violations: assetViolations,
           };
         })
       );
 
-      totalScore = assessments.reduce((sum, assessment) => sum + assessment.score, 0) / assessments.length;
+      totalScore =
+        assessments.reduce((sum, assessment) => sum + assessment.score, 0) / assessments.length;
 
       const optimizedAssets = await Promise.all(
-        assessments.map(async (assessment) => {
+        assessments.map(async assessment => {
           if (assessment.score < 80) {
-            return await this.optimizeForBrandCompliance(assessment.asset, context.guidelines, assessment.violations);
+            return await this.optimizeForBrandCompliance(
+              assessment.asset,
+              context.guidelines,
+              assessment.violations
+            );
           }
           return assessment.asset;
         })
@@ -339,7 +389,7 @@ export class DesignAgent extends AbstractAgent {
         violations,
         suggestions,
         optimizedAssets,
-        success: true
+        success: true,
       };
     } catch (error) {
       logger.error('Brand consistency validation failed', { error }, 'DesignAgent');
@@ -350,7 +400,9 @@ export class DesignAgent extends AbstractAgent {
   /**
    * AI-powered design variations
    */
-  private async createDesignVariations(context: AssetGenerationContext): Promise<DesignVariationResult> {
+  private async createDesignVariations(
+    context: AssetGenerationContext
+  ): Promise<DesignVariationResult> {
     if (!this.openai) {
       return this.fallbackVariations(context);
     }
@@ -381,8 +433,8 @@ Return structured variation concepts with reasoning.
 `;
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [{ role: "user", content: prompt }],
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 2000,
       });
@@ -395,7 +447,7 @@ Return structured variation concepts with reasoning.
         variations,
         recommended: recommended.id,
         reasoning: recommended.reasoning,
-        success: true
+        success: true,
       };
     } catch (error) {
       logger.error('AI design variations failed', { error }, 'DesignAgent');
@@ -411,7 +463,10 @@ Return structured variation concepts with reasoning.
       const wireframe = await this.generateWireframe(context);
       const visualDesign = await this.applyVisualDesign(wireframe, context);
       const interactiveElements = await this.addInteractiveElements(visualDesign, context);
-      const responsiveVariations = await this.createResponsiveVariations(interactiveElements, context);
+      const responsiveVariations = await this.createResponsiveVariations(
+        interactiveElements,
+        context
+      );
 
       const usabilityScore = await this.assessUsability(interactiveElements);
       const accessibility = await this.checkAccessibility(interactiveElements);
@@ -423,15 +478,19 @@ Return structured variation concepts with reasoning.
             wireframe,
             visualDesign,
             interactive: interactiveElements,
-            responsive: responsiveVariations
+            responsive: responsiveVariations,
           },
           analysis: {
             usabilityScore,
             accessibility,
-            brandCompliance: await this.checkBrandCompliance(visualDesign, context.brandGuidelines)
+            brandCompliance: await this.checkBrandCompliance(visualDesign, context.brandGuidelines),
           },
-          recommendations: await this.generateUIRecommendations(interactiveElements, usabilityScore, accessibility)
-        }
+          recommendations: await this.generateUIRecommendations(
+            interactiveElements,
+            usabilityScore,
+            accessibility
+          ),
+        },
       };
     } catch (error) {
       logger.error('UI mockup generation failed', { error }, 'DesignAgent');
@@ -447,21 +506,21 @@ Return structured variation concepts with reasoning.
       instagram_story: { width: 1080, height: 1920, format: 'jpg' },
       facebook_post: { width: 1200, height: 630, format: 'jpg' },
       twitter_post: { width: 1024, height: 512, format: 'jpg' },
-      linkedin_post: { width: 1200, height: 627, format: 'jpg' }
+      linkedin_post: { width: 1200, height: 627, format: 'jpg' },
     });
 
     this.designTemplates.set('web_assets', {
       hero_banner: { width: 1920, height: 1080, format: 'jpg' },
       blog_featured: { width: 1200, height: 630, format: 'jpg' },
       thumbnail: { width: 400, height: 300, format: 'jpg' },
-      favicon: { width: 32, height: 32, format: 'png' }
+      favicon: { width: 32, height: 32, format: 'png' },
     });
 
     this.designTemplates.set('ad_formats', {
       google_display: { width: 728, height: 90, format: 'jpg' },
       facebook_ad: { width: 1200, height: 628, format: 'jpg' },
       instagram_ad: { width: 1080, height: 1080, format: 'jpg' },
-      youtube_thumbnail: { width: 1280, height: 720, format: 'jpg' }
+      youtube_thumbnail: { width: 1280, height: 720, format: 'jpg' },
     });
   }
 
@@ -483,8 +542,8 @@ Return structured variation concepts with reasoning.
       brand: {
         colors: context.brandGuidelines.colors,
         typography: context.brandGuidelines.typography,
-        voice: context.brandGuidelines.voice
-      }
+        voice: context.brandGuidelines.voice,
+      },
     };
   }
 
@@ -492,21 +551,25 @@ Return structured variation concepts with reasoning.
     const basePrompt = `Create a ${context.contentType} for ${context.platform} platform`;
     const stylePrompt = `Style: ${brief.brand.voice}, Colors: ${brief.brand.colors?.primary}`;
     const contextPrompt = `Target audience: ${context.targetAudience.demographics.age_range || 'general'}`;
-    
+
     return [
       `${basePrompt}. ${stylePrompt}. ${contextPrompt}. Modern and engaging design.`,
       `${basePrompt}. ${stylePrompt}. ${contextPrompt}. Clean and minimal approach.`,
-      `${basePrompt}. ${stylePrompt}. ${contextPrompt}. Bold and creative design.`
+      `${basePrompt}. ${stylePrompt}. ${contextPrompt}. Bold and creative design.`,
     ];
   }
 
-  private async generateAssetWithAI(prompt: string, context: DesignContext, index: number): Promise<any> {
+  private async generateAssetWithAI(
+    prompt: string,
+    context: DesignContext,
+    index: number
+  ): Promise<any> {
     // Simulate AI asset generation
     return {
       url: `https://example.com/generated-asset-${index}.${this.getOptimalFormat(context.platform, context.contentType)}`,
       prompt,
       style: context.specifications.style || 'modern',
-      colors: context.brandGuidelines.colors || { primary: '#007bff' }
+      colors: context.brandGuidelines.colors || { primary: '#007bff' },
     };
   }
 
@@ -515,13 +578,16 @@ Return structured variation concepts with reasoning.
       web: { logo: 'svg', banner: 'jpg', icon: 'png' },
       mobile: { logo: 'png', banner: 'jpg', icon: 'png' },
       social: { logo: 'png', banner: 'jpg', post: 'jpg' },
-      print: { logo: 'eps', banner: 'pdf', brochure: 'pdf' }
+      print: { logo: 'eps', banner: 'pdf', brochure: 'pdf' },
     };
 
     return formatMap[platform]?.[contentType] || 'jpg';
   }
 
-  private estimateFileSize(dimensions: { width: number; height: number }, contentType: string): number {
+  private estimateFileSize(
+    dimensions: { width: number; height: number },
+    contentType: string
+  ): number {
     const pixelCount = dimensions.width * dimensions.height;
     const baseSize = pixelCount * (contentType === 'logo' ? 0.5 : 3); // Bytes per pixel
     return Math.round(baseSize / 1024); // KB
@@ -540,20 +606,20 @@ Return structured variation concepts with reasoning.
             dimensions: context.dimensions,
             fileSize: this.estimateFileSize(context.dimensions, context.contentType),
             colorProfile: 'sRGB',
-            brandCompliance: 75
+            brandCompliance: 75,
           },
           variations: ['variation_1', 'variation_2'],
-          optimizationScore: 70
-        }
+          optimizationScore: 70,
+        },
       ],
       brandCompliance: {
         score: 75,
         analysis: ['Basic brand guidelines followed'],
-        recommendations: ['Consider testing different approaches']
+        recommendations: ['Consider testing different approaches'],
       },
       recommendations: ['Optimize for target platform', 'Test different variations'],
       alternatives: ['Try different color schemes', 'Explore alternative layouts'],
-      success: true
+      success: true,
     };
   }
 
@@ -565,21 +631,24 @@ Return structured variation concepts with reasoning.
           original: asset,
           improvements: ['Basic optimization applied'],
           expectedImpact: 15,
-          confidence: 0.7
+          confidence: 0.7,
         })),
         overallImpact: 15,
-        recommendations: ['Consider A/B testing different approaches']
-      }
+        recommendations: ['Consider A/B testing different approaches'],
+      },
     };
   }
 
-  private fallbackBrandConsistency(context: { assets: DesignAsset[]; guidelines: BrandGuidelines }): BrandConsistencyResult {
+  private fallbackBrandConsistency(context: {
+    assets: DesignAsset[];
+    guidelines: BrandGuidelines;
+  }): BrandConsistencyResult {
     return {
       complianceScore: 80,
       violations: [],
       suggestions: ['Maintain consistent color usage', 'Follow typography guidelines'],
       optimizedAssets: context.assets,
-      success: true
+      success: true,
     };
   }
 
@@ -590,11 +659,11 @@ Return structured variation concepts with reasoning.
         variant: `Approach ${i + 1}`,
         differences: [`Different ${['color', 'layout', 'typography'][i % 3]} approach`],
         targetUseCase: ['Primary use', 'Alternative use', 'Special case'][i % 3],
-        performancePrediction: 70 + Math.random() * 20
+        performancePrediction: 70 + Math.random() * 20,
       })),
       recommended: 'variation_1',
       reasoning: 'Best balance of brand compliance and creative appeal',
-      success: true
+      success: true,
     };
   }
 
@@ -606,24 +675,28 @@ Return structured variation concepts with reasoning.
           wireframe: 'Basic wireframe structure',
           visualDesign: 'Standard visual design applied',
           interactive: 'Basic interactive elements',
-          responsive: 'Mobile-responsive layout'
+          responsive: 'Mobile-responsive layout',
         },
         analysis: {
           usabilityScore: 75,
           accessibility: { score: 80, issues: [], improvements: [] },
-          brandCompliance: 80
+          brandCompliance: 80,
         },
-        recommendations: ['Test with real users', 'Optimize for accessibility']
-      }
+        recommendations: ['Test with real users', 'Optimize for accessibility'],
+      },
     };
   }
 
   // Additional utility methods would be implemented here...
-  private async checkBrandCompliance(asset: any, guidelines: BrandGuidelines): Promise<number> { return 85; }
-  private async calculateOptimizationScore(asset: any, context: DesignContext): Promise<number> { return 75; }
-  private async generateVariationIds(asset: any, count: number): Promise<string[]> { 
+  private async checkBrandCompliance(asset: any, guidelines: BrandGuidelines): Promise<number> {
+    return 85;
+  }
+  private async calculateOptimizationScore(asset: any, context: DesignContext): Promise<number> {
+    return 75;
+  }
+  private async generateVariationIds(asset: any, count: number): Promise<string[]> {
     return Array.from({ length: count }, (_, i) => `variation_${i + 1}`);
   }
-  
+
   // ... Additional methods would continue here
 }

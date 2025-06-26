@@ -27,7 +27,17 @@ export interface MessageClassificationInput {
 }
 
 export interface MessageClassificationOutput {
-  intent: 'inquiry' | 'complaint' | 'refund' | 'support' | 'compliment' | 'bug_report' | 'feature_request' | 'billing' | 'technical' | 'general';
+  intent:
+    | 'inquiry'
+    | 'complaint'
+    | 'refund'
+    | 'support'
+    | 'compliment'
+    | 'bug_report'
+    | 'feature_request'
+    | 'billing'
+    | 'technical'
+    | 'general';
   category: string;
   subcategory?: string;
   confidence: number;
@@ -197,11 +207,7 @@ export interface KnowledgeBaseArticle {
 // Add Twilio import
 interface TwilioClient {
   messages: {
-    create: (options: {
-      from: string;
-      to: string;
-      body: string;
-    }) => Promise<{
+    create: (options: { from: string; to: string; body: string }) => Promise<{
       sid: string;
       status: string;
       errorCode?: string;
@@ -219,7 +225,11 @@ try {
     twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
   }
 } catch (error) {
-  logger.warn('Twilio not available, WhatsApp will run in mock mode', { error }, 'CustomerSupportAgent');
+  logger.warn(
+    'Twilio not available, WhatsApp will run in mock mode',
+    { error },
+    'CustomerSupportAgent'
+  );
 }
 
 export class CustomerSupportAgent extends AbstractAgent {
@@ -240,7 +250,7 @@ export class CustomerSupportAgent extends AbstractAgent {
       'manage_knowledge_base',
       'generate_summary',
       'track_satisfaction',
-      'manage_queue'
+      'manage_queue',
     ]);
 
     this.openai = new OpenAI({
@@ -248,7 +258,11 @@ export class CustomerSupportAgent extends AbstractAgent {
     });
 
     if (!process.env.OPENAI_API_KEY) {
-      logger.warn('OPENAI_API_KEY not found. CustomerSupportAgent will run in limited mode.', {}, 'CustomerSupportAgent');
+      logger.warn(
+        'OPENAI_API_KEY not found. CustomerSupportAgent will run in limited mode.',
+        {},
+        'CustomerSupportAgent'
+      );
     }
 
     this.initializeKnowledgeBase();
@@ -257,7 +271,7 @@ export class CustomerSupportAgent extends AbstractAgent {
   async execute(payload: AgentPayload): Promise<AgentResult> {
     return this.executeWithErrorHandling(payload, async () => {
       const { task, context } = payload;
-      
+
       switch (task) {
         case 'classify_message':
           return await this.classifyMessageAI(context as MessageClassificationInput);
@@ -294,25 +308,26 @@ export class CustomerSupportAgent extends AbstractAgent {
    */
   async classifyMessage(input: MessageClassificationInput): Promise<MessageClassificationOutput> {
     const { text, customer, context } = input;
-    
+
     if (!this.openai) {
       return this.classifyMessageFallback(input);
     }
 
     try {
       const prompt = this.buildClassificationPrompt(text, customer, context);
-      
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert customer support message classifier. Analyze customer messages to determine intent, urgency, and required actions with high accuracy."
+            role: 'system',
+            content:
+              'You are an expert customer support message classifier. Analyze customer messages to determine intent, urgency, and required actions with high accuracy.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.3,
         max_tokens: 1000,
@@ -326,7 +341,11 @@ export class CustomerSupportAgent extends AbstractAgent {
       return this.parseClassificationOutput(aiOutput, input);
     } catch (error) {
       await this.logAIFallback('message_classification', error);
-      logger.error('OpenAI message classification failed, using fallback', { error }, 'CustomerSupportAgent');
+      logger.error(
+        'OpenAI message classification failed, using fallback',
+        { error },
+        'CustomerSupportAgent'
+      );
       return this.classifyMessageFallback(input);
     }
   }
@@ -336,25 +355,33 @@ export class CustomerSupportAgent extends AbstractAgent {
    */
   async generateReply(input: ReplyGenerationInput): Promise<ReplyGenerationOutput> {
     const { message, classification, tone, customer, context, constraints } = input;
-    
+
     if (!this.openai) {
       return this.generateReplyFallback(input);
     }
 
     try {
-      const prompt = this.buildReplyPrompt(message, classification, tone, customer, context, constraints);
-      
+      const prompt = this.buildReplyPrompt(
+        message,
+        classification,
+        tone,
+        customer,
+        context,
+        constraints
+      );
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert customer support representative. Generate helpful, empathetic, and professional responses that resolve customer issues effectively."
+            role: 'system',
+            content:
+              'You are an expert customer support representative. Generate helpful, empathetic, and professional responses that resolve customer issues effectively.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.7,
         max_tokens: 1500,
@@ -368,7 +395,11 @@ export class CustomerSupportAgent extends AbstractAgent {
       return this.parseReplyOutput(aiOutput, input);
     } catch (error) {
       await this.logAIFallback('reply_generation', error);
-      logger.error('OpenAI reply generation failed, using fallback', { error }, 'CustomerSupportAgent');
+      logger.error(
+        'OpenAI reply generation failed, using fallback',
+        { error },
+        'CustomerSupportAgent'
+      );
       return this.generateReplyFallback(input);
     }
   }
@@ -378,25 +409,26 @@ export class CustomerSupportAgent extends AbstractAgent {
    */
   async analyzeSentiment(input: SentimentAnalysisInput): Promise<SentimentAnalysisOutput> {
     const { message, context } = input;
-    
+
     if (!this.openai) {
       return this.analyzeSentimentFallback(input);
     }
 
     try {
       const prompt = this.buildSentimentPrompt(message, context);
-      
+
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4",
+        model: 'gpt-4',
         messages: [
           {
-            role: "system",
-            content: "You are an expert sentiment analysis specialist. Analyze customer messages to determine emotional state, satisfaction level, and escalation risks."
+            role: 'system',
+            content:
+              'You are an expert sentiment analysis specialist. Analyze customer messages to determine emotional state, satisfaction level, and escalation risks.',
           },
           {
-            role: "user",
-            content: prompt
-          }
+            role: 'user',
+            content: prompt,
+          },
         ],
         temperature: 0.2,
         max_tokens: 800,
@@ -410,7 +442,11 @@ export class CustomerSupportAgent extends AbstractAgent {
       return this.parseSentimentOutput(aiOutput, input);
     } catch (error) {
       await this.logAIFallback('sentiment_analysis', error);
-      logger.error('OpenAI sentiment analysis failed, using fallback', { error }, 'CustomerSupportAgent');
+      logger.error(
+        'OpenAI sentiment analysis failed, using fallback',
+        { error },
+        'CustomerSupportAgent'
+      );
       return this.analyzeSentimentFallback(input);
     }
   }
@@ -419,12 +455,19 @@ export class CustomerSupportAgent extends AbstractAgent {
    * Determine escalation requirements
    */
   async escalate(input: EscalationInput): Promise<EscalationOutput> {
-    const { message, ticketId, classification, sentiment, reason, customerTier, agentWorkload } = input;
-    
+    const { message, ticketId, classification, sentiment, reason, customerTier, agentWorkload } =
+      input;
+
     // Determine escalation based on multiple factors
-    const shouldEscalate = this.shouldEscalateTicket(classification, sentiment, customerTier, agentWorkload);
-    
-    let escalationLevel: 'supervisor' | 'specialist' | 'manager' | 'senior_management' = 'supervisor';
+    const shouldEscalate = this.shouldEscalateTicket(
+      classification,
+      sentiment,
+      customerTier,
+      agentWorkload
+    );
+
+    let escalationLevel: 'supervisor' | 'specialist' | 'manager' | 'senior_management' =
+      'supervisor';
     let urgency: 'low' | 'medium' | 'high' | 'critical' = 'medium';
 
     if (sentiment?.sentiment === 'negative' && sentiment?.score < -0.7) {
@@ -450,7 +493,7 @@ export class CustomerSupportAgent extends AbstractAgent {
       suggestedAgent: this.findBestAgent(classification, escalationLevel),
       estimatedWaitTime: this.calculateWaitTime(urgency, escalationLevel),
       alternativeActions: this.suggestAlternativeActions(classification),
-      escalationNotes: this.generateEscalationNotes(message, classification, sentiment)
+      escalationNotes: this.generateEscalationNotes(message, classification, sentiment),
     };
   }
 
@@ -488,11 +531,11 @@ Consider:
   }
 
   private buildReplyPrompt(
-    message: string, 
-    classification?: MessageClassificationOutput, 
-    tone?: string, 
-    customer?: any, 
-    context?: any, 
+    message: string,
+    classification?: MessageClassificationOutput,
+    tone?: string,
+    customer?: any,
+    context?: any,
     constraints?: any
   ): string {
     return `
@@ -555,7 +598,10 @@ Consider:
 `;
   }
 
-  private parseClassificationOutput(aiOutput: string, input: MessageClassificationInput): MessageClassificationOutput {
+  private parseClassificationOutput(
+    aiOutput: string,
+    input: MessageClassificationInput
+  ): MessageClassificationOutput {
     try {
       const jsonMatch = aiOutput.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -569,7 +615,7 @@ Consider:
           requiresHuman: parsed.requiresHuman || false,
           suggestedActions: parsed.suggestedActions || [],
           keywords: parsed.keywords || [],
-          entities: parsed.entities || []
+          entities: parsed.entities || [],
         };
       }
     } catch (error) {
@@ -585,14 +631,14 @@ Consider:
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         return {
-          reply: parsed.reply || 'Thank you for contacting us. We\'ll help you resolve this issue.',
+          reply: parsed.reply || "Thank you for contacting us. We'll help you resolve this issue.",
           tone: parsed.tone || input.tone || 'professional',
           confidence: parsed.confidence || 0.7,
           suggestedFollowUps: parsed.suggestedFollowUps || [],
           escalationRecommended: parsed.escalationRecommended || false,
           estimatedResolutionTime: parsed.estimatedResolutionTime || 60,
           requiredActions: parsed.requiredActions || [],
-          relatedResources: parsed.relatedResources || []
+          relatedResources: parsed.relatedResources || [],
         };
       }
     } catch (error) {
@@ -602,7 +648,10 @@ Consider:
     return this.generateReplyFallback(input);
   }
 
-  private parseSentimentOutput(aiOutput: string, input: SentimentAnalysisInput): SentimentAnalysisOutput {
+  private parseSentimentOutput(
+    aiOutput: string,
+    input: SentimentAnalysisInput
+  ): SentimentAnalysisOutput {
     try {
       const jsonMatch = aiOutput.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -614,7 +663,7 @@ Consider:
           emotions: parsed.emotions || [],
           urgencyIndicators: parsed.urgencyIndicators || [],
           escalationTriggers: parsed.escalationTriggers || [],
-          customerSatisfactionRisk: parsed.customerSatisfactionRisk || 'low'
+          customerSatisfactionRisk: parsed.customerSatisfactionRisk || 'low',
         };
       }
     } catch (error) {
@@ -629,7 +678,7 @@ Consider:
   private classifyMessageFallback(input: MessageClassificationInput): MessageClassificationOutput {
     const { text } = input;
     const lowerText = text.toLowerCase();
-    
+
     let intent: MessageClassificationOutput['intent'] = 'general';
     let urgency: MessageClassificationOutput['urgency'] = 'medium';
     let requiresHuman = false;
@@ -639,17 +688,33 @@ Consider:
       intent = 'refund';
       urgency = 'high';
       requiresHuman = true;
-    } else if (lowerText.includes('bug') || lowerText.includes('error') || lowerText.includes('broken')) {
+    } else if (
+      lowerText.includes('bug') ||
+      lowerText.includes('error') ||
+      lowerText.includes('broken')
+    ) {
       intent = 'bug_report';
       urgency = 'medium';
-    } else if (lowerText.includes('angry') || lowerText.includes('frustrated') || lowerText.includes('terrible')) {
+    } else if (
+      lowerText.includes('angry') ||
+      lowerText.includes('frustrated') ||
+      lowerText.includes('terrible')
+    ) {
       intent = 'complaint';
       urgency = 'high';
       requiresHuman = true;
-    } else if (lowerText.includes('bill') || lowerText.includes('charge') || lowerText.includes('payment')) {
+    } else if (
+      lowerText.includes('bill') ||
+      lowerText.includes('charge') ||
+      lowerText.includes('payment')
+    ) {
       intent = 'billing';
       urgency = 'medium';
-    } else if (lowerText.includes('how') || lowerText.includes('help') || lowerText.includes('support')) {
+    } else if (
+      lowerText.includes('how') ||
+      lowerText.includes('help') ||
+      lowerText.includes('support')
+    ) {
       intent = 'support';
       urgency = 'low';
     }
@@ -662,14 +727,14 @@ Consider:
       requiresHuman,
       suggestedActions: ['review_message', 'prepare_response'],
       keywords: this.extractKeywords(text),
-      entities: []
+      entities: [],
     };
   }
 
   private generateReplyFallback(input: ReplyGenerationInput): ReplyGenerationOutput {
     const { customer, tone = 'professional' } = input;
     const customerName = customer?.name || 'there';
-    
+
     return {
       reply: `Hi ${customerName},\n\nThank you for reaching out to us. We've received your message and our team is reviewing it. We'll get back to you shortly with a solution.\n\nBest regards,\nCustomer Support Team`,
       tone,
@@ -678,29 +743,29 @@ Consider:
       escalationRecommended: false,
       estimatedResolutionTime: 120,
       requiredActions: [],
-      relatedResources: []
+      relatedResources: [],
     };
   }
 
   private analyzeSentimentFallback(input: SentimentAnalysisInput): SentimentAnalysisOutput {
     const { message } = input;
     const lowerMessage = message.toLowerCase();
-    
+
     let sentiment: 'positive' | 'neutral' | 'negative' = 'neutral';
     let score = 0;
-    
+
     const positiveWords = ['great', 'excellent', 'love', 'amazing', 'perfect', 'thank you'];
     const negativeWords = ['terrible', 'awful', 'hate', 'angry', 'frustrated', 'worst'];
-    
+
     const positiveCount = positiveWords.filter(word => lowerMessage.includes(word)).length;
     const negativeCount = negativeWords.filter(word => lowerMessage.includes(word)).length;
-    
+
     if (positiveCount > negativeCount) {
       sentiment = 'positive';
-      score = 0.3 + (positiveCount * 0.2);
+      score = 0.3 + positiveCount * 0.2;
     } else if (negativeCount > positiveCount) {
       sentiment = 'negative';
-      score = -0.3 - (negativeCount * 0.2);
+      score = -0.3 - negativeCount * 0.2;
     }
 
     return {
@@ -710,7 +775,7 @@ Consider:
       emotions: [],
       urgencyIndicators: this.extractUrgencyIndicators(message),
       escalationTriggers: negativeWords.filter(word => lowerMessage.includes(word)),
-      customerSatisfactionRisk: negativeCount > 2 ? 'high' : negativeCount > 0 ? 'medium' : 'low'
+      customerSatisfactionRisk: negativeCount > 2 ? 'high' : negativeCount > 0 ? 'medium' : 'low',
     };
   }
 
@@ -727,7 +792,7 @@ Consider:
     if (customerTier === 'enterprise' && classification?.urgency === 'high') return true;
     if (agentWorkload && agentWorkload > 15) return true;
     if (classification?.requiresHuman) return true;
-    
+
     return false;
   }
 
@@ -750,9 +815,24 @@ Consider:
   private findBestAgent(classification?: MessageClassificationOutput, level?: string) {
     // Mock agent assignment logic
     const agents = [
-      { id: 'agent_001', name: 'Sarah Johnson', skills: ['technical', 'billing'], availability: true },
-      { id: 'agent_002', name: 'Mike Chen', skills: ['product', 'integration'], availability: true },
-      { id: 'agent_003', name: 'Emily Rodriguez', skills: ['customer_success'], availability: false }
+      {
+        id: 'agent_001',
+        name: 'Sarah Johnson',
+        skills: ['technical', 'billing'],
+        availability: true,
+      },
+      {
+        id: 'agent_002',
+        name: 'Mike Chen',
+        skills: ['product', 'integration'],
+        availability: true,
+      },
+      {
+        id: 'agent_003',
+        name: 'Emily Rodriguez',
+        skills: ['customer_success'],
+        availability: false,
+      },
     ];
 
     return agents.find(agent => agent.availability) || agents[0];
@@ -761,20 +841,22 @@ Consider:
   private calculateWaitTime(urgency: string, level: string): number {
     const baseTimes = { low: 60, medium: 30, high: 15, critical: 5 };
     const levelMultipliers = { supervisor: 1, specialist: 1.5, manager: 2, senior_management: 3 };
-    
-    return (baseTimes[urgency as keyof typeof baseTimes] || 30) * 
-           (levelMultipliers[level as keyof typeof levelMultipliers] || 1);
+
+    return (
+      (baseTimes[urgency as keyof typeof baseTimes] || 30) *
+      (levelMultipliers[level as keyof typeof levelMultipliers] || 1)
+    );
   }
 
   private suggestAlternativeActions(classification?: MessageClassificationOutput): string[] {
     const actions = ['Check knowledge base', 'Review FAQ section'];
-    
+
     if (classification?.intent === 'technical') {
       actions.push('Try troubleshooting guide', 'Submit bug report');
     } else if (classification?.intent === 'billing') {
       actions.push('Review billing FAQ', 'Check account settings');
     }
-    
+
     return actions;
   }
 
@@ -784,15 +866,15 @@ Consider:
     sentiment?: SentimentAnalysisOutput
   ): string {
     let notes = `Customer message: "${message.substring(0, 100)}${message.length > 100 ? '...' : ''}"`;
-    
+
     if (classification) {
       notes += `\nClassification: ${classification.intent} (${classification.confidence})`;
     }
-    
+
     if (sentiment) {
       notes += `\nSentiment: ${sentiment.sentiment} (${sentiment.score})`;
     }
-    
+
     return notes;
   }
 
@@ -807,15 +889,30 @@ Consider:
       feature_request: 'Product Feedback',
       billing: 'Billing & Payments',
       technical: 'Technical Support',
-      general: 'General Inquiry'
+      general: 'General Inquiry',
     };
-    
+
     return mapping[intent as keyof typeof mapping] || 'General Inquiry';
   }
 
   private extractKeywords(text: string): string[] {
     const words = text.toLowerCase().match(/\b\w+\b/g) || [];
-    const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'];
+    const stopWords = [
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
+    ];
     return words.filter(word => word.length > 3 && !stopWords.includes(word)).slice(0, 5);
   }
 
@@ -826,7 +923,9 @@ Consider:
   }
 
   // Wrapper methods for AI features
-  private async classifyMessageAI(input: MessageClassificationInput): Promise<MessageClassificationOutput> {
+  private async classifyMessageAI(
+    input: MessageClassificationInput
+  ): Promise<MessageClassificationOutput> {
     return this.classifyMessage(input);
   }
 
@@ -834,7 +933,9 @@ Consider:
     return this.generateReply(input);
   }
 
-  private async analyzeSentimentAI(input: SentimentAnalysisInput): Promise<SentimentAnalysisOutput> {
+  private async analyzeSentimentAI(
+    input: SentimentAnalysisInput
+  ): Promise<SentimentAnalysisOutput> {
     return this.analyzeSentiment(input);
   }
 
@@ -846,7 +947,7 @@ Consider:
 
   async createTicket(input: any): Promise<any> {
     const ticketId = input.ticketId || `ticket_${Date.now()}`;
-    
+
     const ticket: SupportTicket = {
       id: ticketId,
       customerId: input.customer?.customerId,
@@ -860,33 +961,33 @@ Consider:
       createdAt: new Date(),
       updatedAt: new Date(),
       tags: [],
-      metadata: input.metadata || {}
+      metadata: input.metadata || {},
     };
 
     this.tickets.set(ticketId, ticket);
 
     // Auto-classify the message
     const classification = await this.classifyMessage({ text: input.message });
-    
+
     return {
       success: true,
       ticket: {
         ...ticket,
         classification,
-        estimatedResolutionTime: this.estimateResolutionTime(classification)
+        estimatedResolutionTime: this.estimateResolutionTime(classification),
       },
-      message: 'Ticket created successfully'
+      message: 'Ticket created successfully',
     };
   }
 
   async updateTicket(input: any): Promise<any> {
     const { ticketId, update } = input;
     const ticket = this.tickets.get(ticketId);
-    
+
     if (!ticket) {
       return {
         success: false,
-        error: 'Ticket not found'
+        error: 'Ticket not found',
       };
     }
 
@@ -896,7 +997,7 @@ Consider:
     return {
       success: true,
       ticket,
-      message: 'Ticket updated successfully'
+      message: 'Ticket updated successfully',
     };
   }
 
@@ -906,7 +1007,7 @@ Consider:
       recipient: input.recipient,
       messageType: input.message.type,
       status: 'pending',
-      service: 'twilio'
+      service: 'twilio',
     };
 
     try {
@@ -914,15 +1015,17 @@ Consider:
       if (twilioClient && process.env.TWILIO_WHATSAPP_NUMBER) {
         const message = await twilioClient.messages.create({
           from: process.env.TWILIO_WHATSAPP_NUMBER,
-          to: input.recipient.startsWith('whatsapp:') ? input.recipient : `whatsapp:${input.recipient}`,
-          body: input.message.content
+          to: input.recipient.startsWith('whatsapp:')
+            ? input.recipient
+            : `whatsapp:${input.recipient}`,
+          body: input.message.content,
         });
 
         logEntry.status = 'sent';
         await this.logWhatsAppEvent({
           ...logEntry,
           messageId: message.sid,
-          twilioStatus: message.status
+          twilioStatus: message.status,
         });
 
         return {
@@ -933,17 +1036,17 @@ Consider:
           message: input.message.content,
           timestamp: new Date(),
           deliveryStatus: message.status,
-          service: 'twilio'
+          service: 'twilio',
         };
       } else {
         // Fallback mock mode
         logEntry.status = 'mock_sent';
         logEntry.service = 'mock';
-        
+
         await this.logWhatsAppEvent({
           ...logEntry,
           messageId: `mock_${Date.now()}`,
-          note: 'Twilio credentials not configured, using mock mode'
+          note: 'Twilio credentials not configured, using mock mode',
         });
 
         return {
@@ -954,14 +1057,14 @@ Consider:
           message: input.message.content,
           timestamp: new Date(),
           deliveryStatus: 'mock_delivered',
-          service: 'mock'
+          service: 'mock',
         };
       }
     } catch (error) {
       logEntry.status = 'failed';
       await this.logWhatsAppEvent({
         ...logEntry,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
 
       // Return error response but don't throw
@@ -972,7 +1075,7 @@ Consider:
         recipient: input.recipient,
         error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date(),
-        service: 'twilio'
+        service: 'twilio',
       };
     }
   }
@@ -981,10 +1084,10 @@ Consider:
     try {
       const logsDir = path.join(process.cwd(), 'logs');
       await fs.mkdir(logsDir, { recursive: true });
-      
+
       const logFile = path.join(logsDir, 'support-agent.log');
       const logLine = JSON.stringify(event) + '\n';
-      
+
       await fs.appendFile(logFile, logLine);
     } catch (error) {
       logger.error('Failed to write WhatsApp log', { error }, 'CustomerSupportAgent');
@@ -995,16 +1098,16 @@ Consider:
     try {
       const logsDir = path.join(process.cwd(), 'logs');
       await fs.mkdir(logsDir, { recursive: true });
-      
+
       const logFile = path.join(logsDir, 'ai-fallback.log');
       const logEntry = {
         timestamp: new Date().toISOString(),
         agent: 'CustomerSupportAgent',
         operation,
         error: error instanceof Error ? error.message : String(error),
-        fallbackUsed: true
+        fallbackUsed: true,
       };
-      
+
       await fs.appendFile(logFile, JSON.stringify(logEntry) + '\n');
     } catch (logError) {
       logger.error('Failed to write AI fallback log', { logError }, 'CustomerSupportAgent');
@@ -1017,16 +1120,16 @@ Consider:
 
   async autoRespond(input: any): Promise<any> {
     const { message, customer } = input;
-    
+
     // Classify message
     const classification = await this.classifyMessage({ text: message, customer });
-    
+
     // Generate appropriate response
     const reply = await this.generateReply({
       message,
       classification,
       tone: 'professional',
-      customer
+      customer,
     });
 
     return {
@@ -1034,13 +1137,13 @@ Consider:
       response: reply,
       classification,
       shouldEscalate: classification.requiresHuman,
-      message: 'Auto-response generated successfully'
+      message: 'Auto-response generated successfully',
     };
   }
 
   async manageKnowledgeBase(input: any): Promise<any> {
     const { action, data } = input;
-    
+
     switch (action) {
       case 'search_articles':
         return this.searchKnowledgeBase(data.query);
@@ -1056,7 +1159,7 @@ Consider:
   async generateTicketSummary(input: any): Promise<any> {
     const { ticketId } = input;
     const ticket = this.tickets.get(ticketId);
-    
+
     if (!ticket) {
       return { success: false, error: 'Ticket not found' };
     }
@@ -1068,12 +1171,12 @@ Consider:
         status: ticket.status,
         priority: ticket.priority,
         category: ticket.category,
-        resolutionTime: ticket.resolvedAt 
-          ? (ticket.resolvedAt.getTime() - ticket.createdAt.getTime()) / 60000 
+        resolutionTime: ticket.resolvedAt
+          ? (ticket.resolvedAt.getTime() - ticket.createdAt.getTime()) / 60000
           : null,
-        summary: `${ticket.category} issue reported via ${ticket.channel}`
+        summary: `${ticket.category} issue reported via ${ticket.channel}`,
       },
-      message: 'Ticket summary generated successfully'
+      message: 'Ticket summary generated successfully',
     };
   }
 
@@ -1083,8 +1186,8 @@ Consider:
       satisfaction: {
         score: 4.2,
         feedback: 'Generally positive',
-        trends: 'improving'
-      }
+        trends: 'improving',
+      },
     };
   }
 
@@ -1095,8 +1198,8 @@ Consider:
         total: 45,
         urgent: 3,
         highPriority: 8,
-        avgWaitTime: 25
-      }
+        avgWaitTime: 25,
+      },
     };
   }
 
@@ -1110,24 +1213,25 @@ Consider:
       support: 45,
       technical: 90,
       billing: 60,
-      general: 30
+      general: 30,
     };
-    
+
     return baseTimes[classification.intent as keyof typeof baseTimes] || 45;
   }
 
   private searchKnowledgeBase(query: string) {
     const articles = Array.from(this.knowledgeBase.values())
-      .filter(article => 
-        article.title.toLowerCase().includes(query.toLowerCase()) ||
-        article.content.toLowerCase().includes(query.toLowerCase())
+      .filter(
+        article =>
+          article.title.toLowerCase().includes(query.toLowerCase()) ||
+          article.content.toLowerCase().includes(query.toLowerCase())
       )
       .slice(0, 5);
 
     return {
       success: true,
       articles,
-      total: articles.length
+      total: articles.length,
     };
   }
 
@@ -1142,7 +1246,7 @@ Consider:
       helpful: 0,
       lastUpdated: new Date(),
       author: data.author || 'System',
-      status: 'published'
+      status: 'published',
     };
 
     this.knowledgeBase.set(article.id, article);
@@ -1150,7 +1254,7 @@ Consider:
     return {
       success: true,
       article,
-      message: 'Article added successfully'
+      message: 'Article added successfully',
     };
   }
 
@@ -1158,10 +1262,11 @@ Consider:
     // Simple keyword matching for suggestions
     const keywords = this.extractKeywords(message);
     const suggestions = Array.from(this.knowledgeBase.values())
-      .filter(article => 
-        keywords.some(keyword => 
-          article.title.toLowerCase().includes(keyword) ||
-          article.tags.some(tag => tag.toLowerCase().includes(keyword))
+      .filter(article =>
+        keywords.some(
+          keyword =>
+            article.title.toLowerCase().includes(keyword) ||
+            article.tags.some(tag => tag.toLowerCase().includes(keyword))
         )
       )
       .slice(0, 3);
@@ -1169,7 +1274,7 @@ Consider:
     return {
       success: true,
       suggestions,
-      total: suggestions.length
+      total: suggestions.length,
     };
   }
 
@@ -1185,7 +1290,7 @@ Consider:
         helpful: 89,
         lastUpdated: new Date(),
         author: 'Support Team',
-        status: 'published'
+        status: 'published',
       },
       {
         id: 'kb_002',
@@ -1197,8 +1302,8 @@ Consider:
         helpful: 76,
         lastUpdated: new Date(),
         author: 'Support Team',
-        status: 'published'
-      }
+        status: 'published',
+      },
     ];
 
     defaultArticles.forEach(article => {
@@ -1207,7 +1312,9 @@ Consider:
   }
 
   // Public API methods for tRPC integration
-  async classifyMessageAPI(input: MessageClassificationInput): Promise<MessageClassificationOutput> {
+  async classifyMessageAPI(
+    input: MessageClassificationInput
+  ): Promise<MessageClassificationOutput> {
     return this.classifyMessage(input);
   }
 
@@ -1222,4 +1329,4 @@ Consider:
   async escalateAPI(input: EscalationInput): Promise<EscalationOutput> {
     return this.escalate(input);
   }
-} 
+}

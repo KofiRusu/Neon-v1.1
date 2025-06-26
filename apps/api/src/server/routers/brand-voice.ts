@@ -95,28 +95,26 @@ export const brandVoiceRouter = createTRPCRouter({
       };
     }),
 
-  getProfile: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const profile = await ctx.db.brandVoice.findUnique({
-        where: { id: input.id },
-        include: {
-          analyses: {
-            orderBy: { analyzedAt: 'desc' },
-            take: 10,
-          },
-          _count: {
-            select: { analyses: true },
-          },
+  getProfile: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const profile = await ctx.db.brandVoice.findUnique({
+      where: { id: input.id },
+      include: {
+        analyses: {
+          orderBy: { analyzedAt: 'desc' },
+          take: 10,
         },
-      });
+        _count: {
+          select: { analyses: true },
+        },
+      },
+    });
 
-      if (!profile) {
-        throw new Error('Brand voice profile not found');
-      }
+    if (!profile) {
+      throw new Error('Brand voice profile not found');
+    }
 
-      return profile;
-    }),
+    return profile;
+  }),
 
   updateProfile: protectedProcedure
     .input(
@@ -269,10 +267,7 @@ export const brandVoiceRouter = createTRPCRouter({
     .input(ContentAnalysisSchema.omit({ brandVoiceId: true }))
     .query(async ({ input }) => {
       try {
-        const result = await brandVoiceAgent.getSuggestionsPublic(
-          input.content,
-          input.contentType
-        );
+        const result = await brandVoiceAgent.getSuggestionsPublic(input.content, input.contentType);
 
         if (!result.success) {
           throw new Error(result.error || 'Suggestion generation failed');
@@ -416,23 +411,25 @@ export const brandVoiceRouter = createTRPCRouter({
 
       // Calculate metrics
       const totalAnalyses = analyses.length;
-      const averageScore = totalAnalyses > 0 
-        ? analyses.reduce((sum, a) => sum + a.voiceScore, 0) / totalAnalyses 
-        : 0;
+      const averageScore =
+        totalAnalyses > 0 ? analyses.reduce((sum, a) => sum + a.voiceScore, 0) / totalAnalyses : 0;
 
-      const scoresByType = analyses.reduce((acc, analysis) => {
-        if (!acc[analysis.contentType]) {
-          acc[analysis.contentType] = [];
-        }
-        acc[analysis.contentType].push(analysis.voiceScore);
-        return acc;
-      }, {} as Record<string, number[]>);
+      const scoresByType = analyses.reduce(
+        (acc, analysis) => {
+          if (!acc[analysis.contentType]) {
+            acc[analysis.contentType] = [];
+          }
+          acc[analysis.contentType].push(analysis.voiceScore);
+          return acc;
+        },
+        {} as Record<string, number[]>
+      );
 
       const consistencyByType = Object.entries(scoresByType).map(([type, scores]) => ({
         contentType: type,
         averageScore: scores.reduce((sum, score) => sum + score, 0) / scores.length,
         count: scores.length,
-                 consistency: calculateConsistency(scores),
+        consistency: calculateConsistency(scores),
       }));
 
       return {
@@ -536,14 +533,15 @@ export const brandVoiceRouter = createTRPCRouter({
 // Helper function for consistency calculation
 function calculateConsistency(scores: number[]): number {
   if (scores.length < 2) return 100;
-  
+
   const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
+  const variance =
+    scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
   const standardDeviation = Math.sqrt(variance);
-  
+
   // Convert to consistency percentage (lower std dev = higher consistency)
   const maxStdDev = 50; // Assume max possible std dev for normalization
   const consistency = Math.max(0, 100 - (standardDeviation / maxStdDev) * 100);
-  
+
   return Math.round(consistency);
 }

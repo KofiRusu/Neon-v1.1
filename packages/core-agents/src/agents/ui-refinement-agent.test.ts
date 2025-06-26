@@ -55,7 +55,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700">
           <p>Social Media</p>
@@ -80,7 +80,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700">
           <p>Social Media</p>
@@ -105,7 +105,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <img src="image.jpg" />
         <button>Click me</button>
@@ -120,9 +120,9 @@ describe('UIRefinementAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(result.data.issues.some((issue: MockUIIssue) => 
-        issue.description.includes('alt attribute')
-      )).toBe(true);
+      expect(
+        result.data.issues.some((issue: MockUIIssue) => issue.description.includes('alt attribute'))
+      ).toBe(true);
     });
   });
 
@@ -131,7 +131,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-gray-900 text-gray-300">
           <p>Content</p>
@@ -155,7 +155,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="w-[500px] overflow-hidden">
           <p>Fixed width content</p>
@@ -170,9 +170,9 @@ describe('UIRefinementAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(result.data.issues.some((issue: MockUIIssue) => 
-        issue.type === 'responsive'
-      )).toBe(true);
+      expect(result.data.issues.some((issue: MockUIIssue) => issue.type === 'responsive')).toBe(
+        true
+      );
     });
   });
 
@@ -181,7 +181,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-white rounded-lg p-4">
           <button className="bg-blue-500">Click</button>
@@ -204,7 +204,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
       ] as MockDirent[]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700 bg-gray-800">
           <img src="image.jpg" />

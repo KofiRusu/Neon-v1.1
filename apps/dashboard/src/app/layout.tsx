@@ -6,11 +6,7 @@ import { api } from '../utils/trpc';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}): JSX.Element {
+export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
   return (
     <html lang="en">
       <head>
@@ -18,9 +14,7 @@ export default function RootLayout({
         <meta name="description" content="AI-powered marketing automation platform" />
       </head>
       <body className={inter.className}>
-        <api.Provider>
-          {children}
-        </api.Provider>
+        <api.Provider>{children}</api.Provider>
       </body>
     </html>
   );

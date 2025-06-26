@@ -1,10 +1,10 @@
 'use client';
 
-import { 
-  ExclamationTriangleIcon, 
-  XMarkIcon, 
-  UserIcon, 
-  ClockIcon 
+import {
+  ExclamationTriangleIcon,
+  XMarkIcon,
+  UserIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline';
 
 interface EscalationBannerProps {
@@ -22,12 +22,12 @@ export default function EscalationBanner({ onClose }: EscalationBannerProps) {
           <div>
             <h4 className="font-medium text-orange-900">Escalated to Human Support</h4>
             <p className="text-sm text-orange-700">
-              This conversation has been transferred to our human support team. 
-              Expected response time: 15-30 minutes
+              This conversation has been transferred to our human support team. Expected response
+              time: 15-30 minutes
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-sm text-orange-700">
             <UserIcon className="h-4 w-4" />
@@ -37,15 +37,12 @@ export default function EscalationBanner({ onClose }: EscalationBannerProps) {
             <ClockIcon className="h-4 w-4" />
             <span>ETA: 12 min</span>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 text-orange-400 hover:text-orange-600 rounded"
-          >
+          <button onClick={onClose} className="p-1 text-orange-400 hover:text-orange-600 rounded">
             <XMarkIcon className="h-4 w-4" />
           </button>
         </div>
       </div>
-      
+
       <div className="mt-3 flex items-center gap-4">
         <button className="px-3 py-1 bg-orange-600 text-white text-sm rounded-lg hover:bg-orange-700">
           Notify Customer
@@ -56,4 +53,4 @@ export default function EscalationBanner({ onClose }: EscalationBannerProps) {
       </div>
     </div>
   );
-} 
+}

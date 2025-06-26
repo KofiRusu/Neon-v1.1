@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   PaperAirplaneIcon,
   FaceSmileIcon,
   PaperClipIcon,
   UserIcon,
   InboxIcon,
-  CpuChipIcon
+  CpuChipIcon,
 } from '@heroicons/react/24/outline';
 import EscalationBanner from './EscalationBanner';
 import { trpc } from '../../../lib/trpc';
@@ -35,28 +35,32 @@ const mockConversation = {
     {
       id: '1',
       sender: 'customer',
-      content: 'Hi, I\'m having trouble with the AI content generator. It keeps giving me generic responses.',
+      content:
+        "Hi, I'm having trouble with the AI content generator. It keeps giving me generic responses.",
       timestamp: new Date('2024-01-16T09:00:00Z'),
       type: 'text',
     },
     {
       id: '2',
       sender: 'ai',
-      content: 'Hello Sarah! I understand you\'re experiencing issues with the AI content generator. Let me help you troubleshoot this. Can you tell me what type of content you\'re trying to generate?',
+      content:
+        "Hello Sarah! I understand you're experiencing issues with the AI content generator. Let me help you troubleshoot this. Can you tell me what type of content you're trying to generate?",
       timestamp: new Date('2024-01-16T09:02:00Z'),
       type: 'text',
     },
     {
       id: '3',
       sender: 'customer',
-      content: 'I\'m trying to create social media posts for my restaurant, but the suggestions are too generic and don\'t capture my brand voice.',
+      content:
+        "I'm trying to create social media posts for my restaurant, but the suggestions are too generic and don't capture my brand voice.",
       timestamp: new Date('2024-01-16T09:05:00Z'),
       type: 'text',
     },
     {
       id: '4',
       sender: 'ai',
-      content: 'I see the issue. For more personalized content, try providing more specific details about your restaurant\'s style, target audience, and unique selling points in the prompt. Would you like me to guide you through creating a better prompt template?',
+      content:
+        "I see the issue. For more personalized content, try providing more specific details about your restaurant's style, target audience, and unique selling points in the prompt. Would you like me to guide you through creating a better prompt template?",
       timestamp: new Date('2024-01-16T09:07:00Z'),
       type: 'text',
     },
@@ -71,7 +75,7 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
     onSuccess: () => {
       setNewMessage('');
     },
-    onError: (error) => {
+    onError: error => {
       // eslint-disable-next-line no-console
       console.error('Failed to send message:', error);
     },
@@ -94,9 +98,9 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
   };
 
   const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
     });
   };
 
@@ -122,8 +126,8 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
               {conversation.customer.avatar ? (
-                <img 
-                  src={conversation.customer.avatar} 
+                <img
+                  src={conversation.customer.avatar}
                   alt={conversation.customer.name}
                   className="w-10 h-10 rounded-full"
                 />
@@ -136,11 +140,15 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <span>{conversation.customer.email}</span>
                 <span className="capitalize">{conversation.channel}</span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  conversation.priority === 'high' ? 'bg-red-100 text-red-800' :
-                  conversation.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-green-100 text-green-800'
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    conversation.priority === 'high'
+                      ? 'bg-red-100 text-red-800'
+                      : conversation.priority === 'medium'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
+                  }`}
+                >
                   {conversation.priority} priority
                 </span>
               </div>
@@ -164,42 +172,38 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
       </div>
 
       {/* Escalation Banner */}
-      {showEscalation && (
-        <EscalationBanner onClose={() => setShowEscalation(false)} />
-      )}
+      {showEscalation && <EscalationBanner onClose={() => setShowEscalation(false)} />}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {conversation.messages.map((message) => (
+        {conversation.messages.map(message => (
           <div
             key={message.id}
-            className={`flex gap-3 ${
-              message.sender === 'customer' ? '' : 'flex-row-reverse'
-            }`}
+            className={`flex gap-3 ${message.sender === 'customer' ? '' : 'flex-row-reverse'}`}
           >
             <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
               {message.sender === 'customer' ? (
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                   <UserIcon className="h-4 w-4 text-gray-600" />
                 </div>
-                             ) : (
-                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                   <CpuChipIcon className="h-4 w-4 text-blue-600" />
-                 </div>
-               )}
+              ) : (
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <CpuChipIcon className="h-4 w-4 text-blue-600" />
+                </div>
+              )}
             </div>
-            
+
             <div className={`max-w-md ${message.sender === 'customer' ? '' : 'text-right'}`}>
-              <div className={`inline-block px-4 py-2 rounded-lg ${
-                message.sender === 'customer'
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'bg-blue-600 text-white'
-              }`}>
+              <div
+                className={`inline-block px-4 py-2 rounded-lg ${
+                  message.sender === 'customer'
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'bg-blue-600 text-white'
+                }`}
+              >
                 <p className="text-sm">{message.content}</p>
               </div>
-              <div className="mt-1 text-xs text-gray-500">
-                {formatTime(message.timestamp)}
-              </div>
+              <div className="mt-1 text-xs text-gray-500">{formatTime(message.timestamp)}</div>
             </div>
           </div>
         ))}
@@ -211,11 +215,11 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
           <div className="flex-1">
             <textarea
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={e => setNewMessage(e.target.value)}
               placeholder="Type your response..."
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleSendMessage(e);
@@ -242,7 +246,7 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
               </div>
             </div>
           </div>
-          
+
           <button
             type="submit"
             disabled={!newMessage.trim() || sendMessageMutation.isLoading}
@@ -254,4 +258,4 @@ export default function SupportInbox({ selectedThread }: SupportInboxProps): JSX
       </div>
     </div>
   );
-} 
+}

@@ -27,7 +27,7 @@ import {
   EyeIcon,
   FireIcon,
   TrendingUpIcon,
-  CloudIcon
+  CloudIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Dashboard(): JSX.Element {
@@ -46,9 +46,9 @@ export default function Dashboard(): JSX.Element {
     retry: 1,
     refetchOnWindowFocus: false,
   });
-  
+
   const { data: recentAgentActivity } = api.agent.getRecentActions.useQuery(
-    { limit: 5 }, 
+    { limit: 5 },
     {
       enabled: true,
       retry: 1,
@@ -64,7 +64,7 @@ export default function Dashboard(): JSX.Element {
       icon: CpuChipIcon,
       description: 'Manage your AI workforce',
       color: 'neon-blue',
-      status: 'active'
+      status: 'active',
     },
     {
       id: 'campaigns',
@@ -73,7 +73,7 @@ export default function Dashboard(): JSX.Element {
       icon: RocketLaunchIcon,
       description: 'Launch and track campaigns',
       color: 'neon-purple',
-      status: 'active'
+      status: 'active',
     },
     {
       id: 'email',
@@ -82,7 +82,7 @@ export default function Dashboard(): JSX.Element {
       icon: EnvelopeIcon,
       description: 'Automated email sequences',
       color: 'neon-pink',
-      status: 'active'
+      status: 'active',
     },
     {
       id: 'social',
@@ -91,7 +91,7 @@ export default function Dashboard(): JSX.Element {
       icon: GlobeAltIcon,
       description: 'Cross-platform management',
       color: 'neon-green',
-      status: 'active'
+      status: 'active',
     },
     {
       id: 'support',
@@ -100,7 +100,7 @@ export default function Dashboard(): JSX.Element {
       icon: ChatBubbleLeftIcon,
       description: 'AI-powered assistance',
       color: 'neon-blue',
-      status: 'active'
+      status: 'active',
     },
     {
       id: 'analytics',
@@ -109,7 +109,7 @@ export default function Dashboard(): JSX.Element {
       icon: ArrowTrendingUpIcon,
       description: 'Performance insights',
       color: 'neon-purple',
-      status: 'active'
+      status: 'active',
     },
   ];
 
@@ -122,17 +122,17 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-blue',
       description: 'AI content generation & optimization',
       performance: 94,
-      lastAction: '2 min ago'
+      lastAction: '2 min ago',
     },
     {
       id: 'seo',
-      name: 'SEOAgent', 
+      name: 'SEOAgent',
       status: 'active',
       icon: MagnifyingGlassIcon,
       color: 'text-neon-green',
       description: 'Search engine optimization',
       performance: 87,
-      lastAction: '5 min ago'
+      lastAction: '5 min ago',
     },
     {
       id: 'email',
@@ -142,7 +142,7 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-purple',
       description: 'Email campaign automation',
       performance: 91,
-      lastAction: '1 min ago'
+      lastAction: '1 min ago',
     },
     {
       id: 'social',
@@ -152,7 +152,7 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-pink',
       description: 'Social media management',
       performance: 89,
-      lastAction: '3 min ago'
+      lastAction: '3 min ago',
     },
     {
       id: 'support',
@@ -162,7 +162,7 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-green',
       description: 'Customer support automation',
       performance: 96,
-      lastAction: '4 min ago'
+      lastAction: '4 min ago',
     },
     {
       id: 'insight',
@@ -172,7 +172,7 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-blue',
       description: 'Advanced analytics & insights',
       performance: 92,
-      lastAction: '6 min ago'
+      lastAction: '6 min ago',
     },
     {
       id: 'design',
@@ -182,7 +182,7 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-purple',
       description: 'Creative asset generation',
       performance: 88,
-      lastAction: '8 min ago'
+      lastAction: '8 min ago',
     },
     {
       id: 'ad',
@@ -192,7 +192,7 @@ export default function Dashboard(): JSX.Element {
       color: 'text-neon-pink',
       description: 'Ad optimization & bidding',
       performance: 93,
-      lastAction: '7 min ago'
+      lastAction: '7 min ago',
     },
   ];
 
@@ -203,7 +203,7 @@ export default function Dashboard(): JSX.Element {
       change: '+3',
       changeType: 'positive',
       icon: RocketLaunchIcon,
-      color: 'neon-blue'
+      color: 'neon-blue',
     },
     {
       name: 'AI Agents Running',
@@ -211,7 +211,7 @@ export default function Dashboard(): JSX.Element {
       change: '+2',
       changeType: 'positive',
       icon: CpuChipIcon,
-      color: 'neon-purple'
+      color: 'neon-purple',
     },
     {
       name: 'Conversion Rate',
@@ -219,7 +219,7 @@ export default function Dashboard(): JSX.Element {
       change: '+5.2%',
       changeType: 'positive',
       icon: ArrowTrendingUpIcon,
-      color: 'neon-green'
+      color: 'neon-green',
     },
     {
       name: 'Revenue Impact',
@@ -227,7 +227,7 @@ export default function Dashboard(): JSX.Element {
       change: '+18.7%',
       changeType: 'positive',
       icon: ArrowTrendingUpIcon,
-      color: 'neon-pink'
+      color: 'neon-pink',
     },
   ];
 
@@ -238,7 +238,7 @@ export default function Dashboard(): JSX.Element {
     action: activity.action,
     time: new Date(activity.createdAt).toLocaleTimeString(),
     status: 'completed',
-    icon: getAgentIcon(activity.agent)
+    icon: getAgentIcon(activity.agent),
   })) || [
     {
       id: 1,
@@ -246,7 +246,7 @@ export default function Dashboard(): JSX.Element {
       action: 'Generated SEO-optimized blog post for Q4 campaign',
       time: 'Just now',
       status: 'completed',
-      icon: DocumentTextIcon
+      icon: DocumentTextIcon,
     },
     {
       id: 2,
@@ -254,7 +254,7 @@ export default function Dashboard(): JSX.Element {
       action: 'Optimized Facebook ad spend allocation (+12% ROI)',
       time: '2 min ago',
       status: 'completed',
-      icon: BoltIcon
+      icon: BoltIcon,
     },
     {
       id: 3,
@@ -262,7 +262,7 @@ export default function Dashboard(): JSX.Element {
       action: 'Deployed personalized email sequence (2,847 recipients)',
       time: '5 min ago',
       status: 'completed',
-      icon: EnvelopeIcon
+      icon: EnvelopeIcon,
     },
     {
       id: 4,
@@ -270,7 +270,7 @@ export default function Dashboard(): JSX.Element {
       action: 'Scheduled 15 cross-platform posts with trending hashtags',
       time: '8 min ago',
       status: 'completed',
-      icon: GlobeAltIcon
+      icon: GlobeAltIcon,
     },
     {
       id: 5,
@@ -278,20 +278,20 @@ export default function Dashboard(): JSX.Element {
       action: 'Generated weekly performance report with recommendations',
       time: '12 min ago',
       status: 'completed',
-      icon: ChartBarIcon
+      icon: ChartBarIcon,
     },
   ];
 
   function getAgentIcon(agentName: string) {
     const iconMap: Record<string, any> = {
-      'ContentAgent': DocumentTextIcon,
-      'AdAgent': BoltIcon,
-      'EmailAgent': EnvelopeIcon,
-      'SocialAgent': GlobeAltIcon,
-      'InsightAgent': ChartBarIcon,
-      'SEOAgent': MagnifyingGlassIcon,
-      'SupportAgent': ChatBubbleLeftIcon,
-      'DesignAgent': PaintBrushIcon
+      ContentAgent: DocumentTextIcon,
+      AdAgent: BoltIcon,
+      EmailAgent: EnvelopeIcon,
+      SocialAgent: GlobeAltIcon,
+      InsightAgent: ChartBarIcon,
+      SEOAgent: MagnifyingGlassIcon,
+      SupportAgent: ChatBubbleLeftIcon,
+      DesignAgent: PaintBrushIcon,
     };
     return iconMap[agentName] || CpuChipIcon;
   }
@@ -321,7 +321,7 @@ export default function Dashboard(): JSX.Element {
                 <div>{currentTime.toLocaleTimeString()}</div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {/* Futuristic Search */}
               <div className="relative hidden md:block">
@@ -361,8 +361,8 @@ export default function Dashboard(): JSX.Element {
                 <span className="text-primary">of AI Marketing</span>
               </h1>
               <p className="text-secondary text-lg mb-6 max-w-2xl">
-                Your autonomous AI agents are revolutionizing marketing campaigns 
-                with real-time optimization and intelligent automation.
+                Your autonomous AI agents are revolutionizing marketing campaigns with real-time
+                optimization and intelligent automation.
               </p>
               <div className="flex items-center space-x-4">
                 <button className="btn-neon">
@@ -382,13 +382,15 @@ export default function Dashboard(): JSX.Element {
 
         {/* Navigation Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {navigationItems.map((item) => {
+          {navigationItems.map(item => {
             const Icon = item.icon;
             return (
               <Link key={item.id} href={item.href} className="group">
                 <div className="card-neon group-hover:scale-105 transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-14 h-14 bg-${item.color} rounded-2xl flex items-center justify-center`}>
+                    <div
+                      className={`w-14 h-14 bg-${item.color} rounded-2xl flex items-center justify-center`}
+                    >
                       <Icon className="h-7 w-7 text-white" />
                     </div>
                     <div className="flex items-center space-x-2">
@@ -410,19 +412,23 @@ export default function Dashboard(): JSX.Element {
 
         {/* Metrics Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {metrics.map((metric) => {
+          {metrics.map(metric => {
             const Icon = metric.icon;
             return (
               <div key={metric.name} className="stat-card">
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 bg-${metric.color} rounded-xl flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 bg-${metric.color} rounded-xl flex items-center justify-center`}
+                  >
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    metric.changeType === 'positive'
-                      ? 'bg-neon-green text-black'
-                      : 'bg-neon-pink text-white'
-                  }`}>
+                  <div
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      metric.changeType === 'positive'
+                        ? 'bg-neon-green text-black'
+                        : 'bg-neon-pink text-white'
+                    }`}
+                  >
                     {metric.change}
                   </div>
                 </div>
@@ -440,15 +446,21 @@ export default function Dashboard(): JSX.Element {
           <div className="glass-strong p-6 rounded-2xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-primary">AI Agent Fleet</h2>
-              <Link href="/agents" className="text-neon-blue hover:text-neon-purple transition-colors text-sm font-medium">
+              <Link
+                href="/agents"
+                className="text-neon-blue hover:text-neon-purple transition-colors text-sm font-medium"
+              >
                 Manage All →
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {agents.map((agent) => {
+              {agents.map(agent => {
                 const Icon = agent.icon;
                 return (
-                  <div key={agent.id} className="glass p-4 rounded-xl hover:scale-105 transition-all duration-300">
+                  <div
+                    key={agent.id}
+                    className="glass p-4 rounded-xl hover:scale-105 transition-all duration-300"
+                  >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <Icon className={`h-6 w-6 ${agent.color}`} />
@@ -459,15 +471,15 @@ export default function Dashboard(): JSX.Element {
                       </div>
                       <div className={`agent-status-${agent.status}`}></div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-secondary">Performance</span>
                         <span className="text-neon-green font-semibold">{agent.performance}%</span>
                       </div>
                       <div className="progress-neon">
-                        <div 
-                          className="progress-fill" 
+                        <div
+                          className="progress-fill"
                           style={{ width: `${agent.performance}%` }}
                         ></div>
                       </div>
@@ -492,7 +504,7 @@ export default function Dashboard(): JSX.Element {
               </div>
             </div>
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {recentActivity.map((activity) => {
+              {recentActivity.map(activity => {
                 const Icon = activity.icon;
                 return (
                   <div key={activity.id} className="glass p-4 rounded-xl">
@@ -502,7 +514,9 @@ export default function Dashboard(): JSX.Element {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-semibold text-neon-blue text-sm">{activity.agent}</span>
+                          <span className="font-semibold text-neon-blue text-sm">
+                            {activity.agent}
+                          </span>
                           <span className="text-xs text-muted">•</span>
                           <span className="text-xs text-secondary">{activity.time}</span>
                         </div>
@@ -529,15 +543,24 @@ export default function Dashboard(): JSX.Element {
                 <RocketLaunchIcon className="h-5 w-5 mr-2" />
                 Deploy Campaign
               </Link>
-              <Link href="/agents" className="btn-neon-purple flex items-center justify-center py-4">
+              <Link
+                href="/agents"
+                className="btn-neon-purple flex items-center justify-center py-4"
+              >
                 <CpuChipIcon className="h-5 w-5 mr-2" />
                 Configure Agents
               </Link>
-              <Link href="/analytics" className="btn-neon-pink flex items-center justify-center py-4">
+              <Link
+                href="/analytics"
+                className="btn-neon-pink flex items-center justify-center py-4"
+              >
                 <ChartBarIcon className="h-5 w-5 mr-2" />
                 Analytics Hub
               </Link>
-              <Link href="/support" className="btn-neon-green flex items-center justify-center py-4">
+              <Link
+                href="/support"
+                className="btn-neon-green flex items-center justify-center py-4"
+              >
                 <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
                 Support Center
               </Link>

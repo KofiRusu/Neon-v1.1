@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { SEOAgent, type SEOOptimizationContext, type MetaTagsInput, type KeywordRecommendation } from './seo-agent';
+import {
+  SEOAgent,
+  type SEOOptimizationContext,
+  type MetaTagsInput,
+  type KeywordRecommendation,
+} from './seo-agent';
 
 // Mock OpenAI
 jest.mock('openai', () => {
@@ -28,7 +33,7 @@ describe('SEOAgent', () => {
     process.env.OPENAI_API_KEY = 'test-api-key';
 
     agent = new SEOAgent();
-    
+
     // Get the mocked OpenAI instance
     const OpenAI = require('openai').default;
     mockOpenAI = new OpenAI();
@@ -59,17 +64,20 @@ describe('SEOAgent', () => {
   describe('Meta tags generation', () => {
     it('should generate meta tags using AI when API key is available', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              title: 'SEO Marketing Guide | Expert Tips & Strategies',
-              description: 'Learn comprehensive SEO marketing strategies from experts. Proven techniques for better rankings.',
-              slug: 'seo-marketing-guide',
-              focusKeyword: 'SEO marketing',
-              semanticKeywords: ['search optimization', 'digital marketing']
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                title: 'SEO Marketing Guide | Expert Tips & Strategies',
+                description:
+                  'Learn comprehensive SEO marketing strategies from experts. Proven techniques for better rankings.',
+                slug: 'seo-marketing-guide',
+                focusKeyword: 'SEO marketing',
+                semanticKeywords: ['search optimization', 'digital marketing'],
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -80,13 +88,15 @@ describe('SEOAgent', () => {
         keywords: ['SEO', 'marketing', 'search optimization'],
         businessContext: 'Digital marketing agency',
         targetAudience: 'Business owners',
-        contentType: 'blog'
+        contentType: 'blog',
       };
 
       const result = await agent.generateMetaTags(input);
 
       expect(result.title).toBe('SEO Marketing Guide | Expert Tips & Strategies');
-      expect(result.description).toBe('Learn comprehensive SEO marketing strategies from experts. Proven techniques for better rankings.');
+      expect(result.description).toBe(
+        'Learn comprehensive SEO marketing strategies from experts. Proven techniques for better rankings.'
+      );
       expect(result.slug).toBe('seo-marketing-guide');
       expect(result.focusKeyword).toBe('SEO marketing');
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledTimes(1);
@@ -99,7 +109,7 @@ describe('SEOAgent', () => {
         topic: 'Content Marketing',
         content: 'Content about content marketing strategies.',
         keywords: ['content marketing', 'strategy'],
-        contentType: 'article'
+        contentType: 'article',
       };
 
       const result = await agent.generateMetaTags(input);
@@ -111,11 +121,13 @@ describe('SEOAgent', () => {
 
     it('should handle malformed AI response gracefully', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: 'Invalid JSON response from AI'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: 'Invalid JSON response from AI',
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -124,7 +136,7 @@ describe('SEOAgent', () => {
         topic: 'Digital Marketing',
         content: 'Content about digital marketing.',
         keywords: ['digital marketing'],
-        contentType: 'page'
+        contentType: 'page',
       };
 
       const result = await agent.generateMetaTags(input);
@@ -138,37 +150,39 @@ describe('SEOAgent', () => {
   describe('Keyword recommendations', () => {
     it('should recommend keywords using AI', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify([
-              {
-                keyword: 'SEO strategy',
-                relevanceScore: 90,
-                difficulty: 45,
-                opportunity: 80,
-                searchVolume: 'high',
-                intent: 'informational',
-                reason: 'High relevance with good search volume'
-              },
-              {
-                keyword: 'search engine optimization tips',
-                relevanceScore: 85,
-                difficulty: 35,
-                opportunity: 75,
-                searchVolume: 'medium',
-                intent: 'informational',
-                reason: 'Long-tail keyword with lower competition'
-              }
-            ])
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify([
+                {
+                  keyword: 'SEO strategy',
+                  relevanceScore: 90,
+                  difficulty: 45,
+                  opportunity: 80,
+                  searchVolume: 'high',
+                  intent: 'informational',
+                  reason: 'High relevance with good search volume',
+                },
+                {
+                  keyword: 'search engine optimization tips',
+                  relevanceScore: 85,
+                  difficulty: 35,
+                  opportunity: 75,
+                  searchVolume: 'medium',
+                  intent: 'informational',
+                  reason: 'Long-tail keyword with lower competition',
+                },
+              ]),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
 
       const result = await agent.recommendKeywords({
         topic: 'SEO',
-        businessContext: 'Marketing agency'
+        businessContext: 'Marketing agency',
       });
 
       expect(result).toHaveLength(2);
@@ -182,7 +196,7 @@ describe('SEOAgent', () => {
       mockOpenAI.chat.completions.create.mockRejectedValue(new Error('API Error'));
 
       const result = await agent.recommendKeywords({
-        topic: 'content marketing'
+        topic: 'content marketing',
       });
 
       expect(result.length).toBeGreaterThan(0);
@@ -201,13 +215,13 @@ describe('SEOAgent', () => {
         contentType: 'article',
         title: 'SEO Guide',
         description: 'Short description',
-        businessContext: 'Marketing agency'
+        businessContext: 'Marketing agency',
       };
 
       const result = await agent.execute({
         task: 'analyze_content',
         context,
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -230,7 +244,8 @@ describe('SEOAgent', () => {
     });
 
     it('should identify keyword positions correctly', async () => {
-      const content = 'SEO Guide: This content discusses search engine optimization and SEO best practices.';
+      const content =
+        'SEO Guide: This content discusses search engine optimization and SEO best practices.';
       const keywords = await agent.analyzeContent(content, ['SEO', 'optimization']);
 
       const seoKeyword = keywords.find(k => k.keyword === 'SEO');
@@ -274,14 +289,15 @@ Implementing proper SEO strategies will significantly improve your website's sea
         focusKeyword: 'SEO',
         contentType: 'article',
         title: 'SEO Best Practices Guide | Complete Guide for 2024',
-        description: 'Learn comprehensive SEO strategies and best practices. Expert tips for improving search rankings, keyword optimization, and technical SEO implementation.',
-        businessContext: 'Digital marketing'
+        description:
+          'Learn comprehensive SEO strategies and best practices. Expert tips for improving search rankings, keyword optimization, and technical SEO implementation.',
+        businessContext: 'Digital marketing',
       };
 
       const result = await agent.execute({
         task: 'analyze_content',
         context,
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.data.seoScore).toBeGreaterThan(70);
@@ -291,13 +307,13 @@ Implementing proper SEO strategies will significantly improve your website's sea
       const context: SEOOptimizationContext = {
         content: 'Short content.',
         targetKeywords: ['missing keyword'],
-        contentType: 'article'
+        contentType: 'article',
       };
 
       const result = await agent.execute({
         task: 'analyze_content',
         context,
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.data.seoScore).toBeLessThan(50);
@@ -311,9 +327,9 @@ Implementing proper SEO strategies will significantly improve your website's sea
         task: 'audit_technical_seo',
         context: {
           url: 'https://example.com/page',
-          content: '<p>Content without proper heading structure</p>'
+          content: '<p>Content without proper heading structure</p>',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       const h1Suggestion = result.data.find((s: any) => s.message.includes('H1 heading'));
@@ -326,9 +342,9 @@ Implementing proper SEO strategies will significantly improve your website's sea
         task: 'audit_technical_seo',
         context: {
           url: 'https://example.com/page',
-          content: '<h1>Title</h1><img src="image.jpg"><img src="image2.jpg" alt="Description">'
+          content: '<h1>Title</h1><img src="image.jpg"><img src="image2.jpg" alt="Description">',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       const altTextSuggestion = result.data.find((s: any) => s.message.includes('alt text'));
@@ -344,13 +360,13 @@ Implementing proper SEO strategies will significantly improve your website's sea
         targetKeywords: ['SEO'],
         contentType: 'blog',
         title: 'SEO Blog Post',
-        description: 'Blog about SEO'
+        description: 'Blog about SEO',
       };
 
       const result = await agent.execute({
         task: 'generate_schema',
         context: blogContext,
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.data['@type']).toBe('BlogPosting');
@@ -363,13 +379,13 @@ Implementing proper SEO strategies will significantly improve your website's sea
         content: 'Product content',
         targetKeywords: ['product'],
         contentType: 'product',
-        title: 'Test Product'
+        title: 'Test Product',
       };
 
       const result = await agent.execute({
         task: 'generate_schema',
         context,
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.data.author.name).toBe('NeonHub');
@@ -383,9 +399,9 @@ Implementing proper SEO strategies will significantly improve your website's sea
         task: 'optimize_keywords',
         context: {
           content: '',
-          targetKeywords: []
+          targetKeywords: [],
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(false);
@@ -396,7 +412,7 @@ Implementing proper SEO strategies will significantly improve your website's sea
       const result = await agent.execute({
         task: 'unknown_task',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(false);
@@ -409,7 +425,7 @@ Implementing proper SEO strategies will significantly improve your website's sea
       const input: MetaTagsInput = {
         topic: 'Best SEO Tools & Techniques 2024!',
         content: 'Content about SEO tools',
-        contentType: 'blog'
+        contentType: 'blog',
       };
 
       const result = await agent.generateMetaTags(input);
@@ -423,7 +439,7 @@ Implementing proper SEO strategies will significantly improve your website's sea
       const productInput: MetaTagsInput = {
         topic: 'Premium SEO Software',
         content: 'Product description',
-        contentType: 'product'
+        contentType: 'product',
       };
 
       const result = await agent.generateMetaTags(productInput);
@@ -438,9 +454,9 @@ Implementing proper SEO strategies will significantly improve your website's sea
         task: 'generate_meta_tags',
         context: {
           topic: 'SEO',
-          content: 'SEO content'
+          content: 'SEO content',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.performance).toBeGreaterThan(0);
@@ -453,9 +469,9 @@ Implementing proper SEO strategies will significantly improve your website's sea
         task: 'generate_meta_tags',
         context: {
           topic: 'SEO',
-          content: 'SEO content'
+          content: 'SEO content',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       const status = await agent.getStatus();
@@ -464,4 +480,4 @@ Implementing proper SEO strategies will significantly improve your website's sea
       expect(status.status).toBe('idle');
     });
   });
-}); 
+});

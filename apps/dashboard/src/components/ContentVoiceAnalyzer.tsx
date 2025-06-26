@@ -19,12 +19,12 @@ export function ContentVoiceAnalyzer({ profiles }: ContentVoiceAnalyzerProps) {
 
   const analyzeContent = async () => {
     if (!content.trim()) return;
-    
+
     setIsAnalyzing(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Mock analysis result
       setAnalysis({
         voiceScore: Math.floor(Math.random() * 30) + 70, // 70-100
@@ -33,9 +33,9 @@ export function ContentVoiceAnalyzer({ profiles }: ContentVoiceAnalyzerProps) {
             type: 'tone',
             issue: 'Content could be more professional',
             suggestion: 'Use more business-oriented language',
-            priority: 'medium'
-          }
-        ]
+            priority: 'medium',
+          },
+        ],
       });
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -60,11 +60,11 @@ export function ContentVoiceAnalyzer({ profiles }: ContentVoiceAnalyzerProps) {
             <label className="block text-sm font-medium mb-2">Select Brand Voice Profile</label>
             <select
               value={selectedProfile}
-              onChange={(e) => setSelectedProfile(e.target.value)}
+              onChange={e => setSelectedProfile(e.target.value)}
               className="w-full p-2 border rounded-md"
             >
               <option value="">Choose a profile...</option>
-              {profiles.map((profile) => (
+              {profiles.map(profile => (
                 <option key={profile.id} value={profile.id}>
                   {profile.name} {profile.isActive ? '(Active)' : ''}
                 </option>
@@ -76,7 +76,7 @@ export function ContentVoiceAnalyzer({ profiles }: ContentVoiceAnalyzerProps) {
             <label className="block text-sm font-medium mb-2">Content to Analyze</label>
             <textarea
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={e => setContent(e.target.value)}
               placeholder="Paste your content here for voice analysis..."
               className="w-full h-64 p-3 border rounded-md"
             />
@@ -94,24 +94,32 @@ export function ContentVoiceAnalyzer({ profiles }: ContentVoiceAnalyzerProps) {
         {/* Results Section */}
         <div className="space-y-4">
           <h4 className="text-md font-semibold">Analysis Results</h4>
-          
+
           {analysis ? (
             <div className="space-y-4">
               <div className="p-4 border rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-medium">Voice Consistency Score</span>
-                  <span className={`text-lg font-bold ${
-                    analysis.voiceScore >= 80 ? 'text-green-600' : 
-                    analysis.voiceScore >= 60 ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
+                  <span
+                    className={`text-lg font-bold ${
+                      analysis.voiceScore >= 80
+                        ? 'text-green-600'
+                        : analysis.voiceScore >= 60
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                    }`}
+                  >
                     {analysis.voiceScore}%
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className={`h-2 rounded-full ${
-                      analysis.voiceScore >= 80 ? 'bg-green-600' : 
-                      analysis.voiceScore >= 60 ? 'bg-yellow-600' : 'bg-red-600'
+                      analysis.voiceScore >= 80
+                        ? 'bg-green-600'
+                        : analysis.voiceScore >= 60
+                          ? 'bg-yellow-600'
+                          : 'bg-red-600'
                     }`}
                     style={{ width: `${analysis.voiceScore}%` }}
                   ></div>
@@ -126,11 +134,15 @@ export function ContentVoiceAnalyzer({ profiles }: ContentVoiceAnalyzerProps) {
                       <div key={index} className="p-3 bg-amber-50 rounded-md">
                         <div className="flex justify-between items-start mb-1">
                           <span className="font-medium text-sm capitalize">{suggestion.type}</span>
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            suggestion.priority === 'high' ? 'bg-red-100 text-red-700' :
-                            suggestion.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-green-100 text-green-700'
-                          }`}>
+                          <span
+                            className={`text-xs px-2 py-1 rounded ${
+                              suggestion.priority === 'high'
+                                ? 'bg-red-100 text-red-700'
+                                : suggestion.priority === 'medium'
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-green-100 text-green-700'
+                            }`}
+                          >
                             {suggestion.priority}
                           </span>
                         </div>
