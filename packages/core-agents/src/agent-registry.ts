@@ -11,6 +11,7 @@ import { InsightAgent } from './agents/insight-agent';
 import { DesignAgent } from './agents/design-agent';
 import { EmailMarketingAgent } from './agents/email-agent';
 import { CustomerSupportAgent } from './agents/support-agent';
+import { ErrorSentinelAgent } from './agents/error-sentinel-agent';
 
 /**
  * Register all available agents with the AgentFactory
@@ -27,6 +28,7 @@ export function registerAllAgents(): void {
   AgentFactory.registerAgent('design', DesignAgent);
   AgentFactory.registerAgent('email', EmailMarketingAgent);
   AgentFactory.registerAgent('support', CustomerSupportAgent);
+  AgentFactory.registerAgent('error-sentinel', ErrorSentinelAgent);
 
   logger.info(
     'Agent registry initialized',
@@ -68,6 +70,13 @@ export function createEmailMarketingAgent(): EmailMarketingAgent {
  */
 export function createCustomerSupportAgent(): CustomerSupportAgent {
   return new CustomerSupportAgent();
+}
+
+/**
+ * Create an Error Sentinel agent instance
+ */
+export function createErrorSentinelAgent(): ErrorSentinelAgent {
+  return new ErrorSentinelAgent();
 }
 
 /**
@@ -139,5 +148,17 @@ export const AGENT_CAPABILITIES = {
     'generate_summary',
     'track_satisfaction',
     'manage_queue'
+  ],
+  'error-sentinel': [
+    'continuous_scan',
+    'fix_build_errors',
+    'fix_type_errors',
+    'fix_lint_errors',
+    'fix_schema_errors',
+    'fix_ci_errors',
+    'fix_unhandled_promises',
+    'health_check',
+    'emergency_recovery',
+    'generate_report'
   ]
 } as const;
