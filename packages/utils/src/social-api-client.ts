@@ -9,7 +9,17 @@ export interface TrendData {
   score: number;
   platform: string;
   region?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RegionScoreData {
+  region: string;
+  platforms: {
+    tiktok: number;
+    instagram: number;
+    twitter: number;
+  };
+  updatedAt: string;
 }
 
 export class SocialApiClient {
@@ -53,7 +63,7 @@ export class SocialApiClient {
     return [...tiktok, ...instagram, ...twitter];
   }
 
-  async getRegionScores(region: string): Promise<any> {
+  async getRegionScores(region: string): Promise<RegionScoreData> {
     // Mock regional data
     return {
       region,

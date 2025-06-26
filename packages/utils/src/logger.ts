@@ -127,7 +127,7 @@ export const createLogger = (source: string, level?: LogLevel): Logger => {
   const l = new Logger(level);
   // Override the log method to include source automatically
   const originalLog = l['log'].bind(l);
-  l['log'] = (level: LogLevel, message: string, context?: Record<string, unknown>) => {
+  l['log'] = (level: LogLevel, message: string, context?: Record<string, unknown>): void => {
     originalLog(level, message, context, source);
   };
   return l;

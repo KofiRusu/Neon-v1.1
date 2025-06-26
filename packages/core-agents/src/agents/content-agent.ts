@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { AbstractAgent } from '../base-agent';
 import type { AgentPayload, AgentResult } from '../base-agent';
-import type { AgentContext, ContentResult } from '../types';
+// import type { ContentResult } from '../types'; // Unused but kept for potential future use
 import { logger } from '@neon/utils';
 
 // Define local interfaces for content generation

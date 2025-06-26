@@ -66,9 +66,9 @@ describe('OptimizedPrismaClient', () => {
     it('should respect cache TTL', async () => {
       const testUserId = 'test-user-ttl';
 
-      // Mock a very short TTL by directly accessing private method via any
-      const originalTTL = (client as any).DEFAULT_CACHE_TTL;
-      (client as any).DEFAULT_CACHE_TTL = 1; // 1ms
+      // Mock a very short TTL by directly accessing private method via type assertion
+      const originalTTL = (client as unknown as { DEFAULT_CACHE_TTL: number }).DEFAULT_CACHE_TTL;
+      (client as unknown as { DEFAULT_CACHE_TTL: number }).DEFAULT_CACHE_TTL = 1; // 1ms
 
       await client.getCampaignsByUserAndStatus(testUserId);
       
@@ -78,7 +78,7 @@ describe('OptimizedPrismaClient', () => {
       await client.getCampaignsByUserAndStatus(testUserId);
 
       // Restore original TTL
-      (client as any).DEFAULT_CACHE_TTL = originalTTL;
+      (client as unknown as { DEFAULT_CACHE_TTL: number }).DEFAULT_CACHE_TTL = originalTTL;
 
       const metrics = client.getQueryMetrics();
       expect(metrics.totalQueries).toBeGreaterThan(0);

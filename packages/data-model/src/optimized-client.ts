@@ -11,8 +11,8 @@ interface QueryMetrics {
   recordCount?: number;
 }
 
-interface CacheEntry {
-  data: any;
+interface CacheEntry<T = unknown> {
+  data: T;
   timestamp: number;
   ttl: number;
 }
@@ -21,7 +21,7 @@ interface CacheEntry {
 export class OptimizedPrismaClient {
   private client: PrismaClient;
   private queryMetrics: QueryMetrics[] = [];
-  private queryCache = new Map<string, CacheEntry>();
+  private queryCache = new Map<string, CacheEntry<unknown>>();
   private readonly DEFAULT_CACHE_TTL = 300000; // 5 minutes
   private readonly MAX_METRICS_HISTORY = 1000;
 
@@ -57,17 +57,17 @@ export class OptimizedPrismaClient {
     }
   }
 
-  private generateCacheKey(operation: string, args: any): string {
+  private generateCacheKey(operation: string, args: unknown): string {
     return `${operation}:${JSON.stringify(args)}`;
   }
 
-  private isValidCacheEntry(entry: CacheEntry): boolean {
+  private isValidCacheEntry(entry: CacheEntry<unknown>): boolean {
     return Date.now() - entry.timestamp < entry.ttl;
   }
 
   private async executeWithCache<T>(
     operation: string,
-    args: any,
+    args: unknown,
     executor: () => Promise<T>,
     cacheTTL: number = this.DEFAULT_CACHE_TTL
   ): Promise<T> {
@@ -118,14 +118,14 @@ export class OptimizedPrismaClient {
     userId: string, 
     status?: string, 
     limit: number = 50
-  ) {
+  ): Promise<unknown> {
     return this.executeWithCache(
       'getCampaignsByUserAndStatus',
       { userId, status, limit },
       () => this.client.campaign.findMany({
         where: {
           userId,
-          ...(status && { status: status as any })
+          ...(status && { status })
         },
         orderBy: { createdAt: 'desc' },
         take: limit,
@@ -144,7 +144,7 @@ export class OptimizedPrismaClient {
     agentId: string,
     startDate?: Date,
     endDate?: Date
-  ) {
+  ): Promise<unknown> {
     return this.executeWithCache(
       'getAgentPerformanceMetrics',
       { agentId, startDate, endDate },
@@ -174,14 +174,14 @@ export class OptimizedPrismaClient {
     type?: string,
     period?: string,
     limit: number = 100
-  ) {
+  ): Promise<unknown> {
     return this.executeWithCache(
       'getCampaignAnalytics',
       { campaignId, type, period, limit },
       () => this.client.analytics.findMany({
         where: {
           campaignId,
-          ...(type && { type: type as any }),
+          ...(type && { type }),
           ...(period && { period })
         },
         orderBy: { date: 'desc' },
@@ -192,7 +192,7 @@ export class OptimizedPrismaClient {
   }
 
   // Optimized lead queries using new indexes
-  async getHighValueLeads(minScore: number = 7.0, limit: number = 50) {
+  async getHighValueLeads(minScore: number = 7.0, limit: number = 50): Promise<unknown> {
     return this.executeWithCache(
       'getHighValueLeads',
       { minScore, limit },
@@ -215,13 +215,13 @@ export class OptimizedPrismaClient {
     platform?: string,
     minScore: number = 5.0,
     limit: number = 20
-  ) {
+  ): Promise<unknown> {
     return this.executeWithCache(
       'getTrendingKeywords',
       { platform, minScore, limit },
       () => this.client.trend.findMany({
         where: {
-          ...(platform && { platform: platform as any }),
+          ...(platform && { platform }),
           score: { gte: minScore }
         },
         orderBy: [
@@ -239,14 +239,14 @@ export class OptimizedPrismaClient {
     platform: string,
     status?: string,
     limit: number = 50
-  ) {
+  ): Promise<unknown> {
     return this.executeWithCache(
       'getContentByPlatformAndStatus',
       { platform, status, limit },
       () => this.client.content.findMany({
         where: {
-          platform: platform as any,
-          ...(status && { status: status as any })
+          platform,
+          ...(status && { status })
         },
         orderBy: { createdAt: 'desc' },
         take: limit
@@ -256,17 +256,17 @@ export class OptimizedPrismaClient {
 
   // Batch operations for better performance
   async createCampaignWithAnalytics(
-    campaignData: any,
-    initialAnalytics?: any[]
-  ) {
-    return this.client.$transaction(async (tx: any) => {
+    campaignData: Record<string, unknown>,
+    initialAnalytics?: Record<string, unknown>[]
+  ): Promise<unknown> {
+    return this.client.$transaction(async (tx: PrismaClient) => {
       const campaign = await tx.campaign.create({
         data: campaignData
       });
 
       if (initialAnalytics && initialAnalytics.length > 0) {
         await tx.analytics.createMany({
-          data: initialAnalytics.map(analytics => ({
+          data: initialAnalytics.map((analytics: Record<string, unknown>) => ({
             ...analytics,
             campaignId: campaign.id
           }))

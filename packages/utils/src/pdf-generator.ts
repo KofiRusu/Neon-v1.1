@@ -16,6 +16,15 @@ export interface ProposalData {
   designMockup?: string;
 }
 
+export interface ProductCatalogItem {
+  name: string;
+  price: number;
+  sizes?: string[];
+  colors?: string[];
+  leadTime?: string;
+  description?: string;
+}
+
 export class PDFGenerator {
   private createHeader(doc: jsPDF, title: string): void {
     // Add company logo area
@@ -275,7 +284,7 @@ export class PDFGenerator {
     return Buffer.from(doc.output('arraybuffer'));
   }
 
-  async generateCatalog(products: any[]): Promise<Buffer> {
+  async generateCatalog(products: ProductCatalogItem[]): Promise<Buffer> {
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height;
     
