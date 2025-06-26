@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { brand } from '@/lib/brand';
 import {
   Dialog,
   DialogContent,
@@ -78,27 +79,27 @@ export function BrandVoiceProfileModal({
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: profile?.name || '',
-      description: profile?.description || '',
-      keywords: profile?.keywords || [],
+      name: profile?.name || brand.voice.primary,
+      description: profile?.description || brand.mission,
+      keywords: profile?.keywords || brand.vocabulary.brandTerms,
       tone: {
-        professional: profile?.tone?.professional || 70,
-        friendly: profile?.tone?.friendly || 50,
-        authoritative: profile?.tone?.authoritative || 60,
-        casual: profile?.tone?.casual || 30,
-        innovative: profile?.tone?.innovative || 80,
+        professional: profile?.tone?.professional || brand.voice.tone.professional,
+        friendly: profile?.tone?.friendly || brand.voice.tone.friendly,
+        authoritative: profile?.tone?.authoritative || brand.voice.tone.authoritative,
+        casual: profile?.tone?.casual || brand.voice.tone.casual,
+        innovative: profile?.tone?.innovative || brand.voice.tone.innovative,
       },
       vocabulary: {
-        preferred: profile?.vocabulary?.preferred || ['solution', 'innovative', 'efficient'],
-        prohibited: profile?.vocabulary?.prohibited || ['cheap', 'basic'],
-        brandTerms: profile?.vocabulary?.brandTerms || ['NeonHub', 'AI-powered'],
+        preferred: profile?.vocabulary?.preferred || brand.vocabulary.preferred,
+        prohibited: profile?.vocabulary?.prohibited || brand.vocabulary.prohibited,
+        brandTerms: profile?.vocabulary?.brandTerms || brand.vocabulary.brandTerms,
       },
       style: {
-        sentenceLength: profile?.style?.sentenceLength || 'medium',
-        readingLevel: profile?.style?.readingLevel || 'college',
-        formality: profile?.style?.formality || 'semi-formal',
+        sentenceLength: profile?.style?.sentenceLength || brand.guidelines.style.sentenceLength as any,
+        readingLevel: profile?.style?.readingLevel || brand.guidelines.style.readingLevel as any,
+        formality: profile?.style?.formality || brand.guidelines.style.formality as any,
       },
-      sampleContent: profile?.sampleContent || '',
+      sampleContent: profile?.sampleContent || brand.messaging.primaryValue,
     },
   });
 

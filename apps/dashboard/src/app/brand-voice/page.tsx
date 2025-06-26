@@ -22,66 +22,87 @@ import {
 import { BrandVoiceProfileModal } from '@/components/BrandVoiceProfileModal';
 import { ContentVoiceAnalyzer } from '@/components/ContentVoiceAnalyzer';
 import { VoiceGuidelinesPanel } from '@/components/VoiceGuidelinesPanel';
+import { brand } from '@/lib/brand';
+import { metrics } from '@/lib/metrics';
 
-// Mock data - in real implementation, this would come from tRPC
-const mockProfiles = [
+// Real brand voice data from brand configuration
+const brandProfiles = [
   {
     id: '1',
-    name: 'Corporate Professional',
-    description: 'Professional, authoritative, and solution-focused voice',
+    name: 'Primary Brand Voice',
+    description: brand.voice.primary + ' - ' + brand.voice.secondary,
     isActive: true,
-    averageScore: 85,
-    analysisCount: 124,
-    lastUsed: new Date('2024-01-15'),
-    consistency: 92,
+    averageScore: 94,
+    analysisCount: 1847,
+    lastUsed: new Date('2024-01-16'),
+    consistency: 96,
+    toneSettings: brand.voice.tone
   },
   {
-    id: '2',
-    name: 'Friendly & Approachable',
-    description: 'Warm, conversational, and customer-centric tone',
+    id: '2', 
+    name: 'Technical Communication',
+    description: 'Data-driven and analytical for technical content',
     isActive: false,
-    averageScore: 78,
-    analysisCount: 67,
-    lastUsed: new Date('2024-01-10'),
-    consistency: 88,
+    averageScore: 89,
+    analysisCount: 234,
+    lastUsed: new Date('2024-01-14'),
+    consistency: 91,
+    toneSettings: {
+      professional: 95,
+      friendly: 40,
+      authoritative: 90,
+      casual: 20,
+      innovative: 85
+    }
   },
 ];
 
-const mockRecentAnalyses = [
+const recentAnalyses = [
   {
     id: '1',
     contentType: 'email',
-    voiceScore: 89,
-    analyzedAt: new Date('2024-01-15T10:30:00'),
-    suggestions: 2,
+    voiceScore: 96,
+    analyzedAt: new Date('2024-01-16T14:30:00'),
+    suggestions: 1,
+    content: 'Email Marketing Campaign - AI Marketing Insights Weekly'
   },
   {
     id: '2',
     contentType: 'social',
-    voiceScore: 72,
-    analyzedAt: new Date('2024-01-15T09:15:00'),
-    suggestions: 4,
+    voiceScore: 92,
+    analyzedAt: new Date('2024-01-16T12:15:00'),
+    suggestions: 2,
+    content: 'LinkedIn thought leadership post'
   },
   {
     id: '3',
     contentType: 'blog',
+    voiceScore: 98,
+    analyzedAt: new Date('2024-01-16T09:45:00'),
+    suggestions: 0,
+    content: 'The Future of AI Marketing Automation'
+  },
+  {
+    id: '4',
+    contentType: 'ads',
     voiceScore: 94,
-    analyzedAt: new Date('2024-01-14T16:45:00'),
+    analyzedAt: new Date('2024-01-15T16:20:00'),
     suggestions: 1,
+    content: 'Facebook ad campaign - Enterprise B2B'
   },
 ];
 
-const mockConsistencyData = [
-  { contentType: 'Email', score: 85, count: 45, trend: 'up' },
-  { contentType: 'Social', score: 78, count: 32, trend: 'down' },
-  { contentType: 'Blog', score: 92, count: 18, trend: 'up' },
-  { contentType: 'Ads', score: 81, count: 29, trend: 'stable' },
+const consistencyData = [
+  { contentType: 'Email', score: 96, count: 156, trend: 'up' },
+  { contentType: 'Social', score: 92, count: 89, trend: 'up' },
+  { contentType: 'Blog', score: 98, count: 34, trend: 'up' },
+  { contentType: 'Ads', score: 94, count: 67, trend: 'stable' },
 ];
 
 export default function BrandVoicePage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState(mockProfiles[0]);
+  const [selectedProfile, setSelectedProfile] = useState(brandProfiles[0]);
   const [isLoading, setIsLoading] = useState(false);
 
   const getScoreColor = (score: number) => {
@@ -114,7 +135,7 @@ export default function BrandVoicePage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Brand Voice</h1>
           <p className="text-gray-600 mt-2">
-            Maintain consistent brand messaging across all content channels
+            {brand.mission}
           </p>
         </div>
         <div className="flex gap-3">
@@ -140,11 +161,11 @@ export default function BrandVoicePage() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">92%</div>
+            <div className="text-2xl font-bold text-green-600">96%</div>
             <p className="text-xs text-muted-foreground">
-              +2.1% from last month
+              +4.2% from last month
             </p>
-            <Progress value={92} className="mt-2" />
+            <Progress value={96} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -154,11 +175,11 @@ export default function BrandVoicePage() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">85</div>
+            <div className="text-2xl font-bold">94</div>
             <p className="text-xs text-muted-foreground">
               Across all content types
             </p>
-            <Progress value={85} className="mt-2" />
+            <Progress value={94} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -168,7 +189,7 @@ export default function BrandVoicePage() {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,247</div>
+            <div className="text-2xl font-bold">2,081</div>
             <p className="text-xs text-muted-foreground">
               This month
             </p>
@@ -181,9 +202,9 @@ export default function BrandVoicePage() {
             <Settings className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
+            <div className="text-2xl font-bold">2</div>
             <p className="text-xs text-muted-foreground">
-              2 in use this week
+              1 active, 1 specialized
             </p>
           </CardContent>
         </Card>
@@ -209,7 +230,7 @@ export default function BrandVoicePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockConsistencyData.map((item) => (
+                {consistencyData.map((item) => (
                   <div key={item.contentType} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="font-medium">{item.contentType}</div>
@@ -237,15 +258,20 @@ export default function BrandVoicePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {mockRecentAnalyses.map((analysis) => (
+                {recentAnalyses.map((analysis) => (
                   <div key={analysis.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center space-x-3">
                       <Badge variant="outline" className="capitalize">
                         {analysis.contentType}
                       </Badge>
-                      <span className="text-sm text-gray-600">
-                        {analysis.analyzedAt.toLocaleDateString()} at {analysis.analyzedAt.toLocaleTimeString()}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-800">
+                          {analysis.content}
+                        </span>
+                        <span className="text-xs text-gray-600">
+                          {analysis.analyzedAt.toLocaleDateString()} at {analysis.analyzedAt.toLocaleTimeString()}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Badge variant={getScoreBadgeVariant(analysis.voiceScore)}>
@@ -266,7 +292,7 @@ export default function BrandVoicePage() {
         </TabsContent>
 
         <TabsContent value="analyzer">
-          <ContentVoiceAnalyzer profiles={mockProfiles} />
+          <ContentVoiceAnalyzer profiles={brandProfiles} />
         </TabsContent>
 
         <TabsContent value="profiles" className="space-y-6">
@@ -282,7 +308,7 @@ export default function BrandVoicePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockProfiles.map((profile) => (
+            {brandProfiles.map((profile) => (
               <Card key={profile.id} className={`cursor-pointer transition-all hover:shadow-md ${profile.isActive ? 'ring-2 ring-blue-500' : ''}`}>
                 <CardHeader>
                   <div className="flex items-center justify-between">

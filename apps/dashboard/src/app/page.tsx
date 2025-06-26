@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api } from '../utils/trpc';
+import { brand } from '../lib/brand';
+import { metrics } from '../lib/metrics';
 import {
   ChartBarIcon,
   CogIcon,
@@ -55,6 +57,59 @@ export default function Dashboard(): JSX.Element {
       refetchOnWindowFocus: false,
     }
   );
+
+  // Utility functions for agent and KPI data
+  function getAgentIcon(agentName: string) {
+    const iconMap: Record<string, any> = {
+      'ContentAgent': DocumentTextIcon,
+      'AdAgent': BoltIcon,
+      'EmailAgent': EnvelopeIcon,
+      'SocialAgent': GlobeAltIcon,
+      'InsightAgent': ChartBarIcon,
+      'SEOAgent': MagnifyingGlassIcon,
+      'SupportAgent': ChatBubbleLeftIcon,
+      'DesignAgent': PaintBrushIcon
+    };
+    return iconMap[agentName] || CpuChipIcon;
+  }
+
+  function getAgentColor(agentName: string) {
+    const colorMap: Record<string, string> = {
+      'ContentAgent': 'text-neon-blue',
+      'AdAgent': 'text-neon-pink',
+      'EmailAgent': 'text-neon-purple',
+      'SocialAgent': 'text-neon-green',
+      'InsightAgent': 'text-neon-blue',
+      'SEOAgent': 'text-neon-green',
+      'SupportAgent': 'text-neon-blue',
+      'DesignAgent': 'text-neon-purple'
+    };
+    return colorMap[agentName] || 'text-neon-blue';
+  }
+
+  function getKPIIcon(kpiName: string) {
+    const iconMap: Record<string, any> = {
+      'Active Campaigns': RocketLaunchIcon,
+      'AI Agents Running': CpuChipIcon,
+      'Conversion Rate': ArrowTrendingUpIcon,
+      'Revenue Impact': ArrowTrendingUpIcon,
+      'Cost Per Lead': ArrowTrendingUpIcon,
+      'Customer LTV': ArrowTrendingUpIcon
+    };
+    return iconMap[kpiName] || ChartBarIcon;
+  }
+
+  function getKPIColor(kpiName: string) {
+    const colorMap: Record<string, string> = {
+      'Active Campaigns': 'neon-blue',
+      'AI Agents Running': 'neon-purple',
+      'Conversion Rate': 'neon-green',
+      'Revenue Impact': 'neon-pink',
+      'Cost Per Lead': 'neon-green',
+      'Customer LTV': 'neon-blue'
+    };
+    return colorMap[kpiName] || 'neon-blue';
+  }
 
   const navigationItems = [
     {
@@ -113,126 +168,30 @@ export default function Dashboard(): JSX.Element {
     },
   ];
 
-  const agents = [
-    {
-      id: 'content',
-      name: 'ContentAgent',
-      status: 'active',
-      icon: DocumentTextIcon,
-      color: 'text-neon-blue',
-      description: 'AI content generation & optimization',
-      performance: 94,
-      lastAction: '2 min ago'
-    },
-    {
-      id: 'seo',
-      name: 'SEOAgent', 
-      status: 'active',
-      icon: MagnifyingGlassIcon,
-      color: 'text-neon-green',
-      description: 'Search engine optimization',
-      performance: 87,
-      lastAction: '5 min ago'
-    },
-    {
-      id: 'email',
-      name: 'EmailAgent',
-      status: 'active',
-      icon: EnvelopeIcon,
-      color: 'text-neon-purple',
-      description: 'Email campaign automation',
-      performance: 91,
-      lastAction: '1 min ago'
-    },
-    {
-      id: 'social',
-      name: 'SocialAgent',
-      status: 'active',
-      icon: GlobeAltIcon,
-      color: 'text-neon-pink',
-      description: 'Social media management',
-      performance: 89,
-      lastAction: '3 min ago'
-    },
-    {
-      id: 'support',
-      name: 'SupportAgent',
-      status: 'active',
-      icon: ChatBubbleLeftIcon,
-      color: 'text-neon-green',
-      description: 'Customer support automation',
-      performance: 96,
-      lastAction: '4 min ago'
-    },
-    {
-      id: 'insight',
-      name: 'InsightAgent',
-      status: 'active',
-      icon: ChartBarIcon,
-      color: 'text-neon-blue',
-      description: 'Advanced analytics & insights',
-      performance: 92,
-      lastAction: '6 min ago'
-    },
-    {
-      id: 'design',
-      name: 'DesignAgent',
-      status: 'active',
-      icon: PaintBrushIcon,
-      color: 'text-neon-purple',
-      description: 'Creative asset generation',
-      performance: 88,
-      lastAction: '8 min ago'
-    },
-    {
-      id: 'ad',
-      name: 'AdAgent',
-      status: 'active',
-      icon: BoltIcon,
-      color: 'text-neon-pink',
-      description: 'Ad optimization & bidding',
-      performance: 93,
-      lastAction: '7 min ago'
-    },
-  ];
+  // Use real agent data from metrics
+  const agents = metrics.agentPerformance.map(agent => ({
+    id: agent.id,
+    name: agent.name,
+    status: agent.status,
+    icon: getAgentIcon(agent.name),
+    color: getAgentColor(agent.name),
+    description: agent.specialization,
+    performance: agent.performance,
+    lastAction: agent.lastAction
+  }));
 
-  const metrics = [
-    {
-      name: 'Active Campaigns',
-      value: campaignStats?.active?.toString() || '12',
-      change: '+3',
-      changeType: 'positive',
-      icon: RocketLaunchIcon,
-      color: 'neon-blue'
-    },
-    {
-      name: 'AI Agents Running',
-      value: '9',
-      change: '+2',
-      changeType: 'positive',
-      icon: CpuChipIcon,
-      color: 'neon-purple'
-    },
-    {
-      name: 'Conversion Rate',
-      value: '24.8%',
-      change: '+5.2%',
-      changeType: 'positive',
-      icon: ArrowTrendingUpIcon,
-      color: 'neon-green'
-    },
-    {
-      name: 'Revenue Impact',
-      value: '$127K',
-      change: '+18.7%',
-      changeType: 'positive',
-      icon: ArrowTrendingUpIcon,
-      color: 'neon-pink'
-    },
-  ];
+  // Use real KPI data from metrics
+  const dashboardMetrics = metrics.kpis.dashboard.map(kpi => ({
+    name: kpi.name,
+    value: kpi.value,
+    change: kpi.change,
+    changeType: kpi.changeType,
+    icon: getKPIIcon(kpi.name),
+    color: getKPIColor(kpi.name)
+  }));
 
   // Use real activity data from API or fallback to mock data
-  const recentActivity = recentAgentActivity?.map(activity => ({
+  const recentActivity = recentAgentActivity?.map((activity: any) => ({
     id: activity.id,
     agent: activity.agent,
     action: activity.action,
@@ -296,7 +255,7 @@ export default function Dashboard(): JSX.Element {
     return iconMap[agentName] || CpuChipIcon;
   }
 
-  return (
+      return (
     <div className="min-h-screen">
       {/* Futuristic Header */}
       <header className="nav-glass sticky top-0 z-50">
@@ -356,13 +315,12 @@ export default function Dashboard(): JSX.Element {
           <div className="glass-strong p-8 rounded-3xl bg-gradient-primary relative overflow-hidden">
             <div className="relative z-10">
               <h1 className="text-4xl font-bold mb-2">
-                <span className="text-neon-blue">Welcome to the Future</span>
+                <span className="text-neon-blue">{brand.slogan}</span>
                 <br />
-                <span className="text-primary">of AI Marketing</span>
+                <span className="text-primary">with AI Marketing</span>
               </h1>
               <p className="text-secondary text-lg mb-6 max-w-2xl">
-                Your autonomous AI agents are revolutionizing marketing campaigns 
-                with real-time optimization and intelligent automation.
+                {brand.messaging.primaryValue}
               </p>
               <div className="flex items-center space-x-4">
                 <button className="btn-neon">
@@ -410,7 +368,7 @@ export default function Dashboard(): JSX.Element {
 
         {/* Metrics Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {metrics.map((metric) => {
+          {dashboardMetrics.map((metric) => {
             const Icon = metric.icon;
             return (
               <div key={metric.name} className="stat-card">
