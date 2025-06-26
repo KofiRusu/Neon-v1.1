@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { 
-  DocumentTextIcon, 
+import {
+  DocumentTextIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
-  CogIcon
+  CogIcon,
 } from '@heroicons/react/24/outline';
 import ContentAgentTab from './ContentAgentTab';
 import SEOAgentTab from './SEOAgentTab';
@@ -12,26 +12,26 @@ export default function AgentsTab() {
   const [activeAgent, setActiveAgent] = useState<'content' | 'seo' | 'overview'>('overview');
 
   const agents = [
-    { 
-      id: 'content', 
-      name: 'Content Agent', 
-      icon: DocumentTextIcon, 
+    {
+      id: 'content',
+      name: 'Content Agent',
+      icon: DocumentTextIcon,
       color: 'text-blue-400',
       status: 'active',
       description: 'AI-powered content generation for all platforms',
       executions: 1247,
-      successRate: 96.2
+      successRate: 96.2,
     },
-    { 
-      id: 'seo', 
-      name: 'SEO Agent', 
-      icon: MagnifyingGlassIcon, 
+    {
+      id: 'seo',
+      name: 'SEO Agent',
+      icon: MagnifyingGlassIcon,
       color: 'text-purple-400',
       status: 'active',
       description: 'Search engine optimization and keyword research',
       executions: 892,
-      successRate: 94.8
-    }
+      successRate: 94.8,
+    },
   ];
 
   if (activeAgent === 'content') {
@@ -86,15 +86,24 @@ export default function AgentsTab() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <p className="text-dark-400 text-xs">Total Executions</p>
-            <p className="text-2xl font-bold text-white">{agents.reduce((sum, agent) => sum + agent.executions, 0).toLocaleString()}</p>
+            <p className="text-2xl font-bold text-white">
+              {agents.reduce((sum, agent) => sum + agent.executions, 0).toLocaleString()}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-dark-400 text-xs">Avg Success Rate</p>
-            <p className="text-2xl font-bold text-green-400">{(agents.reduce((sum, agent) => sum + agent.successRate, 0) / agents.length).toFixed(1)}%</p>
+            <p className="text-2xl font-bold text-green-400">
+              {(agents.reduce((sum, agent) => sum + agent.successRate, 0) / agents.length).toFixed(
+                1
+              )}
+              %
+            </p>
           </div>
           <div className="text-center">
             <p className="text-dark-400 text-xs">Active Agents</p>
-            <p className="text-2xl font-bold text-neon-400">{agents.filter(a => a.status === 'active').length}</p>
+            <p className="text-2xl font-bold text-neon-400">
+              {agents.filter(a => a.status === 'active').length}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-dark-400 text-xs">Uptime</p>
@@ -107,12 +116,18 @@ export default function AgentsTab() {
       <div className="card-glow">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-white">Phase 1 Agents - Content & SEO</h3>
-          <span className="px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">Active</span>
+          <span className="px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
+            Active
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {agents.map((agent) => (
-            <div key={agent.id} className="agent-card cursor-pointer hover:scale-105 transition-transform" onClick={() => setActiveAgent(agent.id as any)}>
+          {agents.map(agent => (
+            <div
+              key={agent.id}
+              className="agent-card cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => setActiveAgent(agent.id as any)}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <agent.icon className={`h-10 w-10 ${agent.color}`} />
@@ -123,7 +138,7 @@ export default function AgentsTab() {
                 </div>
                 <div className={`status-indicator ${agent.status}`}></div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <p className="text-dark-400 text-xs">Executions</p>
@@ -134,7 +149,7 @@ export default function AgentsTab() {
                   <p className="text-green-400 font-semibold">{agent.successRate}%</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-dark-400 text-sm capitalize">Status: {agent.status}</span>
                 <button className="btn-pill flex items-center space-x-1">
@@ -150,15 +165,31 @@ export default function AgentsTab() {
       {/* Phase 2 Agents - Coming Soon */}
       <div className="card-glow">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-white">Phase 2 Agents - Email, Social & Support</h3>
-          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-sm rounded-full">In Development</span>
+          <h3 className="text-lg font-semibold text-white">
+            Phase 2 Agents - Email, Social & Support
+          </h3>
+          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-sm rounded-full">
+            In Development
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { name: 'Email Agent', description: 'Automated email sequences and nurturing', color: 'text-green-400' },
-            { name: 'Social Agent', description: 'Multi-platform social media management', color: 'text-pink-400' },
-            { name: 'Support Agent', description: 'WhatsApp and customer support automation', color: 'text-cyan-400' }
+            {
+              name: 'Email Agent',
+              description: 'Automated email sequences and nurturing',
+              color: 'text-green-400',
+            },
+            {
+              name: 'Social Agent',
+              description: 'Multi-platform social media management',
+              color: 'text-pink-400',
+            },
+            {
+              name: 'Support Agent',
+              description: 'WhatsApp and customer support automation',
+              color: 'text-cyan-400',
+            },
           ].map((agent, index) => (
             <div key={index} className="agent-card opacity-60">
               <div className="flex items-center space-x-3 mb-3">
@@ -168,7 +199,7 @@ export default function AgentsTab() {
                   <p className="text-dark-400 text-sm">{agent.description}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-dark-400 text-sm">Status: Coming Soon</span>
                 <span className="px-2 py-1 bg-dark-700 text-dark-400 text-xs rounded">Phase 2</span>
@@ -181,18 +212,12 @@ export default function AgentsTab() {
       {/* Quick Actions */}
       <div className="card-glow">
         <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <button 
-            onClick={() => setActiveAgent('content')}
-            className="btn-secondary text-sm py-3"
-          >
+          <button onClick={() => setActiveAgent('content')} className="btn-secondary text-sm py-3">
             Generate Content
           </button>
-          <button 
-            onClick={() => setActiveAgent('seo')}
-            className="btn-secondary text-sm py-3"
-          >
+          <button onClick={() => setActiveAgent('seo')} className="btn-secondary text-sm py-3">
             SEO Analysis
           </button>
           <button className="btn-secondary text-sm py-3 opacity-50 cursor-not-allowed">

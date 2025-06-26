@@ -12,11 +12,11 @@ interface CampaignConfigDrawerProps {
   onUpdate: (data: EmailData) => void;
 }
 
-export default function CampaignConfigDrawer({ 
-  isOpen, 
-  onClose, 
-  emailData: _emailData, 
-  onUpdate: _onUpdate 
+export default function CampaignConfigDrawer({
+  isOpen,
+  onClose,
+  emailData: _emailData,
+  onUpdate: _onUpdate,
 }: CampaignConfigDrawerProps): JSX.Element | null {
   if (!isOpen) return null;
 
@@ -25,9 +25,11 @@ export default function CampaignConfigDrawer({
       <div className="absolute right-0 top-0 h-full w-96 bg-white shadow-xl">
         <div className="p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Advanced Configuration</h3>
-          <button onClick={onClose} className="text-gray-500">Close</button>
+          <button onClick={onClose} className="text-gray-500">
+            Close
+          </button>
         </div>
       </div>
     </div>
   );
-} 
+}

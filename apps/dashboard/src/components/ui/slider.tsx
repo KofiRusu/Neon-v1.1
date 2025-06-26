@@ -37,7 +37,7 @@ export function Slider({
         disabled={disabled}
         className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-secondary slider-neon"
         style={{
-          background: `linear-gradient(to right, var(--neon-blue) 0%, var(--neon-blue) ${((value[0] - min) / (max - min)) * 100}%, var(--bg-secondary) ${((value[0] - min) / (max - min)) * 100}%, var(--bg-secondary) 100%)`
+          background: `linear-gradient(to right, var(--neon-blue) 0%, var(--neon-blue) ${((value[0] - min) / (max - min)) * 100}%, var(--bg-secondary) ${((value[0] - min) / (max - min)) * 100}%, var(--bg-secondary) 100%)`,
         }}
       />
       <style jsx>{`
@@ -62,4 +62,4 @@ export function Slider({
       `}</style>
     </div>
   );
-} 
+}

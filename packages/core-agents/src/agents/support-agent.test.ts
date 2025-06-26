@@ -28,7 +28,7 @@ describe('CustomerSupportAgent', () => {
     process.env.OPENAI_API_KEY = 'test-api-key';
 
     agent = new CustomerSupportAgent();
-    
+
     // Get the mocked OpenAI instance
     const OpenAI = require('openai').default;
     mockOpenAI = new OpenAI();
@@ -60,23 +60,23 @@ describe('CustomerSupportAgent', () => {
   describe('Message classification', () => {
     it('should classify message using AI when API key is available', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              intent: 'complaint',
-              category: 'Product Issue',
-              subcategory: 'Defective Product',
-              confidence: 0.92,
-              urgency: 'high',
-              requiresHuman: true,
-              suggestedActions: ['escalate_to_specialist', 'offer_replacement'],
-              keywords: ['broken', 'defective', 'not working'],
-              entities: [
-                { type: 'product_id', value: 'NEON-001', confidence: 0.95 }
-              ]
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                intent: 'complaint',
+                category: 'Product Issue',
+                subcategory: 'Defective Product',
+                confidence: 0.92,
+                urgency: 'high',
+                requiresHuman: true,
+                suggestedActions: ['escalate_to_specialist', 'offer_replacement'],
+                keywords: ['broken', 'defective', 'not working'],
+                entities: [{ type: 'product_id', value: 'NEON-001', confidence: 0.95 }],
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -86,12 +86,12 @@ describe('CustomerSupportAgent', () => {
         customer: {
           id: 'customer_123',
           name: 'John Doe',
-          email: 'john@example.com'
+          email: 'john@example.com',
         },
         context: {
           channel: 'email',
-          customerTier: 'premium'
-        }
+          customerTier: 'premium',
+        },
       };
 
       const result = await agent.classifyMessageAPI(input);
@@ -110,7 +110,7 @@ describe('CustomerSupportAgent', () => {
 
       const input = {
         text: 'I need a refund for my order',
-        customer: { name: 'Jane Smith' }
+        customer: { name: 'Jane Smith' },
       };
 
       const result = await agent.classifyMessageAPI(input);
@@ -123,17 +123,19 @@ describe('CustomerSupportAgent', () => {
 
     it('should handle malformed AI response gracefully', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: 'Invalid JSON response from AI'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: 'Invalid JSON response from AI',
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
 
       const input: MessageClassificationInput = {
-        text: 'How do I reset my password?'
+        text: 'How do I reset my password?',
       };
 
       const result = await agent.classifyMessageAPI(input);
@@ -151,7 +153,7 @@ describe('CustomerSupportAgent', () => {
         { text: 'How do I use this feature?', expectedIntent: 'support' },
         { text: 'There is a bug in the application', expectedIntent: 'bug_report' },
         { text: 'Can you help me with my bill?', expectedIntent: 'billing' },
-        { text: 'Hello there', expectedIntent: 'general' }
+        { text: 'Hello there', expectedIntent: 'general' },
       ];
 
       for (const testCase of testCases) {
@@ -164,24 +166,23 @@ describe('CustomerSupportAgent', () => {
   describe('Reply generation', () => {
     it('should generate AI-powered reply', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              reply: 'Hi John, I understand your frustration with the defective neon sign. I sincerely apologize for this issue.',
-              tone: 'empathetic',
-              confidence: 0.95,
-              suggestedFollowUps: ['Confirm shipping address'],
-              escalationRecommended: false,
-              estimatedResolutionTime: 24,
-              requiredActions: [
-                { action: 'arrange_replacement', priority: 'high' }
-              ],
-              relatedResources: [
-                { type: 'article', title: 'Product Replacement Policy' }
-              ]
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                reply:
+                  'Hi John, I understand your frustration with the defective neon sign. I sincerely apologize for this issue.',
+                tone: 'empathetic',
+                confidence: 0.95,
+                suggestedFollowUps: ['Confirm shipping address'],
+                escalationRecommended: false,
+                estimatedResolutionTime: 24,
+                requiredActions: [{ action: 'arrange_replacement', priority: 'high' }],
+                relatedResources: [{ type: 'article', title: 'Product Replacement Policy' }],
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -189,7 +190,7 @@ describe('CustomerSupportAgent', () => {
       const input = {
         message: 'My neon sign is defective and not working',
         tone: 'empathetic',
-        customer: { name: 'John' }
+        customer: { name: 'John' },
       };
 
       const result = await agent.generateReplyAPI(input);
@@ -206,7 +207,7 @@ describe('CustomerSupportAgent', () => {
       const input: ReplyGenerationInput = {
         message: 'I need help',
         tone: 'professional',
-        customer: { name: 'Alice' }
+        customer: { name: 'Alice' },
       };
 
       const result = await agent.generateReplyAPI(input);
@@ -219,11 +220,11 @@ describe('CustomerSupportAgent', () => {
 
     it('should handle different tones appropriately', async () => {
       const tones = ['professional', 'friendly', 'empathetic', 'apologetic', 'informative'];
-      
+
       for (const tone of tones) {
         const input: ReplyGenerationInput = {
           message: 'I have a question about my account',
-          tone: tone as any
+          tone: tone as any,
         };
 
         const result = await agent.generateReplyAPI(input);
@@ -235,25 +236,27 @@ describe('CustomerSupportAgent', () => {
   describe('Sentiment analysis', () => {
     it('should analyze sentiment using AI', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              sentiment: 'negative',
-              score: -0.8,
-              confidence: 0.94,
-              emotions: [{ emotion: 'frustrated', intensity: 0.9 }],
-              urgencyIndicators: ['immediately'],
-              escalationTriggers: ['terrible'],
-              customerSatisfactionRisk: 'high'
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                sentiment: 'negative',
+                score: -0.8,
+                confidence: 0.94,
+                emotions: [{ emotion: 'frustrated', intensity: 0.9 }],
+                urgencyIndicators: ['immediately'],
+                escalationTriggers: ['terrible'],
+                customerSatisfactionRisk: 'high',
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
 
       const input = {
-        message: 'This is terrible service! I need this fixed immediately!'
+        message: 'This is terrible service! I need this fixed immediately!',
       };
 
       const result = await agent.analyzeSentimentAPI(input);
@@ -270,7 +273,7 @@ describe('CustomerSupportAgent', () => {
       const testCases = [
         { text: 'This is amazing, I love it!', expectedSentiment: 'positive' },
         { text: 'This is terrible and I hate it!', expectedSentiment: 'negative' },
-        { text: 'How do I change my settings?', expectedSentiment: 'neutral' }
+        { text: 'How do I change my settings?', expectedSentiment: 'neutral' },
       ];
 
       for (const testCase of testCases) {
@@ -283,7 +286,7 @@ describe('CustomerSupportAgent', () => {
       mockOpenAI.chat.completions.create.mockRejectedValue(new Error('API Error'));
 
       const input: SentimentAnalysisInput = {
-        message: 'This is urgent! I need help immediately, it\'s an emergency!'
+        message: "This is urgent! I need help immediately, it's an emergency!",
       };
 
       const result = await agent.analyzeSentimentAPI(input);
@@ -306,9 +309,9 @@ describe('CustomerSupportAgent', () => {
           requiresHuman: true,
           suggestedActions: [],
           keywords: ['critical'],
-          entities: []
+          entities: [],
         },
-        customerTier: 'enterprise'
+        customerTier: 'enterprise',
       };
 
       const result = await agent.escalateAPI(input);
@@ -329,7 +332,7 @@ describe('CustomerSupportAgent', () => {
           requiresHuman: false,
           suggestedActions: [],
           keywords: ['password'],
-          entities: []
+          entities: [],
         },
         sentiment: {
           sentiment: 'neutral',
@@ -338,9 +341,9 @@ describe('CustomerSupportAgent', () => {
           emotions: [],
           urgencyIndicators: [],
           escalationTriggers: [],
-          customerSatisfactionRisk: 'low'
+          customerSatisfactionRisk: 'low',
         },
-        customerTier: 'basic'
+        customerTier: 'basic',
       };
 
       const result = await agent.escalateAPI(input);
@@ -359,9 +362,9 @@ describe('CustomerSupportAgent', () => {
           requiresHuman: false,
           suggestedActions: [],
           keywords: [],
-          entities: []
+          entities: [],
         },
-        customerTier: 'enterprise'
+        customerTier: 'enterprise',
       };
 
       const result = await agent.escalateAPI(input);
@@ -373,7 +376,7 @@ describe('CustomerSupportAgent', () => {
     it('should escalate based on agent workload', async () => {
       const input: EscalationInput = {
         message: 'I need help with something',
-        agentWorkload: 20 // Over the threshold of 15
+        agentWorkload: 20, // Over the threshold of 15
       };
 
       const result = await agent.escalateAPI(input);
@@ -388,7 +391,7 @@ describe('CustomerSupportAgent', () => {
         subject: 'Unable to login',
         message: 'I cannot log into my account',
         channel: 'email',
-        customer: { name: 'John Doe' }
+        customer: { name: 'John Doe' },
       };
 
       const result = await agent.createTicket(input);
@@ -404,7 +407,7 @@ describe('CustomerSupportAgent', () => {
         subject: 'Test ticket',
         message: 'Test message',
         channel: 'chat',
-        customer: { name: 'Test User' }
+        customer: { name: 'Test User' },
       };
 
       const createResult = await agent.createTicket(createInput);
@@ -416,8 +419,8 @@ describe('CustomerSupportAgent', () => {
         update: {
           status: 'in_progress',
           assignedTo: 'agent_001',
-          priority: 'high'
-        }
+          priority: 'high',
+        },
       };
 
       const updateResult = await agent.updateTicket(updateInput);
@@ -431,7 +434,7 @@ describe('CustomerSupportAgent', () => {
     it('should handle updating non-existent tickets', async () => {
       const updateInput = {
         ticketId: 'non_existent_ticket',
-        update: { status: 'closed' }
+        update: { status: 'closed' },
       };
 
       const result = await agent.updateTicket(updateInput);
@@ -447,12 +450,12 @@ describe('CustomerSupportAgent', () => {
         recipient: '+1234567890',
         message: {
           type: 'text' as const,
-          content: 'Hello! How can we help you today?'
+          content: 'Hello! How can we help you today?',
         },
         settings: {
           businessId: 'business_123',
-          accessToken: 'token_456'
-        }
+          accessToken: 'token_456',
+        },
       };
 
       const result = await agent.sendMessage(input);
@@ -470,8 +473,8 @@ describe('CustomerSupportAgent', () => {
         message: 'I need help with my billing',
         customer: {
           name: 'Sarah Johnson',
-          email: 'sarah@example.com'
-        }
+          email: 'sarah@example.com',
+        },
       };
 
       const result = await agent.autoRespond(input);
@@ -488,7 +491,7 @@ describe('CustomerSupportAgent', () => {
     it('should search knowledge base articles', async () => {
       const input = {
         action: 'search_articles',
-        data: { query: 'password' }
+        data: { query: 'password' },
       };
 
       const result = await agent.manageKnowledgeBase(input);
@@ -506,8 +509,8 @@ describe('CustomerSupportAgent', () => {
           content: 'To update your payment method...',
           category: 'Billing',
           tags: ['payment', 'billing'],
-          author: 'Support Team'
-        }
+          author: 'Support Team',
+        },
       };
 
       const result = await agent.manageKnowledgeBase(input);
@@ -521,7 +524,7 @@ describe('CustomerSupportAgent', () => {
     it('should get suggested articles based on message', async () => {
       const input = {
         action: 'get_suggestions',
-        data: { message: 'I forgot my password and cannot login' }
+        data: { message: 'I forgot my password and cannot login' },
       };
 
       const result = await agent.manageKnowledgeBase(input);
@@ -539,7 +542,7 @@ describe('CustomerSupportAgent', () => {
         subject: 'Login Issue',
         message: 'Cannot access account',
         channel: 'email',
-        category: 'Account Management'
+        category: 'Account Management',
       };
 
       const createResult = await agent.createTicket(createInput);
@@ -567,9 +570,9 @@ describe('CustomerSupportAgent', () => {
       const result = await agent.execute({
         task: 'classify_message',
         context: {
-          text: 'I have a billing question'
+          text: 'I have a billing question',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -582,9 +585,9 @@ describe('CustomerSupportAgent', () => {
         context: {
           message: 'Can you help me?',
           tone: 'friendly',
-          customer: { name: 'Alice' }
+          customer: { name: 'Alice' },
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -596,9 +599,9 @@ describe('CustomerSupportAgent', () => {
       const result = await agent.execute({
         task: 'analyze_sentiment',
         context: {
-          message: 'I am very frustrated with this service!'
+          message: 'I am very frustrated with this service!',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -610,9 +613,9 @@ describe('CustomerSupportAgent', () => {
         task: 'escalate_ticket',
         context: {
           message: 'This is urgent!',
-          customerTier: 'enterprise'
+          customerTier: 'enterprise',
         },
-        priority: 'high'
+        priority: 'high',
       });
 
       expect(result.success).toBe(true);
@@ -623,7 +626,7 @@ describe('CustomerSupportAgent', () => {
       const result = await agent.execute({
         task: 'unknown_task',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(false);
@@ -636,9 +639,9 @@ describe('CustomerSupportAgent', () => {
       const result = await agent.execute({
         task: 'classify_message',
         context: {
-          text: 'Performance test message'
+          text: 'Performance test message',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.performance).toBeGreaterThan(0);
@@ -650,9 +653,9 @@ describe('CustomerSupportAgent', () => {
       await agent.execute({
         task: 'classify_message',
         context: {
-          text: 'Status test message'
+          text: 'Status test message',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       const status = await agent.getStatus();
@@ -664,14 +667,13 @@ describe('CustomerSupportAgent', () => {
 
   describe('Error handling', () => {
     it('should handle OpenAI timeout gracefully', async () => {
-      mockOpenAI.chat.completions.create.mockImplementation(() => 
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 100)
-        )
+      mockOpenAI.chat.completions.create.mockImplementation(
+        () =>
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 100))
       );
 
       const input: MessageClassificationInput = {
-        text: 'Timeout test message'
+        text: 'Timeout test message',
       };
 
       const result = await agent.classifyMessageAPI(input);
@@ -691,7 +693,7 @@ describe('CustomerSupportAgent', () => {
       const result = await agent.execute({
         task: 'track_satisfaction',
         context: {},
-        priority: 'low'
+        priority: 'low',
       });
 
       expect(result.success).toBe(true);
@@ -705,7 +707,7 @@ describe('CustomerSupportAgent', () => {
       const result = await agent.execute({
         task: 'manage_queue',
         context: {},
-        priority: 'low'
+        priority: 'low',
       });
 
       expect(result.success).toBe(true);
@@ -714,4 +716,4 @@ describe('CustomerSupportAgent', () => {
       expect(result.data.queue.avgWaitTime).toBeGreaterThan(0);
     });
   });
-}); 
+});

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { logger } from '@neon/utils';
+import { AgentMemoryStore } from './memory/AgentMemoryStore';
 
 // Base schemas for agent communication
 export const AgentPayloadSchema = z.object({
@@ -53,12 +54,20 @@ export abstract class AbstractAgent implements BaseAgent {
   protected status: 'idle' | 'running' | 'error' | 'maintenance' = 'idle';
   protected lastExecution?: Date;
   protected performance?: number;
+  protected memoryStore: AgentMemoryStore;
 
-  constructor(id: string, name: string, type: string, capabilities: string[] = []) {
+  constructor(
+    id: string,
+    name: string,
+    type: string,
+    capabilities: string[] = [],
+    memoryStore?: AgentMemoryStore
+  ) {
     this.id = id;
     this.name = name;
     this.type = type;
     this.capabilities = capabilities;
+    this.memoryStore = memoryStore || new AgentMemoryStore();
   }
 
   abstract execute(payload: AgentPayload): Promise<AgentResult>;
@@ -110,6 +119,8 @@ export abstract class AbstractAgent implements BaseAgent {
     executionFn: () => Promise<unknown>
   ): Promise<AgentResult> {
     const startTime = Date.now();
+    const sessionId = payload.metadata?.sessionId || `session-${Date.now()}`;
+    const userId = payload.metadata?.userId;
 
     try {
       this.setStatus('running');
@@ -125,7 +136,7 @@ export abstract class AbstractAgent implements BaseAgent {
       this.setLastExecution(new Date());
       this.setPerformance(executionTime);
 
-      return {
+      const agentResult = {
         success: true,
         data: result,
         performance: executionTime,
@@ -136,13 +147,25 @@ export abstract class AbstractAgent implements BaseAgent {
           timestamp: new Date().toISOString(),
         },
       };
+
+      // Store successful execution in memory
+      await this.storeMemory(sessionId, payload, agentResult, {
+        userId,
+        executionTime,
+        success: true,
+        tokensUsed: this.extractTokensUsed(result),
+        cost: this.estimateCost(result),
+      });
+
+      return agentResult;
     } catch (error) {
       this.setStatus('error');
+      const executionTime = Date.now() - startTime;
 
-      return {
+      const agentResult = {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
-        performance: Date.now() - startTime,
+        performance: executionTime,
         metadata: {
           agentId: this.id,
           agentName: this.name,
@@ -150,6 +173,105 @@ export abstract class AbstractAgent implements BaseAgent {
           timestamp: new Date().toISOString(),
         },
       };
+
+      // Store failed execution in memory
+      await this.storeMemory(sessionId, payload, agentResult, {
+        userId,
+        executionTime,
+        success: false,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        tokensUsed: 0,
+        cost: 0,
+      });
+
+      return agentResult;
+    }
+  }
+
+  /**
+   * Store execution in memory for learning and analysis
+   */
+  protected async storeMemory(
+    sessionId: string,
+    input: AgentPayload,
+    output: AgentResult,
+    metadata: {
+      userId?: string;
+      executionTime: number;
+      success: boolean;
+      tokensUsed?: number;
+      cost?: number;
+      score?: number;
+      errorMessage?: string;
+    }
+  ): Promise<void> {
+    try {
+      await this.memoryStore.storeMemory(this.id, sessionId, input, output, metadata);
+    } catch (error) {
+      logger.error(
+        `Failed to store memory for agent ${this.name}`,
+        { error, agentId: this.id },
+        'AgentMemory'
+      );
+    }
+  }
+
+  /**
+   * Get last successful runs for context
+   */
+  protected async getLastSuccessfulRuns(count: number = 3): Promise<any[]> {
+    try {
+      const memories = await this.memoryStore.getLastSuccessfulRuns(this.id, count);
+      return memories.map(m => ({
+        input: m.input,
+        output: m.output,
+        timestamp: m.timestamp,
+        executionTime: m.executionTime,
+      }));
+    } catch (error) {
+      logger.error(
+        `Failed to retrieve successful runs for agent ${this.name}`,
+        { error, agentId: this.id },
+        'AgentMemory'
+      );
+      return [];
+    }
+  }
+
+  /**
+   * Extract tokens used from result (override in specific agents)
+   */
+  protected extractTokensUsed(result: unknown): number {
+    // Default implementation - agents can override for specific token tracking
+    if (typeof result === 'object' && result !== null && 'tokensUsed' in result) {
+      return (result as any).tokensUsed || 0;
+    }
+    return 0;
+  }
+
+  /**
+   * Estimate cost from result (override in specific agents)
+   */
+  protected estimateCost(result: unknown): number {
+    // Default implementation - agents can override for specific cost calculation
+    const tokens = this.extractTokensUsed(result);
+    // Rough estimate: $0.002 per 1K tokens (GPT-4 pricing)
+    return (tokens / 1000) * 0.002;
+  }
+
+  /**
+   * Get agent performance metrics
+   */
+  async getPerformanceMetrics(days: number = 30): Promise<any> {
+    try {
+      return await this.memoryStore.getAgentMetrics(this.id, days);
+    } catch (error) {
+      logger.error(
+        `Failed to get performance metrics for agent ${this.name}`,
+        { error, agentId: this.id },
+        'AgentMemory'
+      );
+      return null;
     }
   }
 }

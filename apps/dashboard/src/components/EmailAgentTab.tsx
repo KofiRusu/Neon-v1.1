@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { 
+import {
   EnvelopeIcon,
   PaperAirplaneIcon,
   CalendarIcon,
@@ -12,7 +12,7 @@ import {
   UserGroupIcon,
   ClockIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
 } from '@heroicons/react/24/outline';
 import { trpc } from '../lib/trpc';
 
@@ -37,10 +37,14 @@ const emailTemplateSchema = z.object({
 });
 
 const campaignSchema = z.object({
-  recipients: z.array(z.object({
-    email: z.string().email(),
-    name: z.string().optional(),
-  })).min(1, 'At least one recipient is required'),
+  recipients: z
+    .array(
+      z.object({
+        email: z.string().email(),
+        name: z.string().optional(),
+      })
+    )
+    .min(1, 'At least one recipient is required'),
   scheduleAt: z.date().optional(),
   testMode: z.boolean().default(false),
 });
@@ -49,7 +53,9 @@ type EmailTemplateForm = z.infer<typeof emailTemplateSchema>;
 type CampaignForm = z.infer<typeof campaignSchema>;
 
 export default function EmailAgentTab() {
-  const [activeSection, setActiveSection] = useState<'template' | 'campaign' | 'analytics'>('template');
+  const [activeSection, setActiveSection] = useState<'template' | 'campaign' | 'analytics'>(
+    'template'
+  );
   const [generatedTemplate, setGeneratedTemplate] = useState<any>(null);
   const [campaignResult, setCampaignResult] = useState<any>(null);
 
@@ -86,19 +92,19 @@ export default function EmailAgentTab() {
 
   // tRPC mutations
   const generateTemplate = trpc.email.generateTemplate.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setGeneratedTemplate(data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to generate template:', error);
     },
   });
 
   const sendCampaign = trpc.email.sendCampaign.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setCampaignResult(data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to send campaign:', error);
     },
   });
@@ -116,7 +122,7 @@ export default function EmailAgentTab() {
 
   const onSendCampaign = (data: CampaignForm) => {
     if (!generatedTemplate) return;
-    
+
     sendCampaign.mutate({
       campaignId: 'temp-campaign-id', // In real app, get from context
       emailTemplate: {
@@ -140,7 +146,10 @@ export default function EmailAgentTab() {
   const removeRecipient = (index: number) => {
     const current = campaignForm.getValues('recipients');
     if (current.length > 1) {
-      campaignForm.setValue('recipients', current.filter((_, i) => i !== index));
+      campaignForm.setValue(
+        'recipients',
+        current.filter((_, i) => i !== index)
+      );
     }
   };
 
@@ -154,10 +163,12 @@ export default function EmailAgentTab() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-gray-900">Email Marketing Agent</h1>
-            <p className="text-sm text-gray-600">Create campaigns, manage templates, and track performance</p>
+            <p className="text-sm text-gray-600">
+              Create campaigns, manage templates, and track performance
+            </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 bg-green-500 rounded-full"></div>
           <span className="text-sm text-gray-600">Agent Online</span>
@@ -170,7 +181,7 @@ export default function EmailAgentTab() {
           { id: 'template', name: 'Template Builder', icon: EnvelopeIcon },
           { id: 'campaign', name: 'Send Campaign', icon: PaperAirplaneIcon },
           { id: 'analytics', name: 'Analytics', icon: ChartBarIcon },
-        ].map((section) => {
+        ].map(section => {
           const Icon = section.icon;
           return (
             <button
@@ -195,11 +206,13 @@ export default function EmailAgentTab() {
           {/* Template Form */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Template Configuration</h3>
-            
+
             <form onSubmit={templateForm.handleSubmit(onGenerateTemplate)} className="space-y-4">
               {/* Template Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Template Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Template Type
+                </label>
                 <Controller
                   name="type"
                   control={templateForm.control}
@@ -229,7 +242,9 @@ export default function EmailAgentTab() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {templateForm.formState.errors.subject && (
-                  <p className="mt-1 text-sm text-red-600">{templateForm.formState.errors.subject.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {templateForm.formState.errors.subject.message}
+                  </p>
                 )}
               </div>
 
@@ -330,25 +345,27 @@ export default function EmailAgentTab() {
           {/* Template Preview */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Template Preview</h3>
-            
+
             {generatedTemplate ? (
               <div className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">Subject: {generatedTemplate.subject}</h4>
-                  <div className="text-sm text-gray-600 mb-2">Preview: {generatedTemplate.previewText}</div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Subject: {generatedTemplate.subject}
+                  </h4>
+                  <div className="text-sm text-gray-600 mb-2">
+                    Preview: {generatedTemplate.previewText}
+                  </div>
                 </div>
-                
+
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <div 
+                  <div
                     className="p-4 max-h-96 overflow-y-auto"
                     dangerouslySetInnerHTML={{ __html: generatedTemplate.htmlTemplate }}
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-600">
-                    Template generated successfully
-                  </div>
+                  <div className="text-sm text-gray-600">Template generated successfully</div>
                   <button
                     onClick={() => setActiveSection('campaign')}
                     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
@@ -374,13 +391,15 @@ export default function EmailAgentTab() {
           {/* Campaign Form */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Setup</h3>
-            
+
             {!generatedTemplate && (
               <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
-                <p className="text-sm text-yellow-800">Please generate a template first before sending a campaign.</p>
+                <p className="text-sm text-yellow-800">
+                  Please generate a template first before sending a campaign.
+                </p>
               </div>
             )}
-            
+
             <form onSubmit={campaignForm.handleSubmit(onSendCampaign)} className="space-y-4">
               {/* Recipients */}
               <div>
@@ -430,8 +449,18 @@ export default function EmailAgentTab() {
                     <input
                       {...field}
                       type="datetime-local"
-                      value={field.value ? new Date(field.value.getTime() - field.value.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
-                      onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                      value={
+                        field.value
+                          ? new Date(
+                              field.value.getTime() - field.value.getTimezoneOffset() * 60000
+                            )
+                              .toISOString()
+                              .slice(0, 16)
+                          : ''
+                      }
+                      onChange={e =>
+                        field.onChange(e.target.value ? new Date(e.target.value) : undefined)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   )}
@@ -475,30 +504,36 @@ export default function EmailAgentTab() {
           {/* Campaign Results */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Results</h3>
-            
+
             {campaignResult ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircleIcon className="h-5 w-5" />
                   <span className="font-medium">Campaign sent successfully!</span>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-700">{campaignResult.sentCount}</div>
+                    <div className="text-2xl font-bold text-green-700">
+                      {campaignResult.sentCount}
+                    </div>
                     <div className="text-sm text-green-600">Emails Sent</div>
                   </div>
                   <div className="p-3 bg-red-50 rounded-lg">
-                    <div className="text-2xl font-bold text-red-700">{campaignResult.failedCount}</div>
+                    <div className="text-2xl font-bold text-red-700">
+                      {campaignResult.failedCount}
+                    </div>
                     <div className="text-sm text-red-600">Failed</div>
                   </div>
                 </div>
-                
+
                 {campaignResult.scheduledFor && (
                   <div className="p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center gap-2 text-blue-700">
                       <CalendarIcon className="h-4 w-4" />
-                      <span className="text-sm">Scheduled for: {new Date(campaignResult.scheduledFor).toLocaleString()}</span>
+                      <span className="text-sm">
+                        Scheduled for: {new Date(campaignResult.scheduledFor).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -518,8 +553,10 @@ export default function EmailAgentTab() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Performance Metrics */}
           <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Email Performance (Last 30 Days)</h3>
-            
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Email Performance (Last 30 Days)
+            </h3>
+
             {performanceLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -528,45 +565,63 @@ export default function EmailAgentTab() {
               <div className="space-y-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-700">{performance.performance.sent.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-blue-700">
+                      {performance.performance.sent.toLocaleString()}
+                    </div>
                     <div className="text-sm text-blue-600">Emails Sent</div>
                   </div>
                   <div className="p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-700">{performance.rates.delivery}%</div>
+                    <div className="text-2xl font-bold text-green-700">
+                      {performance.rates.delivery}%
+                    </div>
                     <div className="text-sm text-green-600">Delivery Rate</div>
                   </div>
                   <div className="p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-700">{performance.rates.open}%</div>
+                    <div className="text-2xl font-bold text-purple-700">
+                      {performance.rates.open}%
+                    </div>
                     <div className="text-sm text-purple-600">Open Rate</div>
                   </div>
                   <div className="p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-700">{performance.rates.click}%</div>
+                    <div className="text-2xl font-bold text-orange-700">
+                      {performance.rates.click}%
+                    </div>
                     <div className="text-sm text-orange-600">Click Rate</div>
                   </div>
                 </div>
-                
+
                 <div className="border-t border-gray-200 pt-4">
                   <h4 className="font-medium text-gray-900 mb-3">Detailed Metrics</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Delivered:</span>
-                      <span className="font-medium">{performance.performance.delivered.toLocaleString()}</span>
+                      <span className="font-medium">
+                        {performance.performance.delivered.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Opened:</span>
-                      <span className="font-medium">{performance.performance.opened.toLocaleString()}</span>
+                      <span className="font-medium">
+                        {performance.performance.opened.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Clicked:</span>
-                      <span className="font-medium">{performance.performance.clicked.toLocaleString()}</span>
+                      <span className="font-medium">
+                        {performance.performance.clicked.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Bounced:</span>
-                      <span className="font-medium text-red-600">{performance.performance.bounced.toLocaleString()}</span>
+                      <span className="font-medium text-red-600">
+                        {performance.performance.bounced.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Unsubscribed:</span>
-                      <span className="font-medium text-red-600">{performance.performance.unsubscribed.toLocaleString()}</span>
+                      <span className="font-medium text-red-600">
+                        {performance.performance.unsubscribed.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -582,7 +637,7 @@ export default function EmailAgentTab() {
           {/* Quick Actions */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-            
+
             <div className="space-y-3">
               <button
                 onClick={() => setActiveSection('template')}
@@ -596,7 +651,7 @@ export default function EmailAgentTab() {
                   </div>
                 </div>
               </button>
-              
+
               <button
                 onClick={() => setActiveSection('campaign')}
                 className="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors"
@@ -609,7 +664,7 @@ export default function EmailAgentTab() {
                   </div>
                 </div>
               </button>
-              
+
               <div className="p-3 border border-gray-200 rounded-lg bg-gray-50">
                 <div className="flex items-center gap-3">
                   <ClockIcon className="h-5 w-5 text-gray-400" />
@@ -625,4 +680,4 @@ export default function EmailAgentTab() {
       )}
     </div>
   );
-} 
+}

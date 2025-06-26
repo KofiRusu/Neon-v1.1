@@ -95,28 +95,26 @@ export const brandVoiceRouter = createTRPCRouter({
       };
     }),
 
-  getProfile: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const profile = await ctx.db.brandVoice.findUnique({
-        where: { id: input.id },
-        include: {
-          analyses: {
-            orderBy: { analyzedAt: 'desc' },
-            take: 10,
-          },
-          _count: {
-            select: { analyses: true },
-          },
+  getProfile: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const profile = await ctx.db.brandVoice.findUnique({
+      where: { id: input.id },
+      include: {
+        analyses: {
+          orderBy: { analyzedAt: 'desc' },
+          take: 10,
         },
-      });
+        _count: {
+          select: { analyses: true },
+        },
+      },
+    });
 
-      if (!profile) {
-        throw new Error('Brand voice profile not found');
-      }
+    if (!profile) {
+      throw new Error('Brand voice profile not found');
+    }
 
-      return profile;
-    }),
+    return profile;
+  }),
 
   // Content Analysis
   analyzeContent: protectedProcedure
@@ -203,10 +201,7 @@ export const brandVoiceRouter = createTRPCRouter({
     .input(ContentAnalysisSchema.omit({ brandVoiceId: true }))
     .query(async ({ input }) => {
       try {
-        const result = await brandVoiceAgent.getSuggestionsPublic(
-          input.content,
-          input.contentType
-        );
+        const result = await brandVoiceAgent.getSuggestionsPublic(input.content, input.contentType);
 
         if (!result.success) {
           throw new Error(result.error || 'Suggestion generation failed');

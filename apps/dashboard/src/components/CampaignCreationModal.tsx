@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { 
+import {
   XMarkIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -15,7 +15,7 @@ import {
   CalendarIcon,
   UserGroupIcon,
   ChartBarIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { trpc } from '../lib/trpc';
 
@@ -31,20 +31,33 @@ const campaignBasicsSchema = z.object({
 });
 
 const emailConfigSchema = z.object({
-  templateType: z.enum(['newsletter', 'promotional', 'welcome', 'follow-up', 'reminder', 'announcement']),
+  templateType: z.enum([
+    'newsletter',
+    'promotional',
+    'welcome',
+    'follow-up',
+    'reminder',
+    'announcement',
+  ]),
   subject: z.string().min(1, 'Subject is required').max(200),
   fromName: z.string().min(1, 'From name is required'),
   fromEmail: z.string().email('Invalid email'),
-  recipients: z.array(z.object({
-    email: z.string().email(),
-    name: z.string().optional(),
-  })).min(1, 'At least one recipient is required'),
+  recipients: z
+    .array(
+      z.object({
+        email: z.string().email(),
+        name: z.string().optional(),
+      })
+    )
+    .min(1, 'At least one recipient is required'),
   scheduleType: z.enum(['immediate', 'scheduled', 'sequence']),
   scheduledTime: z.date().optional(),
 });
 
 const socialConfigSchema = z.object({
-  platforms: z.array(z.enum(['FACEBOOK', 'INSTAGRAM', 'TIKTOK', 'TWITTER', 'LINKEDIN'])).min(1, 'Select at least one platform'),
+  platforms: z
+    .array(z.enum(['FACEBOOK', 'INSTAGRAM', 'TIKTOK', 'TWITTER', 'LINKEDIN']))
+    .min(1, 'Select at least one platform'),
   contentType: z.enum(['post', 'story', 'reel', 'thread']),
   tone: z.enum(['professional', 'casual', 'humorous', 'inspirational', 'promotional']),
   includeHashtags: z.boolean().default(true),
@@ -63,7 +76,11 @@ interface CampaignCreationModalProps {
   onSuccess?: (campaign: any) => void;
 }
 
-export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: CampaignCreationModalProps) {
+export default function CampaignCreationModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}: CampaignCreationModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [campaignType, setCampaignType] = useState<'email' | 'social' | 'mixed'>('email');
   const [generatedContent, setGeneratedContent] = useState<any>(null);
@@ -109,19 +126,19 @@ export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: Ca
 
   // tRPC mutations
   const generateEmailTemplate = trpc.email.generateTemplate.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setGeneratedContent({ type: 'email', data });
     },
   });
 
   const generateSocialContent = trpc.social.generateContent.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setGeneratedContent({ type: 'social', data });
     },
   });
 
   const createCampaign = trpc.campaign.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setCreatedCampaign(data);
       onSuccess?.(data);
     },
@@ -161,7 +178,7 @@ export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: Ca
 
   const handleGenerateContent = () => {
     const basicsData = basicsForm.getValues();
-    
+
     if (campaignType === 'email' || campaignType === 'mixed') {
       const emailData = emailForm.getValues();
       generateEmailTemplate.mutate({
@@ -221,7 +238,10 @@ export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: Ca
   const removeRecipient = (index: number) => {
     const current = emailForm.getValues('recipients');
     if (current.length > 1) {
-      emailForm.setValue('recipients', current.filter((_, i) => i !== index));
+      emailForm.setValue(
+        'recipients',
+        current.filter((_, i) => i !== index)
+      );
     }
   };
 
@@ -230,7 +250,7 @@ export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: Ca
     const updated = current.includes(platform as any)
       ? current.filter(p => p !== platform)
       : [...current, platform as any];
-    
+
     if (updated.length > 0) {
       socialForm.setValue('platforms', updated);
     }
@@ -260,34 +280,42 @@ export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: Ca
           <div className="text-center py-12">
             <SparklesIcon className="h-16 w-16 mx-auto text-gray-300 mb-4" />
             <h3 className="text-xl font-medium text-gray-900 mb-2">Campaign Creation Wizard</h3>
-            <p className="text-gray-600 mb-6">Advanced campaign creation with AI agent integration coming soon!</p>
-            
+            <p className="text-gray-600 mb-6">
+              Advanced campaign creation with AI agent integration coming soon!
+            </p>
+
             <div className="space-y-4 text-left max-w-md mx-auto">
               <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
                 <EnvelopeIcon className="h-5 w-5 text-blue-600" />
                 <div>
                   <div className="font-medium text-blue-900">Email Campaign Builder</div>
-                  <div className="text-sm text-blue-700">Template generation, audience targeting, scheduling</div>
+                  <div className="text-sm text-blue-700">
+                    Template generation, audience targeting, scheduling
+                  </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3 p-3 bg-pink-50 rounded-lg">
                 <GlobeAltIcon className="h-5 w-5 text-pink-600" />
                 <div>
                   <div className="font-medium text-pink-900">Social Media Campaigns</div>
-                  <div className="text-sm text-pink-700">Multi-platform content, scheduling, analytics</div>
+                  <div className="text-sm text-pink-700">
+                    Multi-platform content, scheduling, analytics
+                  </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
                 <ChartBarIcon className="h-5 w-5 text-green-600" />
                 <div>
                   <div className="font-medium text-green-900">Cross-Agent Integration</div>
-                  <div className="text-sm text-green-700">ContentAgent + EmailAgent + SocialAgent coordination</div>
+                  <div className="text-sm text-green-700">
+                    ContentAgent + EmailAgent + SocialAgent coordination
+                  </div>
                 </div>
               </div>
             </div>
-            
+
             <button
               onClick={onClose}
               className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
@@ -299,4 +327,4 @@ export default function CampaignCreationModal({ isOpen, onClose, onSuccess }: Ca
       </div>
     </div>
   );
-} 
+}

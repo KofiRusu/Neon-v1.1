@@ -2,12 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { trpc } from '../../lib/trpc';
-import {
-  PlayIcon,
-  PauseIcon,
-  PencilIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { brand } from '@/lib/brand';
+import { PlayIcon, PauseIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Campaign {
   id: string;
@@ -44,100 +40,56 @@ export default function CampaignsPage(): JSX.Element {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const mockCampaigns: Campaign[] = [
-          {
-            id: 'camp-1',
-            name: 'Summer Neon Collection 2024',
-            type: 'social_media',
-            status: 'active',
-            budget: 15000,
-            spent: 8750,
-            roi: 4.2,
-            impressions: 2450000,
-            clicks: 83300,
-            conversions: 2830,
-            startDate: '2024-06-01',
-            endDate: '2024-08-31',
-            targetAudience: 'Young Adults 18-35',
-            agentsAssigned: ['Content Agent', 'Design Agent', 'Trend Agent'],
-            createdAt: '2024-05-15',
-            lastModified: '2024-12-19',
-          },
-          {
-            id: 'camp-2',
-            name: 'B2B Outreach Q4 2024',
-            type: 'email',
-            status: 'active',
-            budget: 8000,
-            spent: 6200,
-            roi: 3.8,
-            impressions: 890000,
-            clicks: 34200,
-            conversions: 1150,
-            startDate: '2024-10-01',
-            endDate: '2024-12-31',
-            targetAudience: 'Business Decision Makers',
-            agentsAssigned: ['Outreach Agent', 'Content Agent'],
-            createdAt: '2024-09-15',
-            lastModified: '2024-12-18',
-          },
-          {
-            id: 'camp-3',
-            name: 'Black Friday Special 2024',
-            type: 'display',
-            status: 'completed',
-            budget: 25000,
-            spent: 24800,
-            roi: 5.1,
-            impressions: 1850000,
-            clicks: 67800,
-            conversions: 3420,
-            startDate: '2024-11-20',
-            endDate: '2024-11-30',
-            targetAudience: 'Holiday Shoppers',
-            agentsAssigned: ['Ad Agent', 'Design Agent', 'Insight Agent'],
-            createdAt: '2024-11-01',
-            lastModified: '2024-12-01',
-          },
-          {
-            id: 'camp-4',
-            name: 'New Year Resolution Fitness',
-            type: 'video',
-            status: 'draft',
-            budget: 12000,
-            spent: 0,
-            roi: 0,
-            impressions: 0,
-            clicks: 0,
-            conversions: 0,
-            startDate: '2025-01-01',
-            endDate: '2025-01-31',
-            targetAudience: 'Fitness Enthusiasts',
-            agentsAssigned: ['Content Agent', 'Design Agent'],
-            createdAt: '2024-12-10',
-            lastModified: '2024-12-15',
-          },
-          {
-            id: 'camp-5',
-            name: 'Spring Launch Campaign',
-            type: 'search',
-            status: 'paused',
-            budget: 18000,
-            spent: 4500,
-            roi: 2.1,
-            impressions: 456000,
-            clicks: 12400,
-            conversions: 340,
-            startDate: '2024-03-01',
-            endDate: '2024-05-31',
-            targetAudience: 'Fashion Forward Consumers',
-            agentsAssigned: ['Ad Agent', 'Trend Agent'],
-            createdAt: '2024-02-15',
-            lastModified: '2024-04-20',
-          },
-        ];
+        // Import real campaign data from metrics
+        const { metrics } = await import('@/lib/metrics');
 
-        setFilteredCampaigns(mockCampaigns);
+        const realCampaigns: Campaign[] = metrics.campaignMetrics.active.map(campaign => ({
+          id: campaign.id,
+          name: campaign.name,
+          type: 'social_media' as Campaign['type'], // Default type since our metrics don't have this exact mapping
+          status: 'active' as Campaign['status'],
+          budget: campaign.budget,
+          spent: campaign.spent,
+          roi: campaign.roi,
+          impressions: campaign.leads * 100, // Approximate impressions from leads
+          clicks: campaign.leads * 10, // Approximate clicks
+          conversions: campaign.conversions,
+          startDate: new Date().toISOString().split('T')[0], // Current date as start
+          endDate: new Date(Date.now() + campaign.daysRemaining * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0],
+          targetAudience: campaign.channels.includes('linkedin')
+            ? 'Business Professionals'
+            : campaign.channels.includes('social')
+              ? 'Social Media Users'
+              : 'General Audience',
+          agentsAssigned: campaign.channels.map(channel => {
+            switch (channel) {
+              case 'email':
+                return 'EmailAgent';
+              case 'social':
+                return 'SocialAgent';
+              case 'ads':
+                return 'AdAgent';
+              case 'content':
+                return 'ContentAgent';
+              case 'linkedin':
+                return 'LinkedInAgent';
+              case 'blog':
+                return 'ContentAgent';
+              case 'youtube':
+                return 'VideoAgent';
+              default:
+                return 'GeneralAgent';
+            }
+          }),
+          createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0],
+          lastModified: new Date().toISOString().split('T')[0],
+        }));
+
+        setFilteredCampaigns(realCampaigns);
       } catch (error) {
         // Error handling - could be logged to external service or shown to user
         console.error('Failed to fetch campaigns:', error);
@@ -274,9 +226,7 @@ export default function CampaignsPage(): JSX.Element {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">Campaign Management</h1>
-            <p className="text-purple-200">
-              Orchestrate and optimize your AI-driven marketing campaigns
-            </p>
+            <p className="text-purple-200">{brand.messaging.keyMessages[0]}</p>
           </div>
           <button
             onClick={() => setShowNewCampaignModal(true)}

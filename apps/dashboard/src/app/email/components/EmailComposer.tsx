@@ -1,10 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  XMarkIcon,
-  PaperAirplaneIcon
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { trpc } from '../../../lib/trpc';
 import CampaignConfigDrawer from './CampaignConfigDrawer';
 
@@ -64,7 +61,11 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
     }
   };
 
-  const isValid = emailData.name && emailData.subject && emailData.content.text && emailData.recipients.emails.length > 0;
+  const isValid =
+    emailData.name &&
+    emailData.subject &&
+    emailData.content.text &&
+    emailData.recipients.emails.length > 0;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -75,7 +76,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
             <h2 className="text-xl font-semibold text-gray-900">Create Email Campaign</h2>
             <p className="text-sm text-gray-600 mt-1">Design and send your email campaign</p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Step Indicators */}
             <div className="flex items-center gap-2">
@@ -106,7 +107,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                 3
               </button>
             </div>
-            
+
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
@@ -131,7 +132,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                       <input
                         type="text"
                         value={emailData.name}
-                        onChange={(e) => setEmailData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={e => setEmailData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="Enter campaign name"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -143,7 +144,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                       <input
                         type="text"
                         value={emailData.subject}
-                        onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
+                        onChange={e => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
                         placeholder="Enter email subject"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -157,18 +158,18 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                   </label>
                   <textarea
                     value={emailData.content.text}
-                    onChange={(e) => setEmailData(prev => ({
-                      ...prev,
-                      content: { ...prev.content, text: e.target.value }
-                    }))}
+                    onChange={e =>
+                      setEmailData(prev => ({
+                        ...prev,
+                        content: { ...prev.content, text: e.target.value },
+                      }))
+                    }
                     placeholder="Write your email content here..."
                     className="w-full h-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   />
-                  
+
                   <div className="mt-4 flex items-center gap-4">
-                    <button className="text-sm text-blue-600 hover:text-blue-700">
-                      Add Image
-                    </button>
+                    <button className="text-sm text-blue-600 hover:text-blue-700">Add Image</button>
                     <button className="text-sm text-blue-600 hover:text-blue-700">
                       Insert Link
                     </button>
@@ -182,7 +183,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
               {/* Quick Settings Sidebar */}
               <div className="w-80 border-l border-gray-200 p-6">
                 <h3 className="text-sm font-medium text-gray-900 mb-4">Quick Settings</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -191,10 +192,12 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                     <input
                       type="text"
                       value={emailData.settings.fromName}
-                      onChange={(e) => setEmailData(prev => ({
-                        ...prev,
-                        settings: { ...prev.settings, fromName: e.target.value }
-                      }))}
+                      onChange={e =>
+                        setEmailData(prev => ({
+                          ...prev,
+                          settings: { ...prev.settings, fromName: e.target.value },
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -206,10 +209,12 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                     <input
                       type="email"
                       value={emailData.settings.fromEmail}
-                      onChange={(e) => setEmailData(prev => ({
-                        ...prev,
-                        settings: { ...prev.settings, fromEmail: e.target.value }
-                      }))}
+                      onChange={e =>
+                        setEmailData(prev => ({
+                          ...prev,
+                          settings: { ...prev.settings, fromEmail: e.target.value },
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -219,10 +224,12 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                       <input
                         type="checkbox"
                         checked={emailData.settings.trackOpens}
-                        onChange={(e) => setEmailData(prev => ({
-                          ...prev,
-                          settings: { ...prev.settings, trackOpens: e.target.checked }
-                        }))}
+                        onChange={e =>
+                          setEmailData(prev => ({
+                            ...prev,
+                            settings: { ...prev.settings, trackOpens: e.target.checked },
+                          }))
+                        }
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">Track opens</span>
@@ -232,10 +239,12 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                       <input
                         type="checkbox"
                         checked={emailData.settings.trackClicks}
-                        onChange={(e) => setEmailData(prev => ({
-                          ...prev,
-                          settings: { ...prev.settings, trackClicks: e.target.checked }
-                        }))}
+                        onChange={e =>
+                          setEmailData(prev => ({
+                            ...prev,
+                            settings: { ...prev.settings, trackClicks: e.target.checked },
+                          }))
+                        }
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">Track clicks</span>
@@ -249,7 +258,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
           {step === 'configure' && (
             <div className="h-full p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-6">Campaign Configuration</h3>
-              
+
               <div className="max-w-2xl space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -258,10 +267,15 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                   <textarea
                     placeholder="Enter email addresses, one per line"
                     value={emailData.recipients.emails.join('\n')}
-                    onChange={(e) => setEmailData(prev => ({
-                      ...prev,
-                      recipients: { ...prev.recipients, emails: e.target.value.split('\n').filter(Boolean) }
-                    }))}
+                    onChange={e =>
+                      setEmailData(prev => ({
+                        ...prev,
+                        recipients: {
+                          ...prev.recipients,
+                          emails: e.target.value.split('\n').filter(Boolean),
+                        },
+                      }))
+                    }
                     className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <p className="text-sm text-gray-600 mt-1">
@@ -270,18 +284,22 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Scheduling
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Scheduling</label>
                   <div className="space-y-3">
                     <label className="flex items-center">
                       <input
                         type="radio"
                         checked={emailData.scheduling.sendImmediately}
-                        onChange={() => setEmailData(prev => ({
-                          ...prev,
-                          scheduling: { ...prev.scheduling, sendImmediately: true, scheduledAt: undefined }
-                        }))}
+                        onChange={() =>
+                          setEmailData(prev => ({
+                            ...prev,
+                            scheduling: {
+                              ...prev.scheduling,
+                              sendImmediately: true,
+                              scheduledAt: undefined,
+                            },
+                          }))
+                        }
                         className="text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">Send immediately</span>
@@ -291,10 +309,12 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                       <input
                         type="radio"
                         checked={!emailData.scheduling.sendImmediately}
-                        onChange={() => setEmailData(prev => ({
-                          ...prev,
-                          scheduling: { ...prev.scheduling, sendImmediately: false }
-                        }))}
+                        onChange={() =>
+                          setEmailData(prev => ({
+                            ...prev,
+                            scheduling: { ...prev.scheduling, sendImmediately: false },
+                          }))
+                        }
                         className="text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">Schedule for later</span>
@@ -305,10 +325,15 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                         <input
                           type="datetime-local"
                           value={emailData.scheduling.scheduledAt?.toISOString().slice(0, 16) || ''}
-                          onChange={(e) => setEmailData(prev => ({
-                            ...prev,
-                            scheduling: { ...prev.scheduling, scheduledAt: new Date(e.target.value) }
-                          }))}
+                          onChange={e =>
+                            setEmailData(prev => ({
+                              ...prev,
+                              scheduling: {
+                                ...prev.scheduling,
+                                scheduledAt: new Date(e.target.value),
+                              },
+                            }))
+                          }
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
@@ -323,17 +348,23 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
             <div className="h-full flex">
               <div className="flex-1 p-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-6">Preview & Send</h3>
-                
+
                 <div className="bg-gray-50 rounded-lg p-6">
                   <div className="bg-white rounded-lg shadow-sm p-6">
                     <div className="border-b border-gray-200 pb-4 mb-4">
-                      <div className="text-sm text-gray-600">From: {emailData.settings.fromName} &lt;{emailData.settings.fromEmail}&gt;</div>
-                      <div className="text-lg font-medium text-gray-900 mt-1">{emailData.subject}</div>
+                      <div className="text-sm text-gray-600">
+                        From: {emailData.settings.fromName} &lt;{emailData.settings.fromEmail}&gt;
+                      </div>
+                      <div className="text-lg font-medium text-gray-900 mt-1">
+                        {emailData.subject}
+                      </div>
                     </div>
-                    
+
                     <div className="prose prose-sm max-w-none">
                       {emailData.content.text.split('\n').map((paragraph, index) => (
-                        <p key={index} className="mb-3">{paragraph}</p>
+                        <p key={index} className="mb-3">
+                          {paragraph}
+                        </p>
                       ))}
                     </div>
                   </div>
@@ -342,25 +373,25 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
 
               <div className="w-80 border-l border-gray-200 p-6">
                 <h4 className="text-sm font-medium text-gray-900 mb-4">Campaign Summary</h4>
-                
+
                 <div className="space-y-4 text-sm">
                   <div>
                     <span className="text-gray-600">Campaign:</span>
                     <div className="font-medium">{emailData.name}</div>
                   </div>
-                  
+
                   <div>
                     <span className="text-gray-600">Recipients:</span>
                     <div className="font-medium">{emailData.recipients.emails.length} emails</div>
                   </div>
-                  
+
                   <div>
                     <span className="text-gray-600">Timing:</span>
                     <div className="font-medium">
                       {emailData.scheduling.sendImmediately ? 'Send immediately' : 'Scheduled'}
                     </div>
                   </div>
-                  
+
                   <div>
                     <span className="text-gray-600">Tracking:</span>
                     <div className="font-medium">
@@ -391,13 +422,10 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
-            >
+            <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-900">
               Cancel
             </button>
-            
+
             {step === 'compose' && (
               <button
                 onClick={() => setStep('configure')}
@@ -407,7 +435,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                 Continue
               </button>
             )}
-            
+
             {step === 'configure' && (
               <button
                 onClick={() => setStep('preview')}
@@ -417,7 +445,7 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
                 Preview
               </button>
             )}
-            
+
             {step === 'preview' && (
               <button
                 onClick={handleSend}
@@ -443,4 +471,4 @@ export default function EmailComposer({ onClose }: EmailComposerProps): JSX.Elem
       )}
     </div>
   );
-} 
+}

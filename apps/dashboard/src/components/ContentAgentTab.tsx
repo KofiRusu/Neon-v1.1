@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { api } from '../utils/trpc';
-import { 
-  DocumentTextIcon, 
+import {
+  DocumentTextIcon,
   SparklesIcon,
   ArrowDownTrayIcon,
   ClipboardDocumentIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
 interface Post {
@@ -19,14 +19,18 @@ interface Post {
 }
 
 export default function ContentAgentTab() {
-  const [platform, setPlatform] = useState<'instagram' | 'facebook' | 'tiktok' | 'twitter' | 'linkedin'>('instagram');
+  const [platform, setPlatform] = useState<
+    'instagram' | 'facebook' | 'tiktok' | 'twitter' | 'linkedin'
+  >('instagram');
   const [topic, setTopic] = useState('custom neon signs');
-  const [tone, setTone] = useState<'professional' | 'casual' | 'funny' | 'inspiring' | 'urgent'>('professional');
+  const [tone, setTone] = useState<'professional' | 'casual' | 'funny' | 'inspiring' | 'urgent'>(
+    'professional'
+  );
   const [generatedPosts, setGeneratedPosts] = useState<Post[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const generatePosts = api.content.generatePosts.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setGeneratedPosts(data.posts);
     },
   });
@@ -62,9 +66,7 @@ export default function ContentAgentTab() {
           </div>
           <div className="flex items-center space-x-2">
             <div className="status-indicator active"></div>
-            <span className="text-green-400 text-sm">
-              {agentStatus.data?.status || 'Active'}
-            </span>
+            <span className="text-green-400 text-sm">{agentStatus.data?.status || 'Active'}</span>
           </div>
         </div>
 
@@ -93,14 +95,14 @@ export default function ContentAgentTab() {
       {/* Content Generation Form */}
       <div className="card-glow">
         <h3 className="text-lg font-semibold text-white mb-4">Generate Social Media Posts</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Platform Selection */}
           <div>
             <label className="block text-dark-300 text-sm font-medium mb-2">Platform</label>
             <select
               value={platform}
-              onChange={(e) => setPlatform(e.target.value as any)}
+              onChange={e => setPlatform(e.target.value as any)}
               className="input w-full"
             >
               <option value="instagram">Instagram</option>
@@ -117,7 +119,7 @@ export default function ContentAgentTab() {
             <input
               type="text"
               value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              onChange={e => setTopic(e.target.value)}
               placeholder="e.g., custom neon signs"
               className="input w-full"
             />
@@ -128,7 +130,7 @@ export default function ContentAgentTab() {
             <label className="block text-dark-300 text-sm font-medium mb-2">Tone</label>
             <select
               value={tone}
-              onChange={(e) => setTone(e.target.value as any)}
+              onChange={e => setTone(e.target.value as any)}
               className="input w-full"
             >
               <option value="professional">Professional</option>
@@ -164,28 +166,26 @@ export default function ContentAgentTab() {
         <div className="card-glow">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white">Generated Posts</h3>
-            <div className="text-dark-400 text-sm">
-              {generatedPosts.length} posts generated
-            </div>
+            <div className="text-dark-400 text-sm">{generatedPosts.length} posts generated</div>
           </div>
 
           <div className="space-y-4">
-            {generatedPosts.map((post) => (
+            {generatedPosts.map(post => (
               <div key={post.id} className="agent-card">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <span className="px-2 py-1 bg-neon-400/20 text-neon-400 text-xs rounded-full capitalize">
                       {post.platform}
                     </span>
-                    <span className="text-dark-400 text-xs">
-                      Score: {post.engagementScore}/100
-                    </span>
+                    <span className="text-dark-400 text-xs">Score: {post.engagementScore}/100</span>
                     <span className="text-dark-400 text-xs">
                       Est. Reach: {post.estimatedReach.toLocaleString()}
                     </span>
                   </div>
                   <button
-                    onClick={() => copyToClipboard(`${post.content  }\n\n${  post.hashtags.join(' ')}`, post.id)}
+                    onClick={() =>
+                      copyToClipboard(`${post.content}\n\n${post.hashtags.join(' ')}`, post.id)
+                    }
                     className="btn-pill flex items-center space-x-1"
                   >
                     {copiedId === post.id ? (
@@ -196,25 +196,26 @@ export default function ContentAgentTab() {
                     <span className="text-xs">{copiedId === post.id ? 'Copied!' : 'Copy'}</span>
                   </button>
                 </div>
-                
+
                 <div className="mb-3">
                   <p className="text-white leading-relaxed">{post.content}</p>
                 </div>
-                
+
                 {post.hashtags.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-neon-400 text-sm">
-                      {post.hashtags.join(' ')}
-                    </p>
+                    <p className="text-neon-400 text-sm">{post.hashtags.join(' ')}</p>
                   </div>
                 )}
-                
+
                 {post.imageSuggestions.length > 0 && (
                   <div>
                     <p className="text-dark-400 text-xs mb-1">Image suggestions:</p>
                     <div className="flex flex-wrap gap-1">
                       {post.imageSuggestions.map((suggestion, index) => (
-                        <span key={index} className="px-2 py-1 bg-dark-700 text-dark-300 text-xs rounded">
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-dark-700 text-dark-300 text-xs rounded"
+                        >
                           {suggestion}
                         </span>
                       ))}

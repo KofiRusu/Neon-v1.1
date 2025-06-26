@@ -50,7 +50,7 @@ export class OptimizedPrismaClient {
 
   private addMetric(metric: QueryMetrics): void {
     this.queryMetrics.push(metric);
-    
+
     // Keep only recent metrics
     if (this.queryMetrics.length > this.MAX_METRICS_HISTORY) {
       this.queryMetrics = this.queryMetrics.slice(-this.MAX_METRICS_HISTORY);
@@ -81,7 +81,7 @@ export class OptimizedPrismaClient {
         model: 'cached',
         duration: 0,
         timestamp: new Date(),
-        cached: true
+        cached: true,
       };
       this.addMetric(metric);
       return cachedEntry.data;
@@ -96,7 +96,7 @@ export class OptimizedPrismaClient {
     this.queryCache.set(cacheKey, {
       data: result,
       timestamp: Date.now(),
-      ttl: cacheTTL
+      ttl: cacheTTL,
     });
 
     // Record metrics
@@ -106,7 +106,7 @@ export class OptimizedPrismaClient {
       duration,
       timestamp: new Date(),
       cached: false,
-      recordCount: Array.isArray(result) ? result.length : 1
+      recordCount: Array.isArray(result) ? result.length : 1,
     };
     this.addMetric(metric);
 
@@ -114,56 +114,47 @@ export class OptimizedPrismaClient {
   }
 
   // Optimized campaign queries using new indexes
-  async getCampaignsByUserAndStatus(
-    userId: string, 
-    status?: string, 
-    limit: number = 50
-  ) {
-    return this.executeWithCache(
-      'getCampaignsByUserAndStatus',
-      { userId, status, limit },
-      () => this.client.campaign.findMany({
+  async getCampaignsByUserAndStatus(userId: string, status?: string, limit: number = 50) {
+    return this.executeWithCache('getCampaignsByUserAndStatus', { userId, status, limit }, () =>
+      this.client.campaign.findMany({
         where: {
           userId,
-          ...(status && { status: status as any })
+          ...(status && { status: status as any }),
         },
         orderBy: { createdAt: 'desc' },
         take: limit,
         include: {
           analytics: {
             take: 1,
-            orderBy: { date: 'desc' }
-          }
-        }
+            orderBy: { date: 'desc' },
+          },
+        },
       })
     );
   }
 
   // Optimized agent execution queries using new indexes
-  async getAgentPerformanceMetrics(
-    agentId: string,
-    startDate?: Date,
-    endDate?: Date
-  ) {
+  async getAgentPerformanceMetrics(agentId: string, startDate?: Date, endDate?: Date) {
     return this.executeWithCache(
       'getAgentPerformanceMetrics',
       { agentId, startDate, endDate },
-      () => this.client.agentExecution.findMany({
-        where: {
-          agentId,
-          ...(startDate && { startedAt: { gte: startDate } }),
-          ...(endDate && { startedAt: { lte: endDate } }),
-          status: 'COMPLETED'
-        },
-        orderBy: { startedAt: 'desc' },
-        select: {
-          id: true,
-          task: true,
-          performance: true,
-          startedAt: true,
-          completedAt: true
-        }
-      }),
+      () =>
+        this.client.agentExecution.findMany({
+          where: {
+            agentId,
+            ...(startDate && { startedAt: { gte: startDate } }),
+            ...(endDate && { startedAt: { lte: endDate } }),
+            status: 'COMPLETED',
+          },
+          orderBy: { startedAt: 'desc' },
+          select: {
+            id: true,
+            task: true,
+            performance: true,
+            startedAt: true,
+            completedAt: true,
+          },
+        }),
       600000 // 10 minute cache for performance data
     );
   }
@@ -178,15 +169,16 @@ export class OptimizedPrismaClient {
     return this.executeWithCache(
       'getCampaignAnalytics',
       { campaignId, type, period, limit },
-      () => this.client.analytics.findMany({
-        where: {
-          campaignId,
-          ...(type && { type: type as any }),
-          ...(period && { period })
-        },
-        orderBy: { date: 'desc' },
-        take: limit
-      }),
+      () =>
+        this.client.analytics.findMany({
+          where: {
+            campaignId,
+            ...(type && { type: type as any }),
+            ...(period && { period }),
+          },
+          orderBy: { date: 'desc' },
+          take: limit,
+        }),
       300000 // 5 minute cache for analytics
     );
   }
@@ -196,80 +188,63 @@ export class OptimizedPrismaClient {
     return this.executeWithCache(
       'getHighValueLeads',
       { minScore, limit },
-      () => this.client.lead.findMany({
-        where: {
-          score: { gte: minScore }
-        },
-        orderBy: [
-          { score: 'desc' },
-          { createdAt: 'desc' }
-        ],
-        take: limit
-      }),
+      () =>
+        this.client.lead.findMany({
+          where: {
+            score: { gte: minScore },
+          },
+          orderBy: [{ score: 'desc' }, { createdAt: 'desc' }],
+          take: limit,
+        }),
       900000 // 15 minute cache for leads
     );
   }
 
   // Optimized trend queries using new indexes
-  async getTrendingKeywords(
-    platform?: string,
-    minScore: number = 5.0,
-    limit: number = 20
-  ) {
+  async getTrendingKeywords(platform?: string, minScore: number = 5.0, limit: number = 20) {
     return this.executeWithCache(
       'getTrendingKeywords',
       { platform, minScore, limit },
-      () => this.client.trend.findMany({
-        where: {
-          ...(platform && { platform: platform as any }),
-          score: { gte: minScore }
-        },
-        orderBy: [
-          { score: 'desc' },
-          { detectedAt: 'desc' }
-        ],
-        take: limit
-      }),
+      () =>
+        this.client.trend.findMany({
+          where: {
+            ...(platform && { platform: platform as any }),
+            score: { gte: minScore },
+          },
+          orderBy: [{ score: 'desc' }, { detectedAt: 'desc' }],
+          take: limit,
+        }),
       180000 // 3 minute cache for trends
     );
   }
 
   // Content optimization queries
-  async getContentByPlatformAndStatus(
-    platform: string,
-    status?: string,
-    limit: number = 50
-  ) {
-    return this.executeWithCache(
-      'getContentByPlatformAndStatus',
-      { platform, status, limit },
-      () => this.client.content.findMany({
+  async getContentByPlatformAndStatus(platform: string, status?: string, limit: number = 50) {
+    return this.executeWithCache('getContentByPlatformAndStatus', { platform, status, limit }, () =>
+      this.client.content.findMany({
         where: {
           platform: platform as any,
-          ...(status && { status: status as any })
+          ...(status && { status: status as any }),
         },
         orderBy: { createdAt: 'desc' },
-        take: limit
+        take: limit,
       })
     );
   }
 
   // Batch operations for better performance
-  async createCampaignWithAnalytics(
-    campaignData: any,
-    initialAnalytics?: any[]
-  ) {
+  async createCampaignWithAnalytics(campaignData: any, initialAnalytics?: any[]) {
     return this.client.$transaction(async (tx: any) => {
       const campaign = await tx.campaign.create({
-        data: campaignData
+        data: campaignData,
       });
 
       if (initialAnalytics && initialAnalytics.length > 0) {
         await tx.analytics.createMany({
           data: initialAnalytics.map(analytics => ({
             ...analytics,
-            campaignId: campaign.id
-          }))
+            campaignId: campaign.id,
+          })),
         });
       }
 
@@ -288,10 +263,11 @@ export class OptimizedPrismaClient {
     const totalQueries = this.queryMetrics.length;
     const cachedQueries = this.queryMetrics.filter(m => m.cached).length;
     const executedQueries = this.queryMetrics.filter(m => !m.cached);
-    
-    const avgDuration = executedQueries.length > 0 
-      ? executedQueries.reduce((sum, m) => sum + m.duration, 0) / executedQueries.length
-      : 0;
+
+    const avgDuration =
+      executedQueries.length > 0
+        ? executedQueries.reduce((sum, m) => sum + m.duration, 0) / executedQueries.length
+        : 0;
 
     const cacheHitRate = totalQueries > 0 ? cachedQueries / totalQueries : 0;
 
@@ -300,16 +276,14 @@ export class OptimizedPrismaClient {
       .sort((a, b) => b.duration - a.duration)
       .slice(0, 10);
 
-    const recentActivity = this.queryMetrics
-      .slice(-20)
-      .reverse();
+    const recentActivity = this.queryMetrics.slice(-20).reverse();
 
     return {
       totalQueries,
       avgDuration,
       cacheHitRate,
       slowQueries,
-      recentActivity
+      recentActivity,
     };
   }
 

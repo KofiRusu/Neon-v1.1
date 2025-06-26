@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { 
+import {
   GlobeAltIcon,
   CalendarIcon,
   ChartBarIcon,
@@ -14,7 +14,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   SparklesIcon,
-  EyeIcon
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 import { trpc } from '../lib/trpc';
 
@@ -23,7 +23,9 @@ const contentGenerationSchema = z.object({
   platform: z.enum(['FACEBOOK', 'INSTAGRAM', 'TIKTOK', 'TWITTER', 'LINKEDIN']),
   contentType: z.enum(['post', 'story', 'reel', 'thread']),
   topic: z.string().min(1, 'Topic is required').max(200),
-  tone: z.enum(['professional', 'casual', 'humorous', 'inspirational', 'promotional']).default('professional'),
+  tone: z
+    .enum(['professional', 'casual', 'humorous', 'inspirational', 'promotional'])
+    .default('professional'),
   targetAudience: z.string().optional(),
   includeHashtags: z.boolean().default(true),
   includeEmojis: z.boolean().default(true),
@@ -31,7 +33,9 @@ const contentGenerationSchema = z.object({
 });
 
 const publishPostSchema = z.object({
-  platforms: z.array(z.enum(['FACEBOOK', 'INSTAGRAM', 'TIKTOK', 'TWITTER', 'LINKEDIN'])).min(1, 'Select at least one platform'),
+  platforms: z
+    .array(z.enum(['FACEBOOK', 'INSTAGRAM', 'TIKTOK', 'TWITTER', 'LINKEDIN']))
+    .min(1, 'Select at least one platform'),
   content: z.object({
     text: z.string().min(1, 'Content is required').max(2000),
     images: z.array(z.string().url()).optional(),
@@ -58,7 +62,9 @@ const platformConfig = {
 };
 
 export default function SocialAgentTab() {
-  const [activeSection, setActiveSection] = useState<'generate' | 'publish' | 'schedule' | 'analytics'>('generate');
+  const [activeSection, setActiveSection] = useState<
+    'generate' | 'publish' | 'schedule' | 'analytics'
+  >('generate');
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [publishResult, setPublishResult] = useState<any>(null);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['INSTAGRAM']);
@@ -95,21 +101,21 @@ export default function SocialAgentTab() {
 
   // tRPC mutations
   const generateContent = trpc.social.generateContent.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setGeneratedContent(data);
       publishForm.setValue('content.text', data.generatedText);
       publishForm.setValue('hashtags', data.hashtags);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to generate content:', error);
     },
   });
 
   const publishPost = trpc.social.publishPost.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setPublishResult(data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to publish post:', error);
     },
   });
@@ -137,7 +143,7 @@ export default function SocialAgentTab() {
     const updated = current.includes(platform as any)
       ? current.filter(p => p !== platform)
       : [...current, platform as any];
-    
+
     if (updated.length > 0) {
       publishForm.setValue('platforms', updated);
       setSelectedPlatforms(updated);
@@ -150,9 +156,21 @@ export default function SocialAgentTab() {
   };
 
   const suggestedHashtags = [
-    '#marketing', '#socialmedia', '#digitalmarketing', '#branding', '#content',
-    '#business', '#entrepreneur', '#startup', '#growth', '#innovation',
-    '#ai', '#technology', '#automation', '#neonhub', '#success'
+    '#marketing',
+    '#socialmedia',
+    '#digitalmarketing',
+    '#branding',
+    '#content',
+    '#business',
+    '#entrepreneur',
+    '#startup',
+    '#growth',
+    '#innovation',
+    '#ai',
+    '#technology',
+    '#automation',
+    '#neonhub',
+    '#success',
   ];
 
   const optimalTimes = {
@@ -173,10 +191,12 @@ export default function SocialAgentTab() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-gray-900">Social Media Agent</h1>
-            <p className="text-sm text-gray-600">Generate content, schedule posts, and manage social platforms</p>
+            <p className="text-sm text-gray-600">
+              Generate content, schedule posts, and manage social platforms
+            </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 bg-green-500 rounded-full"></div>
           <span className="text-sm text-gray-600">Agent Online</span>
@@ -190,7 +210,7 @@ export default function SocialAgentTab() {
           { id: 'publish', name: 'Publish Post', icon: GlobeAltIcon },
           { id: 'schedule', name: 'Schedule Calendar', icon: CalendarIcon },
           { id: 'analytics', name: 'Analytics', icon: ChartBarIcon },
-        ].map((section) => {
+        ].map(section => {
           const Icon = section.icon;
           return (
             <button
@@ -215,7 +235,7 @@ export default function SocialAgentTab() {
           {/* Content Generation Form */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Content Generation</h3>
-            
+
             <form onSubmit={contentForm.handleSubmit(onGenerateContent)} className="space-y-4">
               {/* Platform Selection */}
               <div>
@@ -229,7 +249,9 @@ export default function SocialAgentTab() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                     >
                       {Object.entries(platformConfig).map(([key, config]) => (
-                        <option key={key} value={key}>{config.name}</option>
+                        <option key={key} value={key}>
+                          {config.name}
+                        </option>
                       ))}
                     </select>
                   )}
@@ -266,7 +288,9 @@ export default function SocialAgentTab() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
                 {contentForm.formState.errors.topic && (
-                  <p className="mt-1 text-sm text-red-600">{contentForm.formState.errors.topic.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {contentForm.formState.errors.topic.message}
+                  </p>
                 )}
               </div>
 
@@ -293,7 +317,9 @@ export default function SocialAgentTab() {
 
               {/* Target Audience */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Target Audience (Optional)
+                </label>
                 <input
                   {...contentForm.register('targetAudience')}
                   type="text"
@@ -346,7 +372,7 @@ export default function SocialAgentTab() {
           {/* Content Preview */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Content Preview</h3>
-            
+
             {generatedContent ? (
               <div className="space-y-4">
                 {/* Platform Preview Card */}
@@ -360,11 +386,11 @@ export default function SocialAgentTab() {
                       <div className="text-xs text-gray-500">2 minutes ago</div>
                     </div>
                   </div>
-                  
+
                   <div className="text-sm text-gray-900 mb-3 whitespace-pre-wrap">
                     {generatedContent.generatedText}
                   </div>
-                  
+
                   {generatedContent.hashtags && generatedContent.hashtags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
                       {generatedContent.hashtags.map((tag: string, index: number) => (
@@ -374,7 +400,7 @@ export default function SocialAgentTab() {
                       ))}
                     </div>
                   )}
-                  
+
                   <div className="flex items-center gap-4 text-gray-500 text-sm">
                     <button className="flex items-center gap-1 hover:text-red-500">
                       <span>❤️</span> Like
@@ -387,23 +413,25 @@ export default function SocialAgentTab() {
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Content Stats */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="p-3 bg-blue-50 rounded-lg">
                     <div className="font-medium text-blue-700">Character Count</div>
-                    <div className="text-blue-600">{generatedContent.generatedText.length} characters</div>
+                    <div className="text-blue-600">
+                      {generatedContent.generatedText.length} characters
+                    </div>
                   </div>
                   <div className="p-3 bg-purple-50 rounded-lg">
                     <div className="font-medium text-purple-700">Hashtags</div>
-                    <div className="text-purple-600">{generatedContent.hashtags?.length || 0} tags</div>
+                    <div className="text-purple-600">
+                      {generatedContent.hashtags?.length || 0} tags
+                    </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-600">
-                    Content generated successfully
-                  </div>
+                  <div className="text-sm text-gray-600">Content generated successfully</div>
                   <button
                     onClick={() => setActiveSection('publish')}
                     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
@@ -429,14 +457,19 @@ export default function SocialAgentTab() {
           {/* Publish Form */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Publish to Social Media</h3>
-            
+
             <form onSubmit={publishForm.handleSubmit(onPublishPost)} className="space-y-4">
               {/* Platform Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select Platforms</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Platforms
+                </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(platformConfig).map(([key, config]) => (
-                    <label key={key} className="flex items-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer">
+                    <label
+                      key={key}
+                      className="flex items-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={selectedPlatforms.includes(key)}
@@ -463,7 +496,8 @@ export default function SocialAgentTab() {
                   <div className="space-x-2">
                     {selectedPlatforms.map(platform => (
                       <span key={platform}>
-                        {platformConfig[platform as keyof typeof platformConfig].name}: {getCharacterCount(publishForm.watch('content.text') || '', platform)}
+                        {platformConfig[platform as keyof typeof platformConfig].name}:{' '}
+                        {getCharacterCount(publishForm.watch('content.text') || '', platform)}
                       </span>
                     ))}
                   </div>
@@ -492,13 +526,19 @@ export default function SocialAgentTab() {
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {(publishForm.watch('hashtags') || []).map((tag, index) => (
-                    <span key={index} className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full"
+                    >
                       {tag}
                       <button
                         type="button"
                         onClick={() => {
                           const current = publishForm.getValues('hashtags') || [];
-                          publishForm.setValue('hashtags', current.filter((_, i) => i !== index));
+                          publishForm.setValue(
+                            'hashtags',
+                            current.filter((_, i) => i !== index)
+                          );
                         }}
                         className="text-blue-500 hover:text-blue-700"
                       >
@@ -511,10 +551,14 @@ export default function SocialAgentTab() {
 
               {/* Media Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Media (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Media (Optional)
+                </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <PhotoIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Drag and drop images or videos, or click to browse</p>
+                  <p className="text-sm text-gray-600">
+                    Drag and drop images or videos, or click to browse
+                  </p>
                   <p className="text-xs text-gray-500 mt-1">Supports JPG, PNG, MP4, MOV</p>
                 </div>
               </div>
@@ -541,7 +585,7 @@ export default function SocialAgentTab() {
                     />
                     <span className="ml-2 text-sm text-gray-700">Schedule for Later</span>
                   </label>
-                  
+
                   {!publishForm.watch('scheduling.publishNow') && (
                     <Controller
                       name="scheduling.scheduledTime"
@@ -550,8 +594,18 @@ export default function SocialAgentTab() {
                         <input
                           {...field}
                           type="datetime-local"
-                          value={field.value ? new Date(field.value.getTime() - field.value.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
-                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                          value={
+                            field.value
+                              ? new Date(
+                                  field.value.getTime() - field.value.getTimezoneOffset() * 60000
+                                )
+                                  .toISOString()
+                                  .slice(0, 16)
+                              : ''
+                          }
+                          onChange={e =>
+                            field.onChange(e.target.value ? new Date(e.target.value) : undefined)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                         />
                       )}
@@ -586,17 +640,20 @@ export default function SocialAgentTab() {
             {/* Publish Results */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Publish Results</h3>
-              
+
               {publishResult ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-green-600">
                     <CheckCircleIcon className="h-5 w-5" />
                     <span className="font-medium">Post published successfully!</span>
                   </div>
-                  
+
                   <div className="space-y-2">
                     {publishResult.platforms.map((platform: string) => (
-                      <div key={platform} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div
+                        key={platform}
+                        className="flex items-center justify-between p-3 bg-green-50 rounded-lg"
+                      >
                         <span className="font-medium text-green-700">
                           {platformConfig[platform as keyof typeof platformConfig].name}
                         </span>
@@ -604,12 +661,14 @@ export default function SocialAgentTab() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {publishResult.scheduledFor && (
                     <div className="p-3 bg-blue-50 rounded-lg">
                       <div className="flex items-center gap-2 text-blue-700">
                         <CalendarIcon className="h-4 w-4" />
-                        <span className="text-sm">Scheduled for: {new Date(publishResult.scheduledFor).toLocaleString()}</span>
+                        <span className="text-sm">
+                          Scheduled for: {new Date(publishResult.scheduledFor).toLocaleString()}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -625,10 +684,13 @@ export default function SocialAgentTab() {
             {/* Optimal Posting Times */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Optimal Posting Times</h3>
-              
+
               <div className="space-y-3">
                 {Object.entries(optimalTimes).map(([platform, times]) => (
-                  <div key={platform} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div
+                    key={platform}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
                     <div className="flex items-center gap-2">
                       <ClockIcon className="h-4 w-4 text-gray-600" />
                       <span className="font-medium text-gray-900">
@@ -639,11 +701,11 @@ export default function SocialAgentTab() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-700">
-                  💡 These times are based on general audience engagement patterns. 
-                  Check your analytics for personalized optimal times.
+                  💡 These times are based on general audience engagement patterns. Check your
+                  analytics for personalized optimal times.
                 </p>
               </div>
             </div>
@@ -655,11 +717,13 @@ export default function SocialAgentTab() {
       {activeSection === 'schedule' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Content Calendar</h3>
-          
+
           <div className="text-center py-12 text-gray-500">
             <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
             <h4 className="text-lg font-medium text-gray-900 mb-2">Content Calendar Coming Soon</h4>
-            <p className="text-gray-600 mb-4">Plan and schedule your social media content across all platforms</p>
+            <p className="text-gray-600 mb-4">
+              Plan and schedule your social media content across all platforms
+            </p>
             <div className="space-y-2 text-sm text-left max-w-md mx-auto">
               <div className="flex items-center gap-2">
                 <CheckCircleIcon className="h-4 w-4 text-green-600" />
@@ -687,8 +751,10 @@ export default function SocialAgentTab() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Performance Metrics */}
           <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Social Media Performance (Last 30 Days)</h3>
-            
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Social Media Performance (Last 30 Days)
+            </h3>
+
             {analyticsLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
@@ -697,40 +763,58 @@ export default function SocialAgentTab() {
               <div className="space-y-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-700">{analytics.summary.totalReach.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-blue-700">
+                      {analytics.summary.totalReach.toLocaleString()}
+                    </div>
                     <div className="text-sm text-blue-600">Total Reach</div>
                   </div>
                   <div className="p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-700">{analytics.summary.totalEngagement.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-green-700">
+                      {analytics.summary.totalEngagement.toLocaleString()}
+                    </div>
                     <div className="text-sm text-green-600">Engagement</div>
                   </div>
                   <div className="p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-700">{analytics.summary.avgEngagementRate.toFixed(1)}%</div>
+                    <div className="text-2xl font-bold text-purple-700">
+                      {analytics.summary.avgEngagementRate.toFixed(1)}%
+                    </div>
                     <div className="text-sm text-purple-600">Engagement Rate</div>
                   </div>
                   <div className="p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-700">{analytics.summary.totalPosts}</div>
+                    <div className="text-2xl font-bold text-orange-700">
+                      {analytics.summary.totalPosts}
+                    </div>
                     <div className="text-sm text-orange-600">Posts Published</div>
                   </div>
                 </div>
-                
+
                 <div className="border-t border-gray-200 pt-4">
                   <h4 className="font-medium text-gray-900 mb-3">Platform Breakdown</h4>
                   <div className="space-y-3">
-                    {Object.entries(analytics.platforms).map(([platform, metrics]: [string, any]) => (
-                      <div key={platform} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium text-gray-900">
-                            {platformConfig[platform as keyof typeof platformConfig]?.name || platform}
-                          </span>
-                          <span className="text-sm text-gray-600">{metrics.posts} posts</span>
+                    {Object.entries(analytics.platforms).map(
+                      ([platform, metrics]: [string, any]) => (
+                        <div
+                          key={platform}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium text-gray-900">
+                              {platformConfig[platform as keyof typeof platformConfig]?.name ||
+                                platform}
+                            </span>
+                            <span className="text-sm text-gray-600">{metrics.posts} posts</span>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-medium text-gray-900">
+                              {metrics.reach.toLocaleString()} reach
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {metrics.engagementRate.toFixed(1)}% engagement
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium text-gray-900">{metrics.reach.toLocaleString()} reach</div>
-                          <div className="text-xs text-gray-600">{metrics.engagementRate.toFixed(1)}% engagement</div>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -745,7 +829,7 @@ export default function SocialAgentTab() {
           {/* Quick Actions */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-            
+
             <div className="space-y-3">
               <button
                 onClick={() => setActiveSection('generate')}
@@ -759,7 +843,7 @@ export default function SocialAgentTab() {
                   </div>
                 </div>
               </button>
-              
+
               <button
                 onClick={() => setActiveSection('publish')}
                 className="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors"
@@ -772,7 +856,7 @@ export default function SocialAgentTab() {
                   </div>
                 </div>
               </button>
-              
+
               <div className="p-3 border border-gray-200 rounded-lg bg-gray-50">
                 <div className="flex items-center gap-3">
                   <CalendarIcon className="h-5 w-5 text-gray-400" />
@@ -788,4 +872,4 @@ export default function SocialAgentTab() {
       )}
     </div>
   );
-} 
+}

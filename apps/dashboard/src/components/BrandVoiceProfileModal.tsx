@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { brand } from '@/lib/brand';
 import {
   Dialog,
   DialogContent,
@@ -78,27 +79,28 @@ export function BrandVoiceProfileModal({
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: profile?.name || '',
-      description: profile?.description || '',
-      keywords: profile?.keywords || [],
+      name: profile?.name || brand.voice.primary,
+      description: profile?.description || brand.mission,
+      keywords: profile?.keywords || brand.vocabulary.brandTerms,
       tone: {
-        professional: profile?.tone?.professional || 70,
-        friendly: profile?.tone?.friendly || 50,
-        authoritative: profile?.tone?.authoritative || 60,
-        casual: profile?.tone?.casual || 30,
-        innovative: profile?.tone?.innovative || 80,
+        professional: profile?.tone?.professional || brand.voice.tone.professional,
+        friendly: profile?.tone?.friendly || brand.voice.tone.friendly,
+        authoritative: profile?.tone?.authoritative || brand.voice.tone.authoritative,
+        casual: profile?.tone?.casual || brand.voice.tone.casual,
+        innovative: profile?.tone?.innovative || brand.voice.tone.innovative,
       },
       vocabulary: {
-        preferred: profile?.vocabulary?.preferred || ['solution', 'innovative', 'efficient'],
-        prohibited: profile?.vocabulary?.prohibited || ['cheap', 'basic'],
-        brandTerms: profile?.vocabulary?.brandTerms || ['NeonHub', 'AI-powered'],
+        preferred: profile?.vocabulary?.preferred || brand.vocabulary.preferred,
+        prohibited: profile?.vocabulary?.prohibited || brand.vocabulary.prohibited,
+        brandTerms: profile?.vocabulary?.brandTerms || brand.vocabulary.brandTerms,
       },
       style: {
-        sentenceLength: profile?.style?.sentenceLength || 'medium',
-        readingLevel: profile?.style?.readingLevel || 'college',
-        formality: profile?.style?.formality || 'semi-formal',
+        sentenceLength:
+          profile?.style?.sentenceLength || (brand.guidelines.style.sentenceLength as any),
+        readingLevel: profile?.style?.readingLevel || (brand.guidelines.style.readingLevel as any),
+        formality: profile?.style?.formality || (brand.guidelines.style.formality as any),
       },
-      sampleContent: profile?.sampleContent || '',
+      sampleContent: profile?.sampleContent || brand.messaging.primaryValue,
     },
   });
 
@@ -107,10 +109,10 @@ export function BrandVoiceProfileModal({
     try {
       // In real implementation, call tRPC mutation
       console.log('Creating profile:', data);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       onSuccess();
     } catch (error) {
       console.error('Failed to create profile:', error);
@@ -119,35 +121,52 @@ export function BrandVoiceProfileModal({
     }
   };
 
-  const addArrayItem = (fieldName: keyof Pick<ProfileFormData, 'keywords'> | 'preferred' | 'prohibited' | 'brandTerms', value: string, setter: (value: string) => void) => {
+  const addArrayItem = (
+    fieldName: keyof Pick<ProfileFormData, 'keywords'> | 'preferred' | 'prohibited' | 'brandTerms',
+    value: string,
+    setter: (value: string) => void
+  ) => {
     if (!value.trim()) return;
-    
+
     const currentValue = form.getValues();
-    
+
     if (fieldName === 'keywords') {
       const current = currentValue.keywords || [];
       if (!current.includes(value.trim())) {
         form.setValue('keywords', [...current, value.trim()]);
       }
     } else {
-      const current = currentValue.vocabulary[fieldName as keyof typeof currentValue.vocabulary] as string[];
+      const current = currentValue.vocabulary[
+        fieldName as keyof typeof currentValue.vocabulary
+      ] as string[];
       if (!current.includes(value.trim())) {
         form.setValue(`vocabulary.${fieldName}`, [...current, value.trim()]);
       }
     }
-    
+
     setter('');
   };
 
-  const removeArrayItem = (fieldName: keyof Pick<ProfileFormData, 'keywords'> | 'preferred' | 'prohibited' | 'brandTerms', index: number) => {
+  const removeArrayItem = (
+    fieldName: keyof Pick<ProfileFormData, 'keywords'> | 'preferred' | 'prohibited' | 'brandTerms',
+    index: number
+  ) => {
     const currentValue = form.getValues();
-    
+
     if (fieldName === 'keywords') {
       const current = currentValue.keywords || [];
-      form.setValue('keywords', current.filter((_, i) => i !== index));
+      form.setValue(
+        'keywords',
+        current.filter((_, i) => i !== index)
+      );
     } else {
-      const current = currentValue.vocabulary[fieldName as keyof typeof currentValue.vocabulary] as string[];
-      form.setValue(`vocabulary.${fieldName}`, current.filter((_, i) => i !== index));
+      const current = currentValue.vocabulary[
+        fieldName as keyof typeof currentValue.vocabulary
+      ] as string[];
+      form.setValue(
+        `vocabulary.${fieldName}`,
+        current.filter((_, i) => i !== index)
+      );
     }
   };
 
@@ -223,8 +242,8 @@ export function BrandVoiceProfileModal({
                           <Input
                             placeholder="Add a keyword..."
                             value={newKeyword}
-                            onChange={(e) => setNewKeyword(e.target.value)}
-                            onKeyDown={(e) => {
+                            onChange={e => setNewKeyword(e.target.value)}
+                            onKeyDown={e => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
                                 addArrayItem('keywords', newKeyword, setNewKeyword);
@@ -241,7 +260,11 @@ export function BrandVoiceProfileModal({
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {field.value?.map((keyword, index) => (
-                            <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="flex items-center gap-1"
+                            >
                               {keyword}
                               <X
                                 className="h-3 w-3 cursor-pointer"
@@ -264,7 +287,8 @@ export function BrandVoiceProfileModal({
                 <Alert>
                   <Lightbulb className="h-4 w-4" />
                   <AlertDescription>
-                    Adjust the sliders to define your brand's tone characteristics. Higher values indicate stronger emphasis.
+                    Adjust the sliders to define your brand's tone characteristics. Higher values
+                    indicate stronger emphasis.
                   </AlertDescription>
                 </Alert>
 
@@ -286,7 +310,7 @@ export function BrandVoiceProfileModal({
                               max={100}
                               step={5}
                               value={[field.value]}
-                              onValueChange={(value) => field.onChange(value[0])}
+                              onValueChange={value => field.onChange(value[0])}
                               className="w-full"
                             />
                           </FormControl>
@@ -310,8 +334,8 @@ export function BrandVoiceProfileModal({
                         <Input
                           placeholder="Add preferred word..."
                           value={newPreferred}
-                          onChange={(e) => setNewPreferred(e.target.value)}
-                          onKeyDown={(e) => {
+                          onChange={e => setNewPreferred(e.target.value)}
+                          onKeyDown={e => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               addArrayItem('preferred', newPreferred, setNewPreferred);
@@ -351,8 +375,8 @@ export function BrandVoiceProfileModal({
                         <Input
                           placeholder="Add prohibited word..."
                           value={newProhibited}
-                          onChange={(e) => setNewProhibited(e.target.value)}
-                          onKeyDown={(e) => {
+                          onChange={e => setNewProhibited(e.target.value)}
+                          onKeyDown={e => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               addArrayItem('prohibited', newProhibited, setNewProhibited);
@@ -363,14 +387,20 @@ export function BrandVoiceProfileModal({
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => addArrayItem('prohibited', newProhibited, setNewProhibited)}
+                          onClick={() =>
+                            addArrayItem('prohibited', newProhibited, setNewProhibited)
+                          }
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {form.watch('vocabulary.prohibited')?.map((word, index) => (
-                          <Badge key={index} variant="destructive" className="flex items-center gap-1">
+                          <Badge
+                            key={index}
+                            variant="destructive"
+                            className="flex items-center gap-1"
+                          >
                             {word}
                             <X
                               className="h-3 w-3 cursor-pointer"
@@ -392,8 +422,8 @@ export function BrandVoiceProfileModal({
                         <Input
                           placeholder="Add brand term..."
                           value={newBrandTerm}
-                          onChange={(e) => setNewBrandTerm(e.target.value)}
-                          onKeyDown={(e) => {
+                          onChange={e => setNewBrandTerm(e.target.value)}
+                          onKeyDown={e => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               addArrayItem('brandTerms', newBrandTerm, setNewBrandTerm);
@@ -440,7 +470,8 @@ export function BrandVoiceProfileModal({
                         />
                       </FormControl>
                       <FormDescription>
-                        Provide sample content to help train the voice analysis. This will improve accuracy for future content.
+                        Provide sample content to help train the voice analysis. This will improve
+                        accuracy for future content.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -450,7 +481,8 @@ export function BrandVoiceProfileModal({
                 <Alert>
                   <Upload className="h-4 w-4" />
                   <AlertDescription>
-                    You can also upload existing content documents to analyze and extract voice patterns automatically.
+                    You can also upload existing content documents to analyze and extract voice
+                    patterns automatically.
                   </AlertDescription>
                 </Alert>
               </TabsContent>
@@ -466,7 +498,9 @@ export function BrandVoiceProfileModal({
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Saving...' : (
+                {isLoading ? (
+                  'Saving...'
+                ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
                     {profile ? 'Update Profile' : 'Create Profile'}

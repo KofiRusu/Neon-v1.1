@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   EnvelopeIcon,
   EnvelopeOpenIcon,
   CursorArrowRaysIcon,
@@ -9,14 +9,16 @@ import {
   PencilIcon,
   TrashIcon,
   UserGroupIcon,
-  ChartBarIcon
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 
 interface EmailDashboardProps {
   showCampaigns?: boolean;
 }
 
-export default function EmailDashboard({ showCampaigns = false }: EmailDashboardProps): JSX.Element {
+export default function EmailDashboard({
+  showCampaigns = false,
+}: EmailDashboardProps): JSX.Element {
   const [_selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
 
   // Mock data - in real app, this would come from tRPC
@@ -37,7 +39,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       recipients: 1250,
       openRate: 32.1,
       clickRate: 5.8,
-      type: 'welcome'
+      type: 'welcome',
     },
     {
       id: '2',
@@ -48,7 +50,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       recipients: 5420,
       openRate: 0,
       clickRate: 0,
-      type: 'newsletter'
+      type: 'newsletter',
     },
     {
       id: '3',
@@ -59,17 +61,22 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       recipients: 890,
       openRate: 24.6,
       clickRate: 8.2,
-      type: 'promotional'
+      type: 'promotional',
     },
   ];
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'sent': return 'bg-green-100 text-green-800';
-      case 'sending': return 'bg-yellow-100 text-yellow-800';
-      case 'scheduled': return 'bg-blue-100 text-blue-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'sent':
+        return 'bg-green-100 text-green-800';
+      case 'sending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-800';
+      case 'draft':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -78,7 +85,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -87,7 +94,7 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       <div className="p-6">
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Email Campaigns</h2>
-          
+
           {/* Campaign List */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -100,13 +107,10 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
                 <div className="col-span-2">Actions</div>
               </div>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
-              {campaigns.map((campaign) => (
-                <div
-                  key={campaign.id}
-                  className="px-6 py-4 hover:bg-gray-50 transition-colors"
-                >
+              {campaigns.map(campaign => (
+                <div key={campaign.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     <div className="col-span-4">
                       <div className="flex items-center gap-3">
@@ -119,35 +123,38 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="col-span-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}
+                      >
                         {campaign.status}
                       </span>
                     </div>
-                    
+
                     <div className="col-span-2">
-                      <div className="text-sm text-gray-900">{campaign.recipients.toLocaleString()}</div>
+                      <div className="text-sm text-gray-900">
+                        {campaign.recipients.toLocaleString()}
+                      </div>
                       <div className="text-xs text-gray-500">
-                        {campaign.status === 'scheduled' 
+                        {campaign.status === 'scheduled'
                           ? `Scheduled ${formatDate(campaign.scheduledAt || campaign.sentAt)}`
-                          : `Sent ${formatDate(campaign.sentAt)}`
-                        }
+                          : `Sent ${formatDate(campaign.sentAt)}`}
                       </div>
                     </div>
-                    
+
                     <div className="col-span-1">
                       <div className="text-sm font-medium text-gray-900">
                         {campaign.openRate > 0 ? `${campaign.openRate}%` : '-'}
                       </div>
                     </div>
-                    
+
                     <div className="col-span-1">
                       <div className="text-sm font-medium text-gray-900">
                         {campaign.clickRate > 0 ? `${campaign.clickRate}%` : '-'}
                       </div>
                     </div>
-                    
+
                     <div className="col-span-2">
                       <div className="flex items-center gap-2">
                         <button className="p-1 text-gray-400 hover:text-gray-600">
@@ -193,7 +200,9 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Emails Sent</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalSent.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {stats.totalSent.toLocaleString()}
+                </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <EnvelopeOpenIcon className="h-6 w-6 text-green-600" />
@@ -231,17 +240,17 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Recent Campaigns</h2>
-          <button 
+          <button
             onClick={() => setSelectedCampaign('all')}
             className="text-sm text-blue-600 hover:text-blue-700"
           >
             View all
           </button>
         </div>
-        
+
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="divide-y divide-gray-200">
-            {campaigns.slice(0, 3).map((campaign) => (
+            {campaigns.slice(0, 3).map(campaign => (
               <div key={campaign.id} className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -253,11 +262,13 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
                       <p className="text-sm text-gray-500">{campaign.subject}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-6 text-sm">
                     <div>
                       <span className="text-gray-600">Recipients:</span>
-                      <span className="ml-1 font-medium">{campaign.recipients.toLocaleString()}</span>
+                      <span className="ml-1 font-medium">
+                        {campaign.recipients.toLocaleString()}
+                      </span>
                     </div>
                     {campaign.openRate > 0 && (
                       <>
@@ -271,7 +282,9 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
                         </div>
                       </>
                     )}
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}
+                    >
                       {campaign.status}
                     </span>
                   </div>
@@ -313,4 +326,4 @@ export default function EmailDashboard({ showCampaigns = false }: EmailDashboard
       </div>
     </div>
   );
-} 
+}

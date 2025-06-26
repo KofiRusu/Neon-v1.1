@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --prefer-offline --no-audit
+          npm ci --prefer-online --no-audit
           npm run db:generate || echo "⚠️ Database generation failed, continuing..."
 
       - name: Cache node_modules

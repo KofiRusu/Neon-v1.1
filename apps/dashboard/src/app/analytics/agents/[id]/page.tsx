@@ -123,9 +123,7 @@ export default function AgentDetailPage(): JSX.Element {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">
-                {agentMetrics.name.charAt(0)}
-              </span>
+              <span className="text-white font-bold text-lg">{agentMetrics.name.charAt(0)}</span>
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white">{agentMetrics.name}</h1>
@@ -133,11 +131,13 @@ export default function AgentDetailPage(): JSX.Element {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-              agentMetrics.status === 'active' 
-                ? 'bg-green-500/20 text-green-400' 
-                : 'bg-red-500/20 text-red-400'
-            }`}>
+            <div
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                agentMetrics.status === 'active'
+                  ? 'bg-green-500/20 text-green-400'
+                  : 'bg-red-500/20 text-red-400'
+              }`}
+            >
               {agentMetrics.status}
             </div>
             <div className="flex space-x-2">
@@ -214,23 +214,23 @@ export default function AgentDetailPage(): JSX.Element {
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
             <h3 className="text-xl font-semibold text-white mb-4">Usage Statistics</h3>
             <div className="space-y-4">
-              <UsageBar 
-                label="Today" 
-                value={agentMetrics.usage.todayExecutions} 
-                max={agentMetrics.usage.weeklyExecutions} 
-                color="bg-green-500" 
+              <UsageBar
+                label="Today"
+                value={agentMetrics.usage.todayExecutions}
+                max={agentMetrics.usage.weeklyExecutions}
+                color="bg-green-500"
               />
-              <UsageBar 
-                label="This Week" 
-                value={agentMetrics.usage.weeklyExecutions} 
-                max={agentMetrics.usage.monthlyExecutions} 
-                color="bg-blue-500" 
+              <UsageBar
+                label="This Week"
+                value={agentMetrics.usage.weeklyExecutions}
+                max={agentMetrics.usage.monthlyExecutions}
+                color="bg-blue-500"
               />
-              <UsageBar 
-                label="This Month" 
-                value={agentMetrics.usage.monthlyExecutions} 
-                max={agentMetrics.usage.totalExecutions} 
-                color="bg-purple-500" 
+              <UsageBar
+                label="This Month"
+                value={agentMetrics.usage.monthlyExecutions}
+                max={agentMetrics.usage.totalExecutions}
+                color="bg-purple-500"
               />
             </div>
           </div>
@@ -256,17 +256,27 @@ export default function AgentDetailPage(): JSX.Element {
             <h3 className="text-xl font-semibold text-white mb-4">Recent Tasks</h3>
             <div className="space-y-3">
               {agentMetrics.recentTasks.map((task, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                >
                   <div className="flex items-center space-x-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      task.status === 'success' ? 'bg-green-400' : 
-                      task.status === 'failed' ? 'bg-red-400' : 'bg-yellow-400'
-                    }`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        task.status === 'success'
+                          ? 'bg-green-400'
+                          : task.status === 'failed'
+                            ? 'bg-red-400'
+                            : 'bg-yellow-400'
+                      }`}
+                    ></div>
                     <span className="text-white text-sm">{task.task}</span>
                   </div>
                   <div className="text-right">
                     <div className="text-purple-200 text-xs">{task.executionTime}ms</div>
-                    <div className="text-purple-300 text-xs">{new Date(task.timestamp).toLocaleTimeString()}</div>
+                    <div className="text-purple-300 text-xs">
+                      {new Date(task.timestamp).toLocaleTimeString()}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -280,23 +290,33 @@ export default function AgentDetailPage(): JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-green-400 mb-2">
-                {agentMetrics.performance.score >= 95 ? 'Excellent' : 
-                 agentMetrics.performance.score >= 85 ? 'Good' : 
-                 agentMetrics.performance.score >= 70 ? 'Fair' : 'Needs Improvement'}
+                {agentMetrics.performance.score >= 95
+                  ? 'Excellent'
+                  : agentMetrics.performance.score >= 85
+                    ? 'Good'
+                    : agentMetrics.performance.score >= 70
+                      ? 'Fair'
+                      : 'Needs Improvement'}
               </div>
               <div className="text-purple-200">Overall Performance</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-400 mb-2">
-                {agentMetrics.performance.avgExecutionTime < 1000 ? 'Fast' : 
-                 agentMetrics.performance.avgExecutionTime < 2000 ? 'Moderate' : 'Slow'}
+                {agentMetrics.performance.avgExecutionTime < 1000
+                  ? 'Fast'
+                  : agentMetrics.performance.avgExecutionTime < 2000
+                    ? 'Moderate'
+                    : 'Slow'}
               </div>
               <div className="text-purple-200">Execution Speed</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-purple-400 mb-2">
-                {agentMetrics.performance.errorRate < 0.01 ? 'Excellent' : 
-                 agentMetrics.performance.errorRate < 0.03 ? 'Good' : 'Needs Attention'}
+                {agentMetrics.performance.errorRate < 0.01
+                  ? 'Excellent'
+                  : agentMetrics.performance.errorRate < 0.03
+                    ? 'Good'
+                    : 'Needs Attention'}
               </div>
               <div className="text-purple-200">Reliability</div>
             </div>
@@ -338,24 +358,52 @@ function getAgentType(agentId: string): string {
 
 function getAgentCapabilities(agentId: string): string[] {
   const capabilities: Record<string, string[]> = {
-    'content-agent': ['Generate blog posts', 'Create social media content', 'Write product descriptions', 'Content optimization'],
+    'content-agent': [
+      'Generate blog posts',
+      'Create social media content',
+      'Write product descriptions',
+      'Content optimization',
+    ],
     'seo-agent': ['Keyword research', 'On-page optimization', 'Technical SEO', 'Content analysis'],
     'email-agent': ['Email campaigns', 'A/B testing', 'Segmentation', 'Automation'],
-    'social-agent': ['Multi-platform posting', 'Engagement tracking', 'Content scheduling', 'Analytics'],
+    'social-agent': [
+      'Multi-platform posting',
+      'Engagement tracking',
+      'Content scheduling',
+      'Analytics',
+    ],
     'support-agent': ['Ticket management', 'WhatsApp integration', 'Knowledge base', 'Escalation'],
-    'trend-agent': ['Cross-platform trends', 'Viral prediction', 'Hashtag tracking', 'Competitor analysis'],
+    'trend-agent': [
+      'Cross-platform trends',
+      'Viral prediction',
+      'Hashtag tracking',
+      'Competitor analysis',
+    ],
     'outreach-agent': ['PDF proposals', 'HTML proposals', 'Email outreach', 'Lead generation'],
-    'ui-refinement-agent': ['UX analysis', 'A/B testing', 'Conversion optimization', 'User journey mapping'],
+    'ui-refinement-agent': [
+      'UX analysis',
+      'A/B testing',
+      'Conversion optimization',
+      'User journey mapping',
+    ],
   };
   return capabilities[agentId] || ['General capabilities'];
 }
 
 function generateRecentTasks(): any[] {
-  const tasks = ['Generate content', 'Optimize SEO', 'Send email', 'Analyze trends', 'Create proposal'];
+  const tasks = [
+    'Generate content',
+    'Optimize SEO',
+    'Send email',
+    'Analyze trends',
+    'Create proposal',
+  ];
   return Array.from({ length: 5 }, (_, i) => ({
     id: `task_${i}`,
     task: tasks[Math.floor(Math.random() * tasks.length)],
-    status: ['success', 'success', 'success', 'failed', 'running'][Math.floor(Math.random() * 5)] as any,
+    status: ['success', 'success', 'success', 'failed', 'running'][
+      Math.floor(Math.random() * 5)
+    ] as any,
     executionTime: Math.floor(Math.random() * 2000) + 500,
     timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
   }));
@@ -403,7 +451,7 @@ interface UsageBarProps {
 
 function UsageBar({ label, value, max, color }: UsageBarProps): JSX.Element {
   const percentage = (value / max) * 100;
-  
+
   return (
     <div>
       <div className="flex justify-between text-sm mb-1">

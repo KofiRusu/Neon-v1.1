@@ -14,6 +14,15 @@
 // Core Agent Exports
 export * from './base-agent';
 
+// Memory and Performance Tuning
+export * from './memory/AgentMemoryStore';
+export * from './tuner/PerformanceTuner';
+
+// Strategy System
+export * from './strategy/CampaignStrategyPlanner';
+export * from './strategy/strategy-templates';
+export * from './strategy/strategy-store';
+
 // Agent Types
 export * from './agents/content-agent';
 export * from './agents/seo-agent';
@@ -26,9 +35,24 @@ export * from './agents/trend-agent';
 export * from './agents/insight-agent';
 export * from './agents/design-agent';
 export * from './agents/brand-voice-agent';
+export * from './agents/support-agent';
 
 // Export WhatsAppAgent as CustomerSupportAgent for compatibility
 export { WhatsAppAgent as CustomerSupportAgent } from './agents/whatsapp-agent';
+
+// Export Support Agent types for API use
+export type {
+  MessageClassificationInput,
+  MessageClassificationOutput,
+  ReplyGenerationInput,
+  ReplyGenerationOutput,
+  SentimentAnalysisInput,
+  SentimentAnalysisOutput,
+  EscalationInput,
+  EscalationOutput,
+  SupportTicket,
+  WhatsAppMessage,
+} from './agents/support-agent';
 
 // Agent Manager and Factory
 export { AgentManager, AgentFactory } from './base-agent';

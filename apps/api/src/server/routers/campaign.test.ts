@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals';
 import { TRPCError } from '@trpc/server';
 import { campaignRouter } from './campaign';
-import { createTRPCMockContext, createMockSession, createMockCampaign } from '../__test__/helpers/mock-context';
+import {
+  createTRPCMockContext,
+  createMockSession,
+  createMockCampaign,
+} from '../__test__/helpers/mock-context';
 
 describe('campaignRouter', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -173,10 +177,12 @@ describe('campaignRouter', () => {
 
       const caller = campaignRouter.createCaller(mockContext);
 
-      await expect(caller.update({
-        id: 'campaign1',
-        name: 'Updated',
-      })).rejects.toThrow(
+      await expect(
+        caller.update({
+          id: 'campaign1',
+          name: 'Updated',
+        })
+      ).rejects.toThrow(
         expect.objectContaining({
           code: 'NOT_FOUND',
         })
@@ -243,12 +249,14 @@ describe('campaignRouter', () => {
         timeRange: '30d',
       });
 
-      expect(result).toEqual(expect.objectContaining({
-        impressions: expect.any(Number),
-        clicks: expect.any(Number),
-        conversions: expect.any(Number),
-        cost: expect.any(Number),
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          impressions: expect.any(Number),
+          clicks: expect.any(Number),
+          conversions: expect.any(Number),
+          cost: expect.any(Number),
+        })
+      );
     });
   });
 });

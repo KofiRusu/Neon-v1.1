@@ -159,7 +159,7 @@ export interface DesignAsset {
   type: 'image' | 'video' | 'graphic' | 'logo';
   url: string;
   metadata: {
-    dimensions: { width: number; height: number; };
+    dimensions: { width: number; height: number };
     format: string;
     size: number;
   };
@@ -193,7 +193,7 @@ export interface BrandGuidelines {
 }
 
 export interface CreativeSpecification {
-  dimensions: { width: number; height: number; };
+  dimensions: { width: number; height: number };
   format: string;
   platform: string;
   requirements: string[];

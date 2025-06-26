@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   MagnifyingGlassIcon,
   ChartBarIcon,
   TagIcon,
   LightBulbIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import { useSEOOptimizer, SEOOptimizationParams } from '../../lib/hooks/useSEOOptimizer';
 
@@ -54,7 +54,10 @@ export default function SEOOptimizer(): JSX.Element {
     error,
   } = useSEOOptimizer();
 
-  const handleInputChange = (field: keyof SEOOptimizationParams, value: string | string[]): void => {
+  const handleInputChange = (
+    field: keyof SEOOptimizationParams,
+    value: string | string[]
+  ): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -66,7 +69,10 @@ export default function SEOOptimizer(): JSX.Element {
   };
 
   const handleRemoveKeyword = (keyword: string): void => {
-    handleInputChange('targetKeywords', formData.targetKeywords.filter(k => k !== keyword));
+    handleInputChange(
+      'targetKeywords',
+      formData.targetKeywords.filter(k => k !== keyword)
+    );
   };
 
   const handleOptimize = async (): Promise<void> => {
@@ -104,16 +110,16 @@ export default function SEOOptimizer(): JSX.Element {
       <div className="space-y-6">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO Optimization</h3>
-          
+
           {/* Content Type */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
             <select
               value={formData.contentType}
-              onChange={(e) => handleInputChange('contentType', e.target.value)}
+              onChange={e => handleInputChange('contentType', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {contentTypes.map((type) => (
+              {contentTypes.map(type => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>
@@ -126,7 +132,7 @@ export default function SEOOptimizer(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-2">Content *</label>
             <textarea
               value={formData.content}
-              onChange={(e) => handleInputChange('content', e.target.value)}
+              onChange={e => handleInputChange('content', e.target.value)}
               placeholder="Paste your content here for SEO analysis..."
               rows={8}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -135,13 +141,15 @@ export default function SEOOptimizer(): JSX.Element {
 
           {/* Target Keywords */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Target Keywords *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Target Keywords *
+            </label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddKeyword()}
+                onChange={e => setKeywordInput(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleAddKeyword()}
                 placeholder="Add a target keyword"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -176,7 +184,7 @@ export default function SEOOptimizer(): JSX.Element {
             <input
               type="text"
               value={formData.focusKeyword}
-              onChange={(e) => handleInputChange('focusKeyword', e.target.value)}
+              onChange={e => handleInputChange('focusKeyword', e.target.value)}
               placeholder="Primary keyword to focus on"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -189,16 +197,18 @@ export default function SEOOptimizer(): JSX.Element {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
+                onChange={e => handleInputChange('title', e.target.value)}
                 placeholder="Page title (optional)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Meta Description
+              </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={e => handleInputChange('description', e.target.value)}
                 placeholder="Meta description (optional)"
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -209,7 +219,7 @@ export default function SEOOptimizer(): JSX.Element {
               <input
                 type="text"
                 value={formData.url}
-                onChange={(e) => handleInputChange('url', e.target.value)}
+                onChange={e => handleInputChange('url', e.target.value)}
                 placeholder="URL slug (optional)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -230,7 +240,7 @@ export default function SEOOptimizer(): JSX.Element {
               <MagnifyingGlassIcon className="h-5 w-5" />
               {isOptimizing ? 'Optimizing...' : 'Optimize Content'}
             </button>
-            
+
             <button
               onClick={handleGenerateMetaTags}
               disabled={!isFormValid || isOptimizing}
@@ -253,10 +263,7 @@ export default function SEOOptimizer(): JSX.Element {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">SEO Analysis</h3>
             {optimizationResult && (
-              <button
-                onClick={clearResults}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={clearResults} className="text-sm text-gray-500 hover:text-gray-700">
                 Clear
               </button>
             )}
@@ -278,10 +285,14 @@ export default function SEOOptimizer(): JSX.Element {
             <div className="space-y-6">
               {/* SEO Score */}
               <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className={`text-3xl font-bold ${getSEOScoreColor(optimizationResult.seoScore)}`}>
+                <div
+                  className={`text-3xl font-bold ${getSEOScoreColor(optimizationResult.seoScore)}`}
+                >
                   {optimizationResult.seoScore}/100
                 </div>
-                <div className={`text-sm font-medium ${getSEOScoreColor(optimizationResult.seoScore)}`}>
+                <div
+                  className={`text-sm font-medium ${getSEOScoreColor(optimizationResult.seoScore)}`}
+                >
                   {getSEOScoreLabel(optimizationResult.seoScore)}
                 </div>
               </div>
@@ -297,14 +308,18 @@ export default function SEOOptimizer(): JSX.Element {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Description</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      Description
+                    </label>
                     <div className="p-2 bg-gray-50 rounded text-sm">
                       {optimizationResult.meta.optimizedDescription}
                     </div>
                   </div>
                   {optimizationResult.meta.suggestedUrl && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Suggested URL</label>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        Suggested URL
+                      </label>
                       <div className="p-2 bg-gray-50 rounded text-sm">
                         {optimizationResult.meta.suggestedUrl}
                       </div>
@@ -321,7 +336,9 @@ export default function SEOOptimizer(): JSX.Element {
                     <div key={index} className="p-3 border border-gray-200 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
                         <span className="font-medium text-gray-900">{keyword.keyword}</span>
-                        <span className="text-sm text-gray-500">{keyword.density.toFixed(1)}% density</span>
+                        <span className="text-sm text-gray-500">
+                          {keyword.density.toFixed(1)}% density
+                        </span>
                       </div>
                       <div className="text-sm text-gray-600">
                         Frequency: {keyword.frequency} | Prominence: {keyword.prominence.toFixed(1)}
@@ -344,16 +361,20 @@ export default function SEOOptimizer(): JSX.Element {
                           suggestion.priority === 'high'
                             ? 'border-red-400 bg-red-50'
                             : suggestion.priority === 'medium'
-                            ? 'border-yellow-400 bg-yellow-50'
-                            : 'border-green-400 bg-green-50'
+                              ? 'border-yellow-400 bg-yellow-50'
+                              : 'border-green-400 bg-green-50'
                         }`}
                       >
                         <div className="flex items-start gap-2">
                           <Icon className="h-4 w-4 mt-1 text-gray-600" />
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-medium capitalize">{suggestion.type}</span>
-                              <span className={`text-xs px-2 py-1 rounded-full ${priorityColors[suggestion.priority]}`}>
+                              <span className="text-sm font-medium capitalize">
+                                {suggestion.type}
+                              </span>
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full ${priorityColors[suggestion.priority]}`}
+                              >
                                 {suggestion.priority}
                               </span>
                             </div>
@@ -391,4 +412,4 @@ export default function SEOOptimizer(): JSX.Element {
       </div>
     </div>
   );
-} 
+}

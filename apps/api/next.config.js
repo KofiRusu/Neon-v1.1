@@ -7,7 +7,7 @@ const nextConfig = {
     '@neon/data-model',
     '@neon/types',
     '@neon/utils',
-    '@neon/reasoning-engine'
+    '@neon/reasoning-engine',
   ],
   eslint: {
     ignoreDuringBuilds: true,
@@ -29,31 +29,35 @@ const nextConfig = {
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
-        ]
-      }
-    ]
+          {
+            key: 'Access-Control-Allow-Headers',
+            value:
+              'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization',
+          },
+        ],
+      },
+    ];
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
-      config.externals.push('_http_common')
+      config.externals.push('_http_common');
     }
-    
-    config.externals = [...config.externals, 'canvas', 'jsdom']
-    
+
+    config.externals = [...config.externals, 'canvas', 'jsdom'];
+
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
       net: false,
       tls: false,
     };
-    
-    return config
+
+    return config;
   },
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
-  generateEtags: false
-}
+  generateEtags: false,
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

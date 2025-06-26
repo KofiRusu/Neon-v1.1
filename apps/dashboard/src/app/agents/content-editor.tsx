@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  PencilIcon, 
-  SparklesIcon, 
+import {
+  PencilIcon,
+  SparklesIcon,
   DocumentTextIcon,
   ChatBubbleLeftRightIcon,
-  EnvelopeIcon
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import { useContentGenerator, ContentGenerationParams } from '../../lib/hooks/useContentGenerator';
 
@@ -46,16 +46,13 @@ export default function ContentEditor(): JSX.Element {
   const [keywordInput, setKeywordInput] = useState('');
   const [editedContent, setEditedContent] = useState('');
 
-  const {
-    generateContent,
-    clearContent,
-    editContent,
-    isGenerating,
-    generatedContent,
-    error,
-  } = useContentGenerator();
+  const { generateContent, clearContent, editContent, isGenerating, generatedContent, error } =
+    useContentGenerator();
 
-  const handleInputChange = (field: keyof ContentGenerationParams, value: string | string[]): void => {
+  const handleInputChange = (
+    field: keyof ContentGenerationParams,
+    value: string | string[]
+  ): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -90,12 +87,12 @@ export default function ContentEditor(): JSX.Element {
       <div className="space-y-6">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Generation</h3>
-          
+
           {/* Content Type */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
             <div className="grid grid-cols-2 gap-2">
-              {contentTypes.map((type) => {
+              {contentTypes.map(type => {
                 const Icon = type.icon;
                 return (
                   <button
@@ -121,7 +118,7 @@ export default function ContentEditor(): JSX.Element {
             <input
               type="text"
               value={formData.topic}
-              onChange={(e) => handleInputChange('topic', e.target.value)}
+              onChange={e => handleInputChange('topic', e.target.value)}
               placeholder="e.g., 'Benefits of AI in Marketing'"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -129,11 +126,13 @@ export default function ContentEditor(): JSX.Element {
 
           {/* Audience */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Target Audience *
+            </label>
             <input
               type="text"
               value={formData.audience}
-              onChange={(e) => handleInputChange('audience', e.target.value)}
+              onChange={e => handleInputChange('audience', e.target.value)}
               placeholder="e.g., 'Marketing professionals, small business owners'"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -144,10 +143,10 @@ export default function ContentEditor(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
             <select
               value={formData.tone}
-              onChange={(e) => handleInputChange('tone', e.target.value)}
+              onChange={e => handleInputChange('tone', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {tones.map((tone) => (
+              {tones.map(tone => (
                 <option key={tone.value} value={tone.value}>
                   {tone.label}
                 </option>
@@ -161,11 +160,11 @@ export default function ContentEditor(): JSX.Element {
               <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
               <select
                 value={formData.platform || ''}
-                onChange={(e) => handleInputChange('platform', e.target.value || undefined)}
+                onChange={e => handleInputChange('platform', e.target.value || undefined)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select platform</option>
-                {platforms.map((platform) => (
+                {platforms.map(platform => (
                   <option key={platform.value} value={platform.value}>
                     {platform.label}
                   </option>
@@ -176,13 +175,15 @@ export default function ContentEditor(): JSX.Element {
 
           {/* Keywords */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Keywords (Optional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Keywords (Optional)
+            </label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddKeyword()}
+                onChange={e => setKeywordInput(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleAddKeyword()}
                 placeholder="Add a keyword"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -233,10 +234,7 @@ export default function ContentEditor(): JSX.Element {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Content Preview</h3>
             {generatedContent && (
-              <button
-                onClick={clearContent}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={clearContent} className="text-sm text-gray-500 hover:text-gray-700">
                 Clear
               </button>
             )}
@@ -283,7 +281,7 @@ export default function ContentEditor(): JSX.Element {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
                 <textarea
                   value={editedContent || generatedContent.content}
-                  onChange={(e) => handleContentEdit(e.target.value)}
+                  onChange={e => handleContentEdit(e.target.value)}
                   rows={12}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -320,4 +318,4 @@ export default function ContentEditor(): JSX.Element {
       </div>
     </div>
   );
-} 
+}

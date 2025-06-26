@@ -66,12 +66,12 @@ export class ContextCache {
     hits: 0,
     misses: 0,
     evictions: 0,
-    totalTokens: 0
+    totalTokens: 0,
   };
 
   constructor(maxSize: number = 1000, redisUrl?: string) {
     this.maxSize = maxSize;
-    
+
     if (redisUrl) {
       this.redis = Redis.createClient({ url: redisUrl });
       // eslint-disable-next-line no-console
@@ -96,7 +96,7 @@ export class ContextCache {
         if (cached) {
           const context: ReasoningContext = JSON.parse(cached);
           context.lastAccessed = new Date();
-          
+
           // Store in memory cache
           this.set(context);
           this.metrics.hits++;
@@ -155,7 +155,7 @@ export class ContextCache {
       this.cache.delete(oldestKey);
       this.accessOrder.delete(oldestKey);
       this.metrics.evictions++;
-      
+
       // Remove from Redis
       if (this.redis) {
         await this.redis.del(`context:${oldestKey}`);
@@ -165,11 +165,16 @@ export class ContextCache {
 
   private getTTL(priority: string): number {
     switch (priority) {
-      case 'critical': return 7200; // 2 hours
-      case 'high': return 3600; // 1 hour
-      case 'medium': return 1800; // 30 minutes
-      case 'low': return 900; // 15 minutes
-      default: return 1800;
+      case 'critical':
+        return 7200; // 2 hours
+      case 'high':
+        return 3600; // 1 hour
+      case 'medium':
+        return 1800; // 30 minutes
+      case 'low':
+        return 900; // 15 minutes
+      default:
+        return 1800;
     }
   }
 
@@ -178,7 +183,7 @@ export class ContextCache {
       ...this.metrics,
       hitRate: this.metrics.hits / (this.metrics.hits + this.metrics.misses),
       cacheSize: this.cache.size,
-      avgTokensPerContext: this.metrics.totalTokens / Math.max(this.cache.size, 1)
+      avgTokensPerContext: this.metrics.totalTokens / Math.max(this.cache.size, 1),
     };
   }
 }
@@ -195,7 +200,7 @@ export class AgentRouter {
       capabilities,
       load: 0,
       avgResponseTime: 0,
-      successRate: 1.0
+      successRate: 1.0,
     });
     this.loadBalancer.set(agentType, 0);
   }
@@ -216,30 +221,30 @@ export class AgentRouter {
 
     // Sort by score (higher is better)
     candidates.sort((a, b) => b.score - a.score);
-    
+
     // Update load balancing
     const bestCandidate = candidates[0];
     if (!bestCandidate) return null;
-    
+
     const bestAgent = bestCandidate.agentType;
     this.loadBalancer.set(bestAgent, (this.loadBalancer.get(bestAgent) || 0) + 1);
-    
+
     return bestAgent;
   }
 
   private calculateAgentScore(route: AgentRoute, context: ReasoningContext): number {
     let score = route.successRate * 100; // Base score from success rate
-    
+
     // Penalty for high load
     score -= route.load * 10;
-    
+
     // Bonus for fast response times
     score += Math.max(0, (1000 - route.avgResponseTime) / 100);
-    
+
     // Priority boost for high-priority contexts
     if (context.priority === 'critical') score += 50;
     else if (context.priority === 'high') score += 25;
-    
+
     return Math.max(0, score);
   }
 
@@ -249,10 +254,10 @@ export class AgentRouter {
 
     // Update average response time (exponential moving average)
     route.avgResponseTime = route.avgResponseTime * 0.8 + responseTime * 0.2;
-    
+
     // Update success rate (exponential moving average)
     route.successRate = route.successRate * 0.9 + (success ? 1 : 0) * 0.1;
-    
+
     // Decrease load
     route.load = Math.max(0, route.load - 1);
     this.loadBalancer.set(agentType, Math.max(0, (this.loadBalancer.get(agentType) || 0) - 1));
@@ -272,19 +277,25 @@ export class ReasoningEngine extends EventEmitter {
     totalInferences: 0,
     avgResponseTime: 0,
     streamingRequests: 0,
-    cachedResponses: 0
+    cachedResponses: 0,
   };
 
-  constructor(options: { 
-    maxCacheSize?: number; 
-    redisUrl?: string;
-  } = {}) {
+  constructor(
+    options: {
+      maxCacheSize?: number;
+      redisUrl?: string;
+    } = {}
+  ) {
     super();
     this.contextCache = new ContextCache(options.maxCacheSize, options.redisUrl);
     this.agentRouter = new AgentRouter();
   }
 
-  async createContext(sessionId: string, userId?: string, campaignId?: string): Promise<ReasoningContext> {
+  async createContext(
+    sessionId: string,
+    userId?: string,
+    campaignId?: string
+  ): Promise<ReasoningContext> {
     const context: ReasoningContext = {
       id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       sessionId,
@@ -294,14 +305,17 @@ export class ReasoningEngine extends EventEmitter {
       metadata: {},
       createdAt: new Date(),
       lastAccessed: new Date(),
-      priority: 'medium'
+      priority: 'medium',
     };
 
     await this.contextCache.set(context);
     return context;
   }
 
-  async addToContext(contextId: string, entry: Omit<ContextEntry, 'id' | 'timestamp'>): Promise<void> {
+  async addToContext(
+    contextId: string,
+    entry: Omit<ContextEntry, 'id' | 'timestamp'>
+  ): Promise<void> {
     const context = await this.contextCache.get(contextId);
     if (!context) {
       throw new Error(`Context not found: ${contextId}`);
@@ -310,12 +324,12 @@ export class ReasoningEngine extends EventEmitter {
     const contextEntry: ContextEntry = {
       ...entry,
       id: `entry_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     context.history.push(contextEntry);
     context.lastAccessed = new Date();
-    
+
     // Limit context window size (keep last 50 entries)
     if (context.history.length > 50) {
       context.history = context.history.slice(-50);
@@ -324,10 +338,12 @@ export class ReasoningEngine extends EventEmitter {
     await this.contextCache.set(context);
   }
 
-  async processInference(request: InferenceRequest): Promise<InferenceResult | AsyncIterable<string>> {
+  async processInference(
+    request: InferenceRequest
+  ): Promise<InferenceResult | AsyncIterable<string>> {
     const startTime = Date.now();
     const inferenceId = `inf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     this.activeInferences.set(inferenceId, request);
     this.metrics.totalInferences++;
 
@@ -340,7 +356,7 @@ export class ReasoningEngine extends EventEmitter {
       // Check for cached response
       const cacheKey = this.generateCacheKey(request, context);
       const cachedResult = await this.getCachedResponse(cacheKey);
-      
+
       if (cachedResult) {
         this.metrics.cachedResponses++;
         return cachedResult;
@@ -348,14 +364,13 @@ export class ReasoningEngine extends EventEmitter {
 
       // Find best agent for the task
       const bestAgent = this.agentRouter.findBestAgent(request.agentType || 'general', context);
-      
+
       if (request.stream) {
         this.metrics.streamingRequests++;
         return this.processStreamingInference(request, context, bestAgent);
       } else {
         return await this.processBatchInference(request, context, bestAgent);
       }
-
     } finally {
       this.activeInferences.delete(inferenceId);
       const responseTime = Date.now() - startTime;
@@ -364,8 +379,8 @@ export class ReasoningEngine extends EventEmitter {
   }
 
   private async processBatchInference(
-    request: InferenceRequest, 
-    _context: ReasoningContext, 
+    request: InferenceRequest,
+    _context: ReasoningContext,
     agentId: string | null
   ): Promise<InferenceResult> {
     const startTime = Date.now();
@@ -384,7 +399,7 @@ export class ReasoningEngine extends EventEmitter {
       tokensUsed: Math.floor(mockResponse.length / 4), // Rough token estimate
       responseTime,
       cached: false,
-      confidence: 0.95
+      confidence: 0.95,
     };
 
     // Update agent metrics
@@ -397,15 +412,15 @@ export class ReasoningEngine extends EventEmitter {
       type: 'agent_output',
       content: result.content,
       ...(agentId && { agentId }),
-      tokens: result.tokensUsed
+      tokens: result.tokensUsed,
     });
 
     return result;
   }
 
   private async *processStreamingInference(
-    request: InferenceRequest, 
-    _context: ReasoningContext, 
+    request: InferenceRequest,
+    _context: ReasoningContext,
     agentId: string | null
   ): AsyncIterable<string> {
     // Mock streaming response - in production this would stream from AI models
@@ -413,7 +428,7 @@ export class ReasoningEngine extends EventEmitter {
     const words = fullResponse.split(' ');
 
     for (const word of words) {
-      yield `${word  } `;
+      yield `${word} `;
       await new Promise(resolve => setTimeout(resolve, 50)); // Simulate streaming delay
     }
 
@@ -422,12 +437,15 @@ export class ReasoningEngine extends EventEmitter {
       type: 'agent_output',
       content: fullResponse,
       ...(agentId && { agentId }),
-      tokens: Math.floor(fullResponse.length / 4)
+      tokens: Math.floor(fullResponse.length / 4),
     });
   }
 
   private generateCacheKey(request: InferenceRequest, context: ReasoningContext): string {
-    const contextHash = context.history.slice(-5).map(h => h.content).join('|');
+    const contextHash = context.history
+      .slice(-5)
+      .map(h => h.content)
+      .join('|');
     return `cache:${request.prompt}:${contextHash}:${request.agentType}`;
   }
 
@@ -445,7 +463,7 @@ export class ReasoningEngine extends EventEmitter {
       ...this.metrics,
       cache: this.contextCache.getMetrics(),
       agents: this.agentRouter.getRouteStats(),
-      activeInferences: this.activeInferences.size
+      activeInferences: this.activeInferences.size,
     };
   }
 

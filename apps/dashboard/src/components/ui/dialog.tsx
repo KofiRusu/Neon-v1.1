@@ -13,12 +13,7 @@ export function Dialog({ children, ...props }: DialogProps) {
 export interface DialogTriggerProps extends React.HTMLAttributes<HTMLButtonElement> {}
 
 export function DialogTrigger({ className, ...props }: DialogTriggerProps) {
-  return (
-    <button
-      className={cn('btn-neon', className)}
-      {...props}
-    />
-  );
+  return <button className={cn('btn-neon', className)} {...props} />;
 }
 
 export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -26,10 +21,7 @@ export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement>
 export function DialogContent({ className, children, ...props }: DialogContentProps) {
   return (
     <div className="modal-overlay">
-      <div
-        className={cn('modal-content', className)}
-        {...props}
-      >
+      <div className={cn('modal-content', className)} {...props}>
         {children}
       </div>
     </div>
@@ -50,23 +42,13 @@ export function DialogHeader({ className, ...props }: DialogHeaderProps) {
 export interface DialogTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
 
 export function DialogTitle({ className, ...props }: DialogTitleProps) {
-  return (
-    <h2
-      className={cn('text-2xl font-bold text-primary', className)}
-      {...props}
-    />
-  );
+  return <h2 className={cn('text-2xl font-bold text-primary', className)} {...props} />;
 }
 
 export interface DialogDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 export function DialogDescription({ className, ...props }: DialogDescriptionProps) {
-  return (
-    <p
-      className={cn('text-sm text-secondary', className)}
-      {...props}
-    />
-  );
+  return <p className={cn('text-sm text-secondary', className)} {...props} />;
 }
 
 export interface DialogFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -74,8 +56,11 @@ export interface DialogFooterProps extends React.HTMLAttributes<HTMLDivElement> 
 export function DialogFooter({ className, ...props }: DialogFooterProps) {
   return (
     <div
-      className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-6', className)}
+      className={cn(
+        'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-6',
+        className
+      )}
       {...props}
     />
   );
-} 
+}

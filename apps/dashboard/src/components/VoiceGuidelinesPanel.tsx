@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { brand } from '@/lib/brand';
 
 interface VoiceGuidelinesPanelProps {
   profileId?: string;
@@ -10,32 +11,28 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
   const [guidelines, setGuidelines] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock guidelines data
-  const mockGuidelines = {
+  // Real brand guidelines from brand configuration
+  const realGuidelines = {
     tone: {
-      primary: 'professional',
-      secondary: 'friendly',
-      avoid: ['overly casual', 'jargon-heavy', 'aggressive']
+      primary: brand.voice.primary,
+      secondary: brand.voice.secondary,
+      avoid: brand.guidelines.tone.avoid,
     },
     vocabulary: {
-      preferred: ['innovative', 'efficient', 'solution', 'growth'],
-      prohibited: ['cheap', 'basic', 'simple'],
-      brandTerms: ['NeonHub', 'AI-powered', 'automation']
+      preferred: brand.vocabulary.preferred,
+      prohibited: brand.vocabulary.prohibited,
+      brandTerms: brand.vocabulary.brandTerms,
     },
     style: {
-      sentenceLength: 'medium',
+      sentenceLength: brand.guidelines.style.sentenceLength,
       paragraphLength: 'short-to-medium',
-      readingLevel: 'college',
-      punctuation: 'standard'
+      readingLevel: brand.guidelines.style.readingLevel,
+      punctuation: brand.guidelines.style.punctuation,
     },
     messaging: {
-      valueProposition: 'Empowering businesses through intelligent automation',
-      keyMessages: [
-        'Transform your marketing with AI',
-        'Achieve consistent brand voice',
-        'Scale your content creation'
-      ]
-    }
+      valueProposition: brand.messaging.primaryValue,
+      keyMessages: brand.messaging.keyMessages.slice(0, 3), // Take first 3 key messages
+    },
   };
 
   useEffect(() => {
@@ -44,7 +41,7 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
       try {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500));
-        setGuidelines(mockGuidelines);
+        setGuidelines(realGuidelines);
       } catch (error) {
         console.error('Failed to load guidelines:', error);
       } finally {
@@ -118,7 +115,10 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
               <span className="font-medium text-sm block mb-2">Preferred Words:</span>
               <div className="flex flex-wrap gap-1">
                 {guidelines.vocabulary.preferred.map((word: string, index: number) => (
-                  <span key={index} className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm">
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-green-100 text-green-700 rounded text-sm"
+                  >
                     {word}
                   </span>
                 ))}
@@ -199,9 +199,7 @@ export function VoiceGuidelinesPanel({ profileId }: VoiceGuidelinesPanelProps) {
 
       {/* Action Buttons */}
       <div className="flex justify-end space-x-3">
-        <button className="px-4 py-2 border rounded-md hover:bg-gray-50">
-          Export Guidelines
-        </button>
+        <button className="px-4 py-2 border rounded-md hover:bg-gray-50">Export Guidelines</button>
         <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
           Edit Guidelines
         </button>

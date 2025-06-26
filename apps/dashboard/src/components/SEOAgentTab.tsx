@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { api } from '../utils/trpc';
-import { 
-  MagnifyingGlassIcon, 
+import {
+  MagnifyingGlassIcon,
   SparklesIcon,
   ChartBarIcon,
   DocumentTextIcon,
   ClipboardDocumentIcon,
   CheckCircleIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
 
 export default function SEOAgentTab() {
-  const [activeTab, setActiveTab] = useState<'analyze' | 'generate' | 'keywords' | 'performance'>('analyze');
+  const [activeTab, setActiveTab] = useState<'analyze' | 'generate' | 'keywords' | 'performance'>(
+    'analyze'
+  );
   const [analysisContent, setAnalysisContent] = useState('');
   const [targetKeywords, setTargetKeywords] = useState<string[]>(['neon signs']);
   const [newKeyword, setNewKeyword] = useState('');
@@ -20,7 +22,7 @@ export default function SEOAgentTab() {
   // SEO Analysis
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const analyzeContent = api.seo.analyzeContent.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setAnalysisResult(data);
     },
   });
@@ -28,9 +30,11 @@ export default function SEOAgentTab() {
   // Content Generation
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [generateTopic, setGenerateTopic] = useState('Custom Neon Signs');
-  const [contentType, setContentType] = useState<'blog_post' | 'product_description' | 'landing_page' | 'meta_description'>('blog_post');
+  const [contentType, setContentType] = useState<
+    'blog_post' | 'product_description' | 'landing_page' | 'meta_description'
+  >('blog_post');
   const generateSeoContent = api.seo.generateSeoContent.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setGeneratedContent(data);
     },
   });
@@ -90,10 +94,14 @@ export default function SEOAgentTab() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return 'text-red-400';
-      case 'medium': return 'text-yellow-400';
-      case 'low': return 'text-green-400';
-      default: return 'text-gray-400';
+      case 'high':
+        return 'text-red-400';
+      case 'medium':
+        return 'text-yellow-400';
+      case 'low':
+        return 'text-green-400';
+      default:
+        return 'text-gray-400';
     }
   };
 
@@ -119,9 +127,9 @@ export default function SEOAgentTab() {
       {/* Keywords Management */}
       <div className="card-glow">
         <h3 className="text-lg font-semibold text-white mb-4">Target Keywords</h3>
-        
+
         <div className="flex flex-wrap gap-2 mb-4">
-          {targetKeywords.map((keyword) => (
+          {targetKeywords.map(keyword => (
             <span
               key={keyword}
               className="flex items-center space-x-2 px-3 py-1 bg-neon-400/20 text-neon-400 rounded-full text-sm"
@@ -136,13 +144,13 @@ export default function SEOAgentTab() {
             </span>
           ))}
         </div>
-        
+
         <div className="flex space-x-2">
           <input
             type="text"
             value={newKeyword}
-            onChange={(e) => setNewKeyword(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
+            onChange={e => setNewKeyword(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && addKeyword()}
             placeholder="Add keyword..."
             className="input flex-1"
           />
@@ -159,7 +167,7 @@ export default function SEOAgentTab() {
             { id: 'analyze', label: 'Content Analysis', icon: DocumentTextIcon },
             { id: 'generate', label: 'Content Generation', icon: SparklesIcon },
             { id: 'keywords', label: 'Keyword Research', icon: MagnifyingGlassIcon },
-            { id: 'performance', label: 'Performance', icon: ChartBarIcon }
+            { id: 'performance', label: 'Performance', icon: ChartBarIcon },
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -185,12 +193,12 @@ export default function SEOAgentTab() {
               </label>
               <textarea
                 value={analysisContent}
-                onChange={(e) => setAnalysisContent(e.target.value)}
+                onChange={e => setAnalysisContent(e.target.value)}
                 placeholder="Paste your content here for SEO analysis..."
                 className="input w-full h-32 resize-none"
               />
             </div>
-            
+
             <button
               onClick={handleAnalyze}
               disabled={analyzeContent.isLoading || !analysisContent.trim()}
@@ -215,19 +223,27 @@ export default function SEOAgentTab() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">SEO Score</p>
-                    <p className="text-2xl font-bold text-neon-400">{analysisResult.analysis.seoScore}/100</p>
+                    <p className="text-2xl font-bold text-neon-400">
+                      {analysisResult.analysis.seoScore}/100
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Readability</p>
-                    <p className="text-2xl font-bold text-blue-400">{analysisResult.analysis.readabilityScore}/100</p>
+                    <p className="text-2xl font-bold text-blue-400">
+                      {analysisResult.analysis.readabilityScore}/100
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Word Count</p>
-                    <p className="text-2xl font-bold text-white">{analysisResult.analysis.wordCount}</p>
+                    <p className="text-2xl font-bold text-white">
+                      {analysisResult.analysis.wordCount}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Keywords</p>
-                    <p className="text-2xl font-bold text-purple-400">{analysisResult.analysis.keywordDensity.length}</p>
+                    <p className="text-2xl font-bold text-purple-400">
+                      {analysisResult.analysis.keywordDensity.length}
+                    </p>
                   </div>
                 </div>
 
@@ -235,8 +251,13 @@ export default function SEOAgentTab() {
                 <div className="space-y-3">
                   <h4 className="text-white font-medium">Optimization Suggestions</h4>
                   {analysisResult.analysis.suggestions.map((suggestion: any, index: number) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 bg-dark-800/50 rounded-lg">
-                      <div className={`w-2 h-2 rounded-full mt-2 ${getSeverityColor(suggestion.severity)}`}></div>
+                    <div
+                      key={index}
+                      className="flex items-start space-x-3 p-3 bg-dark-800/50 rounded-lg"
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full mt-2 ${getSeverityColor(suggestion.severity)}`}
+                      ></div>
                       <div className="flex-1">
                         <p className="text-white text-sm">{suggestion.suggestion}</p>
                         <p className="text-dark-400 text-xs mt-1">{suggestion.impact}</p>
@@ -271,17 +292,17 @@ export default function SEOAgentTab() {
                 <input
                   type="text"
                   value={generateTopic}
-                  onChange={(e) => setGenerateTopic(e.target.value)}
+                  onChange={e => setGenerateTopic(e.target.value)}
                   placeholder="e.g., Custom Neon Signs"
                   className="input w-full"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-dark-300 text-sm font-medium mb-2">Content Type</label>
                 <select
                   value={contentType}
-                  onChange={(e) => setContentType(e.target.value as any)}
+                  onChange={e => setContentType(e.target.value as any)}
                   className="input w-full"
                 >
                   <option value="blog_post">Blog Post</option>
@@ -291,10 +312,12 @@ export default function SEOAgentTab() {
                 </select>
               </div>
             </div>
-            
+
             <button
               onClick={handleGenerate}
-              disabled={generateSeoContent.isLoading || !generateTopic.trim() || targetKeywords.length === 0}
+              disabled={
+                generateSeoContent.isLoading || !generateTopic.trim() || targetKeywords.length === 0
+              }
               className="btn-primary flex items-center space-x-2"
             >
               {generateSeoContent.isLoading ? (
@@ -323,26 +346,36 @@ export default function SEOAgentTab() {
                     ) : (
                       <ClipboardDocumentIcon className="h-4 w-4" />
                     )}
-                    <span className="text-xs">{copiedId === 'generated-content' ? 'Copied!' : 'Copy'}</span>
+                    <span className="text-xs">
+                      {copiedId === 'generated-content' ? 'Copied!' : 'Copy'}
+                    </span>
                   </button>
                 </div>
-                
+
                 <div className="p-4 bg-dark-800/50 rounded-lg">
-                  <pre className="text-dark-300 text-sm whitespace-pre-wrap">{generatedContent.content}</pre>
+                  <pre className="text-dark-300 text-sm whitespace-pre-wrap">
+                    {generatedContent.content}
+                  </pre>
                 </div>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Word Count</p>
-                    <p className="text-white font-semibold">{generatedContent.seoMetrics.wordCount}</p>
+                    <p className="text-white font-semibold">
+                      {generatedContent.seoMetrics.wordCount}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">SEO Score</p>
-                    <p className="text-green-400 font-semibold">{generatedContent.seoMetrics.seoScore}/100</p>
+                    <p className="text-green-400 font-semibold">
+                      {generatedContent.seoMetrics.seoScore}/100
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Readability</p>
-                    <p className="text-blue-400 font-semibold">{generatedContent.seoMetrics.readabilityScore}/100</p>
+                    <p className="text-blue-400 font-semibold">
+                      {generatedContent.seoMetrics.readabilityScore}/100
+                    </p>
                   </div>
                 </div>
               </div>
@@ -357,7 +390,7 @@ export default function SEOAgentTab() {
               <input
                 type="text"
                 value={seedKeyword}
-                onChange={(e) => setSeedKeyword(e.target.value)}
+                onChange={e => setSeedKeyword(e.target.value)}
                 placeholder="Enter seed keyword..."
                 className="input flex-1"
               />
@@ -375,33 +408,46 @@ export default function SEOAgentTab() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Total Keywords</p>
-                    <p className="text-white font-semibold">{getKeywordResearch.data.totalKeywords}</p>
+                    <p className="text-white font-semibold">
+                      {getKeywordResearch.data.totalKeywords}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Avg Volume</p>
-                    <p className="text-blue-400 font-semibold">{getKeywordResearch.data.avgSearchVolume.toLocaleString()}</p>
+                    <p className="text-blue-400 font-semibold">
+                      {getKeywordResearch.data.avgSearchVolume.toLocaleString()}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Avg Difficulty</p>
-                    <p className="text-yellow-400 font-semibold">{getKeywordResearch.data.avgDifficulty}/100</p>
+                    <p className="text-yellow-400 font-semibold">
+                      {getKeywordResearch.data.avgDifficulty}/100
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Opportunities</p>
-                    <p className="text-green-400 font-semibold">{getKeywordResearch.data.opportunities.length}</p>
+                    <p className="text-green-400 font-semibold">
+                      {getKeywordResearch.data.opportunities.length}
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h4 className="text-white font-medium">Keyword Opportunities</h4>
                   {getKeywordResearch.data.keywords.map((keyword: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-dark-800/50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-dark-800/50 rounded-lg"
+                    >
                       <div className="flex-1">
                         <p className="text-white text-sm font-medium">{keyword.keyword}</p>
                         <p className="text-dark-400 text-xs capitalize">{keyword.intent} intent</p>
                       </div>
                       <div className="flex items-center space-x-4 text-right">
                         <div>
-                          <p className="text-white text-sm">{keyword.searchVolume.toLocaleString()}</p>
+                          <p className="text-white text-sm">
+                            {keyword.searchVolume.toLocaleString()}
+                          </p>
                           <p className="text-dark-400 text-xs">Volume</p>
                         </div>
                         <div>
@@ -429,32 +475,48 @@ export default function SEOAgentTab() {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Organic Traffic</p>
-                    <p className="text-2xl font-bold text-white">{performanceMetrics.data.metrics.organicTraffic.current.toLocaleString()}</p>
-                    <p className="text-green-400 text-xs">+{performanceMetrics.data.metrics.organicTraffic.change.toFixed(1)}%</p>
+                    <p className="text-2xl font-bold text-white">
+                      {performanceMetrics.data.metrics.organicTraffic.current.toLocaleString()}
+                    </p>
+                    <p className="text-green-400 text-xs">
+                      +{performanceMetrics.data.metrics.organicTraffic.change.toFixed(1)}%
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Avg Position</p>
-                    <p className="text-2xl font-bold text-blue-400">{performanceMetrics.data.metrics.averagePosition.current}</p>
-                    <p className="text-green-400 text-xs">+{performanceMetrics.data.metrics.averagePosition.change.toFixed(1)}</p>
+                    <p className="text-2xl font-bold text-blue-400">
+                      {performanceMetrics.data.metrics.averagePosition.current}
+                    </p>
+                    <p className="text-green-400 text-xs">
+                      +{performanceMetrics.data.metrics.averagePosition.change.toFixed(1)}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">CTR</p>
-                    <p className="text-2xl font-bold text-purple-400">{performanceMetrics.data.metrics.clickThroughRate.current}</p>
+                    <p className="text-2xl font-bold text-purple-400">
+                      {performanceMetrics.data.metrics.clickThroughRate.current}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Total Keywords</p>
-                    <p className="text-white font-semibold">{performanceMetrics.data.metrics.totalKeywords}</p>
+                    <p className="text-white font-semibold">
+                      {performanceMetrics.data.metrics.totalKeywords}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Top 10</p>
-                    <p className="text-green-400 font-semibold">{performanceMetrics.data.metrics.keywordsTop10}</p>
+                    <p className="text-green-400 font-semibold">
+                      {performanceMetrics.data.metrics.keywordsTop10}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-dark-400 text-xs">Top 3</p>
-                    <p className="text-neon-400 font-semibold">{performanceMetrics.data.metrics.keywordsTop3}</p>
+                    <p className="text-neon-400 font-semibold">
+                      {performanceMetrics.data.metrics.keywordsTop3}
+                    </p>
                   </div>
                 </div>
               </>
@@ -468,7 +530,10 @@ export default function SEOAgentTab() {
         <div className="card-glow border border-red-500/50">
           <div className="flex items-center space-x-2 text-red-400">
             <span className="text-sm">
-              Error: {analyzeContent.error?.message || generateSeoContent.error?.message || getKeywordResearch.error?.message}
+              Error:{' '}
+              {analyzeContent.error?.message ||
+                generateSeoContent.error?.message ||
+                getKeywordResearch.error?.message}
             </span>
           </div>
         </div>

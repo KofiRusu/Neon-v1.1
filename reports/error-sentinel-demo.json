@@ -1,0 +1,186 @@
+{
+  "timestamp": "2025-06-26T01:02:32.218Z",
+  "demoRuntime": 67986,
+  "errorSentinelCapabilities": [
+    "System Health Monitoring",
+    "Multi-Repository Error Detection",
+    "Automatic Error Classification",
+    "Intelligent Auto-Fix Strategies",
+    "Continuous Background Monitoring",
+    "Performance Metrics Tracking",
+    "Comprehensive Reporting"
+  ],
+  "demoResults": {
+    "monitoringActive": true,
+    "errorsDetected": [
+      {
+        "type": "lint",
+        "severity": "medium",
+        "source": "apps/dashboard",
+        "message": "0 linting errors detected",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:01:54.731Z"
+      },
+      {
+        "type": "type",
+        "severity": "high",
+        "source": "apps/dashboard",
+        "message": "1 TypeScript errors detected",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:01:56.580Z"
+      },
+      {
+        "type": "build",
+        "severity": "critical",
+        "source": "apps/dashboard",
+        "message": "Build process failed",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:01:59.580Z"
+      },
+      {
+        "type": "runtime",
+        "severity": "high",
+        "source": "apps/dashboard",
+        "message": "Missing node_modules - dependencies not installed",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:01:59.580Z"
+      },
+      {
+        "type": "lint",
+        "severity": "medium",
+        "source": "apps/api",
+        "message": "1 linting errors detected",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:01.150Z"
+      },
+      {
+        "type": "type",
+        "severity": "high",
+        "source": "apps/api",
+        "message": "1 TypeScript errors detected",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:02:02.555Z"
+      },
+      {
+        "type": "build",
+        "severity": "critical",
+        "source": "apps/api",
+        "message": "Build process failed",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:02:04.764Z"
+      },
+      {
+        "type": "lint",
+        "severity": "medium",
+        "source": "packages/core-agents",
+        "message": "0 linting errors detected",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:04.947Z"
+      },
+      {
+        "type": "build",
+        "severity": "critical",
+        "source": "packages/core-agents",
+        "message": "Build process failed",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:02:07.019Z"
+      },
+      {
+        "type": "lint",
+        "severity": "medium",
+        "source": "packages/data-model",
+        "message": "0 linting errors detected",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:07.203Z"
+      },
+      {
+        "type": "build",
+        "severity": "critical",
+        "source": "packages/data-model",
+        "message": "Build process failed",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:02:08.783Z"
+      },
+      {
+        "type": "lint",
+        "severity": "medium",
+        "source": "packages/utils",
+        "message": "0 linting errors detected",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:08.971Z"
+      },
+      {
+        "type": "build",
+        "severity": "critical",
+        "source": "packages/utils",
+        "message": "Build process failed",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:02:10.575Z"
+      },
+      {
+        "type": "runtime",
+        "severity": "high",
+        "source": "packages/utils",
+        "message": "Missing node_modules - dependencies not installed",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:10.575Z"
+      },
+      {
+        "type": "lint",
+        "severity": "medium",
+        "source": "packages/types",
+        "message": "0 linting errors detected",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:10.764Z"
+      },
+      {
+        "type": "build",
+        "severity": "critical",
+        "source": "packages/types",
+        "message": "Build process failed",
+        "autoFixable": false,
+        "timestamp": "2025-06-26T01:02:12.379Z"
+      },
+      {
+        "type": "runtime",
+        "severity": "high",
+        "source": "packages/types",
+        "message": "Missing node_modules - dependencies not installed",
+        "autoFixable": true,
+        "timestamp": "2025-06-26T01:02:12.379Z"
+      }
+    ],
+    "errorsFixed": [
+      {
+        "success": true,
+        "description": "Dependencies installed successfully",
+        "commandsExecuted": [
+          "npm install"
+        ],
+        "timeSpent": 1859
+      }
+    ],
+    "systemHealth": "critical",
+    "recommendations": [],
+    "performance": {
+      "scanDuration": 17791,
+      "totalScans": 1,
+      "fixAttempts": 3,
+      "successfulFixes": 1
+    }
+  },
+  "systemRecommendations": [
+    "Address detected errors to improve system stability",
+    "System requires immediate attention - critical errors detected",
+    "Some issues require manual intervention",
+    "Enable continuous monitoring for proactive error detection",
+    "Set up automated alerts for critical system issues"
+  ],
+  "nextSteps": [
+    "Deploy ErrorSentinel in production environment",
+    "Configure continuous monitoring intervals",
+    "Set up alerting for critical issues",
+    "Integrate with CI/CD pipeline",
+    "Establish error escalation procedures"
+  ]
+}

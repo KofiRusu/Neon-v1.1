@@ -1,5 +1,6 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { agentRouter } from './agent';
+import { agentMemoryRouter } from './agent-memory';
 import { campaignRouter } from './campaign';
 import { contentRouter } from './content';
 import { emailRouter } from './email';
@@ -11,7 +12,15 @@ import { userRouter } from './user';
 import { brandVoiceRouter } from './brand-voice';
 import { trendsRouter } from './trends';
 import { outreachRouter } from './outreach';
-import { z } from "zod";
+import { strategyRouter } from './strategy';
+import { abTestingRouter } from './ab-testing';
+import { insightsRouter } from './insights';
+import { analyticsRouter } from './analytics';
+import { coordinationRouter } from './coordination';
+import { executiveRouter } from './executive';
+import { copilotRouter } from './copilot';
+import { boardroomRouter } from './boardroom';
+import { z } from 'zod';
 
 /**
  * This is the primary router for your server.
@@ -20,6 +29,7 @@ import { z } from "zod";
  */
 export const appRouter = createTRPCRouter({
   agent: agentRouter,
+  agentMemory: agentMemoryRouter,
   brandVoice: brandVoiceRouter,
   campaign: campaignRouter,
   content: contentRouter,
@@ -31,6 +41,14 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   trends: trendsRouter,
   outreach: outreachRouter,
+  strategy: strategyRouter,
+  abTesting: abTestingRouter,
+  insights: insightsRouter,
+  analytics: analyticsRouter,
+  coordination: coordinationRouter,
+  executive: executiveRouter,
+  copilot: copilotRouter,
+  boardroom: boardroomRouter,
 });
 
 // export type definition of API
@@ -41,7 +59,7 @@ export const fallbackRouter = createTRPCRouter({
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      message: 'NeonHub API is running'
+      message: 'NeonHub API is running',
     };
   }),
 
@@ -51,7 +69,7 @@ export const fallbackRouter = createTRPCRouter({
       return {
         active: 12,
         completed: 8,
-        total: 20
+        total: 20,
       };
     }),
   }),

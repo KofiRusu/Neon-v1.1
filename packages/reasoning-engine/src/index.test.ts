@@ -1,9 +1,9 @@
-import { 
-  ReasoningEngine, 
-  ContextCache, 
+import {
+  ReasoningEngine,
+  ContextCache,
   AgentRouter,
   ReasoningContext,
-  InferenceResult 
+  InferenceResult,
 } from './index';
 
 describe('ReasoningEngine', () => {
@@ -11,7 +11,7 @@ describe('ReasoningEngine', () => {
 
   beforeEach(() => {
     engine = new ReasoningEngine({
-      maxCacheSize: 100
+      maxCacheSize: 100,
     });
   });
 
@@ -22,7 +22,7 @@ describe('ReasoningEngine', () => {
   describe('Context Management', () => {
     it('should create and manage contexts', async () => {
       const context = await engine.createContext('session-1', 'user-1', 'campaign-1');
-      
+
       expect(context).toBeDefined();
       expect(context.id).toBeTruthy();
       expect(context.sessionId).toBe('session-1');
@@ -34,11 +34,11 @@ describe('ReasoningEngine', () => {
 
     it('should add entries to context', async () => {
       const context = await engine.createContext('session-1');
-      
+
       await engine.addToContext(context.id, {
         type: 'user_input',
         content: 'Hello, world!',
-        tokens: 3
+        tokens: 3,
       });
 
       // Verify context was updated (we can't directly access it, but we can test behavior)
@@ -48,22 +48,22 @@ describe('ReasoningEngine', () => {
 
     it('should limit context window size', async () => {
       const context = await engine.createContext('session-1');
-      
+
       // Add more than 50 entries
       for (let i = 0; i < 55; i++) {
         await engine.addToContext(context.id, {
           type: 'user_input',
           content: `Message ${i}`,
-          tokens: 2
+          tokens: 2,
         });
       }
 
       // Context should be maintained but trimmed (we test this through successful operations)
-      const result = await engine.processInference({
+      const result = (await engine.processInference({
         contextId: context.id,
         prompt: 'Test prompt',
-        priority: 'medium'
-      }) as InferenceResult;
+        priority: 'medium',
+      })) as InferenceResult;
 
       expect(result.content).toBeTruthy();
     });
@@ -77,13 +77,13 @@ describe('ReasoningEngine', () => {
 
     it('should route to appropriate agents', async () => {
       const context = await engine.createContext('session-1');
-      
-      const result = await engine.processInference({
+
+      const result = (await engine.processInference({
         contextId: context.id,
         prompt: 'Generate social media posts',
         agentType: 'content',
-        priority: 'high'
-      }) as InferenceResult;
+        priority: 'high',
+      })) as InferenceResult;
 
       expect(result).toBeDefined();
       expect(result.contextId).toBe(context.id);
@@ -94,13 +94,13 @@ describe('ReasoningEngine', () => {
 
     it('should handle streaming inference', async () => {
       const context = await engine.createContext('session-1');
-      
-      const streamResult = await engine.processInference({
+
+      const streamResult = (await engine.processInference({
         contextId: context.id,
         prompt: 'Stream response please',
         stream: true,
-        priority: 'high'
-      }) as AsyncIterable<string>;
+        priority: 'high',
+      })) as AsyncIterable<string>;
 
       const chunks: string[] = [];
       for await (const chunk of streamResult) {
@@ -115,11 +115,11 @@ describe('ReasoningEngine', () => {
   describe('Performance Metrics', () => {
     it('should track inference metrics', async () => {
       const context = await engine.createContext('session-1');
-      
+
       await engine.processInference({
         contextId: context.id,
         prompt: 'Test prompt',
-        priority: 'medium'
+        priority: 'medium',
       });
 
       const metrics = engine.getMetrics();
@@ -130,12 +130,12 @@ describe('ReasoningEngine', () => {
 
     it('should track streaming requests', async () => {
       const context = await engine.createContext('session-1');
-      
-      const streamResult = await engine.processInference({
+
+      const streamResult = (await engine.processInference({
         contextId: context.id,
         prompt: 'Stream test',
-        stream: true
-      }) as AsyncIterable<string>;
+        stream: true,
+      })) as AsyncIterable<string>;
 
       // Consume the stream
       for await (const _ of streamResult) {
@@ -152,7 +152,7 @@ describe('ReasoningEngine', () => {
       await expect(
         engine.processInference({
           contextId: 'invalid-context',
-          prompt: 'Test prompt'
+          prompt: 'Test prompt',
         })
       ).rejects.toThrow('Context not found');
     });
@@ -161,7 +161,7 @@ describe('ReasoningEngine', () => {
       await expect(
         engine.addToContext('invalid-context', {
           type: 'user_input',
-          content: 'Test content'
+          content: 'Test content',
         })
       ).rejects.toThrow('Context not found');
     });
@@ -182,14 +182,14 @@ describe('ContextCache', () => {
       metadata: {},
       createdAt: new Date(),
       lastAccessed: new Date(),
-      priority: 'medium'
+      priority: 'medium',
     };
   });
 
   it('should store and retrieve contexts', async () => {
     await cache.set(mockContext);
     const retrieved = await cache.get(mockContext.id);
-    
+
     expect(retrieved).toBeDefined();
     expect(retrieved?.id).toBe(mockContext.id);
     expect(retrieved?.sessionId).toBe(mockContext.sessionId);
@@ -230,10 +230,10 @@ describe('ContextCache', () => {
 
   it('should update access time on retrieval', async () => {
     await cache.set(mockContext);
-    
+
     // Wait a bit
     await new Promise(resolve => setTimeout(resolve, 10));
-    
+
     const retrieved = await cache.get(mockContext.id);
     expect(retrieved?.lastAccessed.getTime()).toBeGreaterThan(mockContext.lastAccessed.getTime());
   });
@@ -252,7 +252,7 @@ describe('AgentRouter', () => {
   it('should register agents with capabilities', () => {
     const stats = router.getRouteStats();
     expect(stats).toHaveLength(3);
-    
+
     const contentAgent = stats.find(s => s.agentType === 'content');
     expect(contentAgent?.capabilities).toContain('generate_posts');
     expect(contentAgent?.capabilities).toContain('create_captions');
@@ -266,7 +266,7 @@ describe('AgentRouter', () => {
       metadata: {},
       createdAt: new Date(),
       lastAccessed: new Date(),
-      priority: 'medium'
+      priority: 'medium',
     };
 
     const bestAgent = router.findBestAgent('generate_posts', mockContext);
@@ -284,7 +284,7 @@ describe('AgentRouter', () => {
       metadata: {},
       createdAt: new Date(),
       lastAccessed: new Date(),
-      priority: 'medium'
+      priority: 'medium',
     };
 
     const result = router.findBestAgent('unknown_task', mockContext);
@@ -297,7 +297,7 @@ describe('AgentRouter', () => {
 
     const stats = router.getRouteStats();
     const contentStats = stats.find(s => s.agentType === 'content');
-    
+
     expect(contentStats?.avgResponseTime).toBeCloseTo(460); // 500 * 0.8 + 300 * 0.2
     expect(contentStats?.successRate).toBeCloseTo(0.9); // 1.0 * 0.9 + 0 * 0.1
   });
@@ -310,7 +310,7 @@ describe('AgentRouter', () => {
       metadata: {},
       createdAt: new Date(),
       lastAccessed: new Date(),
-      priority: 'critical'
+      priority: 'critical',
     };
 
     // This should work even with multiple capable agents
@@ -324,9 +324,9 @@ describe('Integration Tests', () => {
 
   beforeEach(() => {
     engine = new ReasoningEngine({
-      maxCacheSize: 10
+      maxCacheSize: 10,
     });
-    
+
     // Register some agents
     engine.registerAgentType('content', ['generate_posts', 'create_captions']);
     engine.registerAgentType('analytics', ['analyze_performance', 'generate_insights']);
@@ -339,23 +339,23 @@ describe('Integration Tests', () => {
   it('should handle complete workflow', async () => {
     // Create context
     const context = await engine.createContext('session-1', 'user-1', 'campaign-1');
-    
+
     // Add user input
     await engine.addToContext(context.id, {
       type: 'user_input',
       content: 'I want to create social media posts for my campaign',
-      tokens: 12
+      tokens: 12,
     });
 
     // Process inference
-    const result = await engine.processInference({
+    const result = (await engine.processInference({
       contextId: context.id,
       prompt: 'Generate engaging social media posts about AI marketing',
       agentType: 'content',
       temperature: 0.7,
       maxTokens: 150,
-      priority: 'high'
-    }) as InferenceResult;
+      priority: 'high',
+    })) as InferenceResult;
 
     // Verify result
     expect(result).toBeDefined();
@@ -379,47 +379,45 @@ describe('Integration Tests', () => {
       engine.processInference({
         contextId: context1.id,
         prompt: 'Generate content for Instagram',
-        agentType: 'content'
+        agentType: 'content',
       }),
       engine.processInference({
         contextId: context2.id,
         prompt: 'Analyze campaign performance',
-        agentType: 'analytics'
-      })
+        agentType: 'analytics',
+      }),
     ]);
 
     expect(result1).toBeDefined();
     expect(result2).toBeDefined();
-    
+
     const metrics = engine.getMetrics();
     expect(metrics.totalInferences).toBe(2);
   });
 
   it('should maintain performance under load', async () => {
     const contexts = await Promise.all(
-      Array.from({ length: 5 }, (_, i) => 
-        engine.createContext(`session-${i}`)
-      )
+      Array.from({ length: 5 }, (_, i) => engine.createContext(`session-${i}`))
     );
 
     const startTime = Date.now();
-    
+
     // Process multiple inferences
     const results = await Promise.all(
       contexts.map(context =>
         engine.processInference({
           contextId: context.id,
           prompt: 'Quick test inference',
-          priority: 'medium'
+          priority: 'medium',
         })
       )
     );
 
     const totalTime = Date.now() - startTime;
-    
+
     expect(results).toHaveLength(5);
     expect(totalTime).toBeLessThan(1000); // Should complete within 1 second
-    
+
     const metrics = engine.getMetrics();
     expect(metrics.totalInferences).toBe(5);
     expect(metrics.avgResponseTime).toBeGreaterThan(0);

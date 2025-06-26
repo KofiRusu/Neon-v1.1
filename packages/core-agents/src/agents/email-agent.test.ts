@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { 
-  EmailMarketingAgent, 
-  type EmailSequenceInput, 
-  type PersonalizationInput, 
+import {
+  EmailMarketingAgent,
+  type EmailSequenceInput,
+  type PersonalizationInput,
   type EmailPerformanceData,
-  type ABTestInput
+  type ABTestInput,
 } from './email-agent';
 
 // Mock OpenAI
@@ -34,7 +34,7 @@ describe('EmailMarketingAgent', () => {
     process.env.OPENAI_API_KEY = 'test-api-key';
 
     agent = new EmailMarketingAgent();
-    
+
     // Get the mocked OpenAI instance
     const OpenAI = require('openai').default;
     mockOpenAI = new OpenAI();
@@ -66,33 +66,35 @@ describe('EmailMarketingAgent', () => {
   describe('Email sequence generation', () => {
     it('should generate email sequence using AI when API key is available', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              name: 'Welcome Email Sequence',
-              description: 'Onboard new customers effectively',
-              emails: [
-                {
-                  step: 1,
-                  subject: 'Welcome to Our Platform!',
-                  content: 'Hi there! Welcome to our amazing platform...',
-                  delayDays: 0,
-                  purpose: 'Welcome and introduce platform',
-                  keyPoints: ['Platform introduction', 'Key features']
-                },
-                {
-                  step: 2,
-                  subject: 'Get Started with These Tips',
-                  content: 'Now that you\'re here, let\'s get you started...',
-                  delayDays: 3,
-                  purpose: 'Education and onboarding',
-                  keyPoints: ['Getting started tips', 'Best practices']
-                }
-              ],
-              recommendations: ['Test different subject lines', 'Personalize content']
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                name: 'Welcome Email Sequence',
+                description: 'Onboard new customers effectively',
+                emails: [
+                  {
+                    step: 1,
+                    subject: 'Welcome to Our Platform!',
+                    content: 'Hi there! Welcome to our amazing platform...',
+                    delayDays: 0,
+                    purpose: 'Welcome and introduce platform',
+                    keyPoints: ['Platform introduction', 'Key features'],
+                  },
+                  {
+                    step: 2,
+                    subject: 'Get Started with These Tips',
+                    content: "Now that you're here, let's get you started...",
+                    delayDays: 3,
+                    purpose: 'Education and onboarding',
+                    keyPoints: ['Getting started tips', 'Best practices'],
+                  },
+                ],
+                recommendations: ['Test different subject lines', 'Personalize content'],
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -104,7 +106,7 @@ describe('EmailMarketingAgent', () => {
         sequenceLength: 2,
         tone: 'friendly',
         goals: ['onboarding', 'engagement'],
-        industry: 'technology'
+        industry: 'technology',
       };
 
       const result = await agent.generateSequence(input);
@@ -122,7 +124,7 @@ describe('EmailMarketingAgent', () => {
       const input: EmailSequenceInput = {
         topic: 'Product Launch',
         audience: 'Existing customers',
-        sequenceLength: 3
+        sequenceLength: 3,
       };
 
       const result = await agent.generateSequence(input);
@@ -135,18 +137,20 @@ describe('EmailMarketingAgent', () => {
 
     it('should handle malformed AI response gracefully', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: 'Invalid JSON response from AI'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: 'Invalid JSON response from AI',
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
 
       const input: EmailSequenceInput = {
         topic: 'Newsletter Campaign',
-        audience: 'Subscribers'
+        audience: 'Subscribers',
       };
 
       const result = await agent.generateSequence(input);
@@ -160,30 +164,36 @@ describe('EmailMarketingAgent', () => {
   describe('Email personalization', () => {
     it('should personalize email using AI', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              personalizedSubject: 'Hi John! Your exclusive tech industry update',
-              personalizedContent: 'Hi John,\n\nAs a tech industry professional, you might be interested in our latest features specifically designed for companies like TechCorp...',
-              personalizationScore: 92,
-              appliedPersonalizations: [
-                {
-                  type: 'Name-based',
-                  field: 'greeting',
-                  originalValue: 'Hi there',
-                  personalizedValue: 'Hi John'
-                },
-                {
-                  type: 'Industry-based',
-                  field: 'content',
-                  originalValue: 'general features',
-                  personalizedValue: 'tech industry features'
-                }
-              ],
-              recommendations: ['Add location-based content', 'Include recent activity references']
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                personalizedSubject: 'Hi John! Your exclusive tech industry update',
+                personalizedContent:
+                  'Hi John,\n\nAs a tech industry professional, you might be interested in our latest features specifically designed for companies like TechCorp...',
+                personalizationScore: 92,
+                appliedPersonalizations: [
+                  {
+                    type: 'Name-based',
+                    field: 'greeting',
+                    originalValue: 'Hi there',
+                    personalizedValue: 'Hi John',
+                  },
+                  {
+                    type: 'Industry-based',
+                    field: 'content',
+                    originalValue: 'general features',
+                    personalizedValue: 'tech industry features',
+                  },
+                ],
+                recommendations: [
+                  'Add location-based content',
+                  'Include recent activity references',
+                ],
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -194,14 +204,14 @@ describe('EmailMarketingAgent', () => {
           firstName: 'John',
           company: 'TechCorp',
           industry: 'technology',
-          role: 'CTO'
+          role: 'CTO',
         },
         segmentData: {
           segment: 'tech_leaders',
           characteristics: ['decision_maker', 'early_adopter'],
-          preferences: ['technical_content', 'case_studies']
+          preferences: ['technical_content', 'case_studies'],
         },
-        businessContext: 'B2B SaaS platform'
+        businessContext: 'B2B SaaS platform',
       };
 
       const result = await agent.personalize(input);
@@ -221,8 +231,8 @@ describe('EmailMarketingAgent', () => {
         baseEmail: 'Hi there,\n\nWelcome to our platform!',
         userTraits: {
           firstName: 'Jane',
-          company: 'StartupCorp'
-        }
+          company: 'StartupCorp',
+        },
       };
 
       const result = await agent.personalize(input);
@@ -237,24 +247,26 @@ describe('EmailMarketingAgent', () => {
   describe('Performance analysis', () => {
     it('should analyze email performance with AI insights', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              insights: [
-                'Open rate is 28% above industry average',
-                'Mobile opens account for 72% of total opens',
-                'Tuesday sends show highest engagement',
-                'Subject lines with personalization perform 15% better'
-              ],
-              recommendations: [
-                'Continue mobile-first email design',
-                'Schedule more campaigns for Tuesday mornings',
-                'Increase personalization across all campaigns',
-                'Test emoji usage in subject lines'
-              ]
-            })
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                insights: [
+                  'Open rate is 28% above industry average',
+                  'Mobile opens account for 72% of total opens',
+                  'Tuesday sends show highest engagement',
+                  'Subject lines with personalization perform 15% better',
+                ],
+                recommendations: [
+                  'Continue mobile-first email design',
+                  'Schedule more campaigns for Tuesday mornings',
+                  'Increase personalization across all campaigns',
+                  'Test emoji usage in subject lines',
+                ],
+              }),
+            },
+          },
+        ],
       };
 
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
@@ -268,7 +280,7 @@ describe('EmailMarketingAgent', () => {
         conversions: 118,
         unsubscribes: 15,
         bounces: 150,
-        timeRange: '30d'
+        timeRange: '30d',
       };
 
       const result = await agent.analyzePerformance(performanceData);
@@ -290,7 +302,7 @@ describe('EmailMarketingAgent', () => {
         opens: 196,
         clicks: 39,
         conversions: 8,
-        timeRange: '7d'
+        timeRange: '7d',
       };
 
       const result = await agent.analyzePerformance(performanceData);
@@ -306,10 +318,10 @@ describe('EmailMarketingAgent', () => {
         campaignId: 'low_performance',
         sent: 1000,
         delivered: 900, // Low delivery rate
-        opens: 144,     // 16% open rate - below average
-        clicks: 14,     // Low click rate
+        opens: 144, // 16% open rate - below average
+        clicks: 14, // Low click rate
         conversions: 1,
-        timeRange: '7d'
+        timeRange: '7d',
       };
 
       const result = await agent.analyzePerformance(performanceData);
@@ -329,18 +341,18 @@ describe('EmailMarketingAgent', () => {
           {
             name: 'Variant A - Direct',
             subject: 'Your order is ready',
-            content: 'Your order #1234 is ready for pickup.'
+            content: 'Your order #1234 is ready for pickup.',
           },
           {
             name: 'Variant B - Personalized',
             subject: 'John, your order is ready!',
-            content: 'Hi John, your order #1234 is ready for pickup.'
-          }
+            content: 'Hi John, your order #1234 is ready for pickup.',
+          },
         ],
         testMetric: 'open_rate',
         sampleSize: 1000,
         duration: 24,
-        audience: []
+        audience: [],
       };
 
       const result = await agent.runABTest(input);
@@ -362,7 +374,7 @@ describe('EmailMarketingAgent', () => {
         testMetric: 'click_rate',
         sampleSize: 500,
         duration: 12,
-        audience: []
+        audience: [],
       };
 
       await expect(agent.runABTest(input)).rejects.toThrow('A/B test requires at least 2 variants');
@@ -371,14 +383,11 @@ describe('EmailMarketingAgent', () => {
     it('should calculate performance metrics for each variant', async () => {
       const input: ABTestInput = {
         name: 'Performance Test',
-        variants: [
-          { name: 'Control' },
-          { name: 'Treatment' }
-        ],
+        variants: [{ name: 'Control' }, { name: 'Treatment' }],
         testMetric: 'conversion_rate',
         sampleSize: 2000,
         duration: 48,
-        audience: []
+        audience: [],
       };
 
       const result = await agent.runABTest(input);
@@ -397,15 +406,11 @@ describe('EmailMarketingAgent', () => {
     it('should identify winner correctly', async () => {
       const input: ABTestInput = {
         name: 'Winner Test',
-        variants: [
-          { name: 'A' },
-          { name: 'B' },
-          { name: 'C' }
-        ],
+        variants: [{ name: 'A' }, { name: 'B' }, { name: 'C' }],
         testMetric: 'click_rate',
         sampleSize: 1500,
         duration: 24,
-        audience: []
+        audience: [],
       };
 
       const result = await agent.runABTest(input);
@@ -413,7 +418,7 @@ describe('EmailMarketingAgent', () => {
       const winner = result.variants.find(v => v.isWinner);
       expect(winner).toBeDefined();
       expect(result.winner).toBe(winner?.id);
-      
+
       // Winner should have highest performance for the test metric
       const winnerMetric = winner?.performance.clickRate || 0;
       result.variants.forEach(variant => {
@@ -431,9 +436,9 @@ describe('EmailMarketingAgent', () => {
         context: {
           topic: 'Product Demo',
           audience: 'Prospects',
-          sequenceLength: 2
+          sequenceLength: 2,
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -446,9 +451,9 @@ describe('EmailMarketingAgent', () => {
         task: 'personalize_email',
         context: {
           baseEmail: 'Hello! Check out our new features.',
-          userTraits: { firstName: 'Alice', company: 'TechStart' }
+          userTraits: { firstName: 'Alice', company: 'TechStart' },
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -465,9 +470,9 @@ describe('EmailMarketingAgent', () => {
           delivered: 980,
           opens: 200,
           clicks: 40,
-          timeRange: '7d'
+          timeRange: '7d',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -485,9 +490,9 @@ describe('EmailMarketingAgent', () => {
           testMetric: 'open_rate',
           sampleSize: 500,
           duration: 24,
-          audience: []
+          audience: [],
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(true);
@@ -499,7 +504,7 @@ describe('EmailMarketingAgent', () => {
       const result = await agent.execute({
         task: 'unknown_task',
         context: {},
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.success).toBe(false);
@@ -513,11 +518,11 @@ describe('EmailMarketingAgent', () => {
       const highPerformData: EmailPerformanceData = {
         campaignId: 'high_perf',
         sent: 1000,
-        delivered: 990,  // 99% delivery
-        opens: 350,     // 35.4% open rate
-        clicks: 70,     // 20% CTR
+        delivered: 990, // 99% delivery
+        opens: 350, // 35.4% open rate
+        clicks: 70, // 20% CTR
         conversions: 14, // 20% conversion rate
-        timeRange: '7d'
+        timeRange: '7d',
       };
 
       const highResult = await agent.analyzePerformance(highPerformData);
@@ -527,11 +532,11 @@ describe('EmailMarketingAgent', () => {
       const lowPerformData: EmailPerformanceData = {
         campaignId: 'low_perf',
         sent: 1000,
-        delivered: 850,  // 85% delivery
-        opens: 85,      // 10% open rate
-        clicks: 4,      // 4.7% CTR
+        delivered: 850, // 85% delivery
+        opens: 85, // 10% open rate
+        clicks: 4, // 4.7% CTR
         conversions: 0, // 0% conversion rate
-        timeRange: '7d'
+        timeRange: '7d',
       };
 
       const lowResult = await agent.analyzePerformance(lowPerformData);
@@ -546,7 +551,7 @@ describe('EmailMarketingAgent', () => {
         opens: 250, // 25.5% open rate (above 21.3% benchmark)
         clicks: 30, // 12% CTR (above 2.6% benchmark)
         conversions: 6,
-        timeRange: '30d'
+        timeRange: '30d',
       };
 
       const result = await agent.analyzePerformance(data);
@@ -558,15 +563,14 @@ describe('EmailMarketingAgent', () => {
 
   describe('Error handling', () => {
     it('should handle OpenAI timeout gracefully', async () => {
-      mockOpenAI.chat.completions.create.mockImplementation(() => 
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 100)
-        )
+      mockOpenAI.chat.completions.create.mockImplementation(
+        () =>
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 100))
       );
 
       const input: EmailSequenceInput = {
         topic: 'Timeout Test',
-        audience: 'Test users'
+        audience: 'Test users',
       };
 
       const result = await agent.generateSequence(input);
@@ -577,7 +581,7 @@ describe('EmailMarketingAgent', () => {
     it('should validate input parameters', async () => {
       // Missing required fields
       const invalidInput = {} as EmailSequenceInput;
-      
+
       const result = await agent.generateSequence(invalidInput);
       expect(result.sequenceId).toBeDefined(); // Should still return fallback
     });
@@ -593,7 +597,7 @@ describe('EmailMarketingAgent', () => {
       const sendResult = await agent.execute({
         task: 'send_campaign',
         context: { campaignData: 'test' },
-        priority: 'high'
+        priority: 'high',
       });
 
       expect(sendResult.success).toBe(true);
@@ -601,7 +605,7 @@ describe('EmailMarketingAgent', () => {
       const templateResult = await agent.execute({
         task: 'manage_templates',
         context: { action: 'list' },
-        priority: 'low'
+        priority: 'low',
       });
 
       expect(templateResult.success).toBe(true);
@@ -614,9 +618,9 @@ describe('EmailMarketingAgent', () => {
         task: 'generate_email_sequence',
         context: {
           topic: 'Performance Test',
-          audience: 'Test users'
+          audience: 'Test users',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       expect(result.performance).toBeGreaterThan(0);
@@ -629,9 +633,9 @@ describe('EmailMarketingAgent', () => {
         task: 'generate_email_sequence',
         context: {
           topic: 'Status Test',
-          audience: 'Test users'
+          audience: 'Test users',
         },
-        priority: 'medium'
+        priority: 'medium',
       });
 
       const status = await agent.getStatus();
@@ -640,4 +644,4 @@ describe('EmailMarketingAgent', () => {
       expect(status.status).toBe('idle');
     });
   });
-}); 
+});

@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   MagnifyingGlassIcon,
   ClockIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ChatBubbleLeftIcon
+  ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
 
 interface ThreadListProps {
@@ -72,7 +72,7 @@ const mockThreads = [
       avatar: null,
     },
     subject: 'API Integration Help',
-    lastMessage: 'I\'m having trouble with the webhook setup...',
+    lastMessage: "I'm having trouble with the webhook setup...",
     lastMessageTime: new Date('2024-01-16T06:15:00Z'),
     status: 'pending',
     priority: 'high',
@@ -87,23 +87,25 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
   const [filterStatus, setFilterStatus] = useState('all');
 
   const filteredThreads = mockThreads.filter(thread => {
-    const matchesSearch = 
+    const matchesSearch =
       thread.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       thread.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       thread.customer.email.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesFilter = filterStatus === 'all' || thread.status === filterStatus;
-    
+
     return matchesSearch && matchesFilter;
   });
 
   const sortedThreads = filteredThreads.sort((a, b) => {
     // Sort by priority first (high > medium > low)
     const priorityOrder = { high: 3, medium: 2, low: 1 };
-    const priorityDiff = priorityOrder[b.priority as keyof typeof priorityOrder] - priorityOrder[a.priority as keyof typeof priorityOrder];
-    
+    const priorityDiff =
+      priorityOrder[b.priority as keyof typeof priorityOrder] -
+      priorityOrder[a.priority as keyof typeof priorityOrder];
+
     if (priorityDiff !== 0) return priorityDiff;
-    
+
     // Then by last message time (newest first)
     return b.lastMessageTime.getTime() - a.lastMessageTime.getTime();
   });
@@ -158,7 +160,7 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-    
+
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
@@ -172,14 +174,14 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        
+
         <select
           value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
+          onChange={e => setFilterStatus(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="all">All Tickets</option>
@@ -198,7 +200,7 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
-            {sortedThreads.map((thread) => (
+            {sortedThreads.map(thread => (
               <div
                 key={thread.id}
                 onClick={() => onSelectThread(thread.id)}
@@ -209,23 +211,25 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                     {thread.customer.avatar ? (
-                      <img 
-                        src={thread.customer.avatar} 
+                      <img
+                        src={thread.customer.avatar}
                         alt={thread.customer.name}
                         className="w-10 h-10 rounded-full"
                       />
                     ) : (
                       <span className="text-sm font-medium text-gray-600">
-                        {thread.customer.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        {thread.customer.name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')
+                          .toUpperCase()}
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-medium text-gray-900 truncate">
-                        {thread.customer.name}
-                      </h4>
+                      <h4 className="font-medium text-gray-900 truncate">{thread.customer.name}</h4>
                       <div className="flex items-center gap-1">
                         {thread.unreadCount > 0 && (
                           <span className="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
@@ -235,20 +239,22 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
                         {getStatusIcon(thread.status)}
                       </div>
                     </div>
-                    
+
                     <p className="text-sm font-medium text-gray-800 mb-1 truncate">
                       {thread.subject}
                     </p>
-                    
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                      {thread.lastMessage}
-                    </p>
-                    
+
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{thread.lastMessage}</p>
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${getChannelColor(thread.channel)}`}></div>
+                        <div
+                          className={`w-2 h-2 rounded-full ${getChannelColor(thread.channel)}`}
+                        ></div>
                         <span className="text-xs text-gray-500 capitalize">{thread.channel}</span>
-                        <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(thread.priority)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(thread.priority)}`}
+                        >
                           {thread.priority}
                         </span>
                         {thread.isAiHandled && (
@@ -270,4 +276,4 @@ export default function ThreadList({ selectedThread, onSelectThread }: ThreadLis
       </div>
     </div>
   );
-} 
+}

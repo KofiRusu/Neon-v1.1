@@ -1,0 +1,118 @@
+{
+  "timestamp": "2025-06-25T21:14:47.848Z",
+  "typeScriptCheck": {
+    "success": false,
+    "errors": []
+  },
+  "eslintCheck": {
+    "success": false,
+    "warnings": []
+  },
+  "testResults": {
+    "success": false,
+    "failures": [
+      {
+        "file": "src/agents/trend-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/insight-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/outreach-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/design-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/ad-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/seo-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/support-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/__tests__/auditAgent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/ui-refinement-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/email-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/content-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/index.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/types.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/base-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/auditAgent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agent-registry.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agents/brand-voice-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/__tests__/base-agent.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/index.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/logger.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/agentLogger.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/index.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/__tests__/agentLogger.test.ts",
+        "type": "test"
+      },
+      {
+        "file": "src/__tests__/index.test.ts",
+        "type": "test"
+      }
+    ]
+  },
+  "fixedFiles": [],
+  "summary": {
+    "totalIssues": 24,
+    "fixedIssues": 0,
+    "remainingIssues": 24
+  }
+}
