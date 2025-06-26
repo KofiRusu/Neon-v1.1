@@ -1,87 +1,81 @@
 {
-  "name": "@neonhub/platform",
-  "version": "1.0.0-beta",
-  "description": "AI-powered marketing automation platform with comprehensive agent-based architecture",
-  "main": "index.js",
+  "name": "@neonhub/monorepo",
+  "version": "2.1.0",
+  "description": "NeonHub v2.1 - Complete AI-powered marketing automation platform",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/dashboard\"",
-    "build": "npm run build --workspaces --if-present",
-    "build:dashboard": "npm run build --workspace=apps/dashboard",
-    "build:api": "npm run build --workspace=apps/api",
-    "start": "concurrently \"npm run start --workspace=apps/api\" \"npm run start --workspace=apps/dashboard\"",
-    "test": "npm run test --workspaces --if-present",
-    "test:unit": "npm run test --workspaces --if-present",
-    "test:coverage": "npm run test:coverage --workspaces --if-present || echo '⚠️ Coverage not available for all workspaces'",
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
     "test:e2e": "playwright test",
-    "lint": "npm run lint --workspaces --if-present",
-    "lint:fix": "npm run lint:fix --workspaces --if-present",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\" || echo '⚠️ Prettier formatting completed'",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\" || echo '⚠️ Format check completed with warnings'",
-    "type-check": "npm run type-check --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules .next dist coverage",
-    "db:generate": "npm run db:generate --workspace=packages/data-model",
-    "db:push": "npm run db:push --workspace=packages/data-model",
-    "db:migrate": "npm run db:migrate --workspace=packages/data-model",
-    "db:studio": "npm run db:studio --workspace=packages/data-model",
-    "deploy:vercel": "./deploy-vercel.sh",
-    "deploy:vercel:prod": "./deploy-vercel.sh --production",
-    "deploy:preview": "vercel",
-    "deploy:production": "vercel --prod",
-    "health-check": "curl -f http://localhost:3001/api/health && curl -f http://localhost:3000",
-    "postinstall": "npm run db:generate"
+    "test:watch": "turbo run test:watch",
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,md,json}\"",
+    "clean": "turbo run clean",
+    "clean:deps": "rm -rf node_modules && rm -rf **/node_modules && rm -rf **/.next && rm -rf **/dist",
+    "postinstall": "pnpm build",
+    "start": "turbo run start",
+    "start:dashboard": "cd apps/dashboard && pnpm dev",
+    "start:api": "cd apps/api && pnpm dev",
+    "deploy": "turbo run build && vercel --prod",
+    "deploy:preview": "turbo run build && vercel",
+    "agents:registry": "cd packages/core-agents && pnpm run registry:sync",
+    "db:generate": "cd packages/data-model && pnpm prisma generate",
+    "db:migrate": "cd packages/data-model && pnpm prisma migrate dev",
+    "db:push": "cd packages/data-model && pnpm prisma db push",
+    "db:seed": "cd packages/data-model && pnpm prisma db seed",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=./packages/* && changeset publish"
   },
-  "keywords": [
-    "ai",
-    "marketing",
-    "automation",
-    "agents",
-    "nextjs",
-    "trpc",
-    "prisma",
-    "typescript",
-    "neon",
-    "platform"
-  ],
-  "author": "KofiRusu",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KofiRusu/Neon-v1.1.git"
-  },
-  "bugs": {
-    "url": "https://github.com/KofiRusu/Neon-v1.1/issues"
-  },
-  "homepage": "https://github.com/KofiRusu/Neon-v1.1#readme",
-  "engines": {
-    "node": ">=18.17.0",
-    "npm": ">=9.0.0"
+  "dependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.10.0",
+    "turbo": "^1.10.16"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
-    "@types/node": "^20.10.0",
-    "@typescript-eslint/eslint-plugin": "^8.35.0",
-    "@typescript-eslint/parser": "^8.35.0",
-    "chokidar": "^4.0.3",
-    "concurrently": "^8.2.2",
-    "eslint-config-prettier": "^10.1.5",
-    "prettier": "^3.6.0",
-    "typescript": "^5.3.0"
+    "@types/jest": "^29.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "eslint-config-next": "^14.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.2"
   },
-  "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   },
-  "dependencies": {
-    "@axe-core/react": "^4.10.2",
-    "@sendgrid/mail": "^8.1.5",
-    "jest-axe": "^10.0.0",
-    "jspdf": "^3.0.1",
-    "puppeteer": "^24.10.2",
-    "twilio": "^5.7.1"
-  }
+  "packageManager": "pnpm@8.10.0",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{md,json}": [
+      "prettier --write"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neonhub/neon-v2.1.git"
+  },
+  "keywords": ["ai", "marketing", "automation", "agents", "dashboard", "neon", "glassmorphism"],
+  "author": "NeonHub Team",
+  "license": "MIT"
 }
