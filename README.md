@@ -81,7 +81,8 @@ Visit `http://localhost:3000` to see the application.
 
 ## 🚀 NeonHub v2.2 - Turborepo + Vercel Deployment
 
-**New in v2.2**: Enhanced monorepo setup with Turborepo for optimized builds and Vercel for seamless deployment.
+**New in v2.2**: Enhanced monorepo setup with Turborepo for optimized builds and
+Vercel for seamless deployment.
 
 ### ⚡ Turborepo Features
 
@@ -93,6 +94,7 @@ Visit `http://localhost:3000` to see the application.
 ### 🎯 Quick Deploy (v2.2)
 
 #### Option 1: Automated Setup (Recommended)
+
 ```bash
 # Run the complete automation script
 ./automated-turbo-vercel-setup.sh
@@ -102,6 +104,7 @@ Visit `http://localhost:3000` to see the application.
 ```
 
 #### Option 2: Manual Setup
+
 ```bash
 # 1. Install Turborepo and Vercel CLI
 npm install -g turbo@2.5.4 vercel@44.2.7
@@ -151,7 +154,7 @@ npm run typecheck
 ```
 Packages in Scope: 8/8 ✅
 ├── @neon/api              → apps/api
-├── @neonhub/dashboard     → apps/dashboard  
+├── @neonhub/dashboard     → apps/dashboard
 ├── @neon/core-agents      → packages/core-agents
 ├── @neon/data-model       → packages/data-model
 ├── @neon/reasoning-engine → packages/reasoning-engine

@@ -21,7 +21,7 @@ export function Slider({
   ...props
 }: SliderProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = [Number(e.target.value)];
+    const newValue = [Number((e.target as HTMLInputElement).value)];
     onValueChange?.(newValue);
   };
 
