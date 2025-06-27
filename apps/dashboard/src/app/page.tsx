@@ -27,7 +27,9 @@ import {
   EyeIcon,
   FireIcon,
   TrendingUpIcon,
-  CloudIcon
+  CloudIcon,
+  AcademicCapIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
 
 export default function Dashboard(): JSX.Element {
@@ -76,12 +78,30 @@ export default function Dashboard(): JSX.Element {
       status: 'active'
     },
     {
+      id: 'training',
+      name: 'Agent Learning',
+      href: '/training',
+      icon: AcademicCapIcon,
+      description: 'Monitor agent training & performance',
+      color: 'neon-green',
+      status: 'active'
+    },
+    {
+      id: 'assets',
+      name: 'AI Asset Library',
+      href: '/assets',
+      icon: PhotoIcon,
+      description: 'Generated content repository',
+      color: 'neon-pink',
+      status: 'active'
+    },
+    {
       id: 'email',
       name: 'Email Marketing',
       href: '/email',
       icon: EnvelopeIcon,
       description: 'Automated email sequences',
-      color: 'neon-pink',
+      color: 'neon-blue',
       status: 'active'
     },
     {
@@ -90,7 +110,7 @@ export default function Dashboard(): JSX.Element {
       href: '/social',
       icon: GlobeAltIcon,
       description: 'Cross-platform management',
-      color: 'neon-green',
+      color: 'neon-purple',
       status: 'active'
     },
     {
@@ -99,7 +119,7 @@ export default function Dashboard(): JSX.Element {
       href: '/support',
       icon: ChatBubbleLeftIcon,
       description: 'AI-powered assistance',
-      color: 'neon-blue',
+      color: 'neon-green',
       status: 'active'
     },
     {
@@ -108,7 +128,16 @@ export default function Dashboard(): JSX.Element {
       href: '/analytics',
       icon: ArrowTrendingUpIcon,
       description: 'Performance insights',
-      color: 'neon-purple',
+      color: 'neon-pink',
+      status: 'active'
+    },
+    {
+      id: 'settings',
+      name: 'System Settings',
+      href: '/settings',
+      icon: CogIcon,
+      description: 'Configure global behavior',
+      color: 'neon-blue',
       status: 'active'
     },
   ];

@@ -11,6 +11,9 @@ import { supportRouter } from './routers/support';
 import { outreachRouter } from './routers/outreach';
 import { trendsRouter } from './routers/trends';
 import { brandVoiceRouter } from './routers/brand-voice';
+import { trainingRouter } from '../routers/training';
+import { assetsRouter } from '../routers/assets';
+import { settingsRouter } from '../routers/settings';
 import { fallbackRouter } from './routers/index';
 
 /**
@@ -34,6 +37,11 @@ export const appRouter = createTRPCRouter({
   outreach: outreachRouter,
   trends: trendsRouter,
   brandVoice: brandVoiceRouter,
+  
+  // New feature routers (Prompts 009, 010, 011)
+  training: trainingRouter,
+  assets: assetsRouter,
+  settings: settingsRouter,
   
   // Health check and fallbacks
   health: fallbackRouter.health,

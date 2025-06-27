@@ -568,3 +568,182 @@ model BrandVoiceAnalysis {
 
   @@map("brand_voice_analyses")
 }
+
+// Agent Learning Tracker Models
+model TrainingLog {
+  id               String   @id @default(cuid())
+  agentId          String
+  agentType        String
+  eventType        TrainingEventType
+  scoreBefore      Float?
+  scoreAfter       Float?
+  scoreDelta       Float?
+  trainingData     Json?
+  hyperparameters  Json?
+  modelVersion     String?
+  retryCount       Int      @default(0)
+  performance      Json?
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  
+  @@index([agentId])
+  @@index([agentType])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("training_logs")
+}
+
+// AI Asset Library Models
+model Asset {
+  id          String        @id @default(cuid())
+  name        String
+  type        AssetType
+  category    String?
+  description String?
+  content     Json          // Flexible content structure
+  fileUrl     String?       // URL to stored file
+  thumbnail   String?       // Thumbnail/preview URL
+  metadata    Json?         // Asset-specific metadata
+  tags        String[]
+  status      AssetStatus   @default(PENDING)
+  version     String        @default("1.0")
+  parentId    String?       // For remixes/versions
+  createdBy   String?       // User who created/generated it
+  approvedBy  String?       // User who approved it
+  remixCount  Int           @default(0)
+  usage       Int           @default(0)
+  rating      Float?
+  size        Int?          // File size in bytes
+  dimensions  Json?         // Width/height for images/videos
+  duration    Int?          // Duration for videos/audio
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Relations
+  parent      Asset?        @relation("AssetVersions", fields: [parentId], references: [id])
+  versions    Asset[]       @relation("AssetVersions")
+  approvals   AssetApproval[]
+  
+  @@index([type])
+  @@index([category])
+  @@index([status])
+  @@index([createdBy])
+  @@index([createdAt])
+  @@map("assets")
+}
+
+model AssetApproval {
+  id        String           @id @default(cuid())
+  assetId   String
+  userId    String
+  status    ApprovalStatus
+  comment   String?
+  createdAt DateTime         @default(now())
+  
+  asset     Asset            @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  @@unique([assetId, userId])
+  @@map("asset_approvals")
+}
+
+// Unified System Settings Models
+model Setting {
+  id          String       @id @default(cuid())
+  key         String       @unique
+  value       Json
+  type        SettingType
+  category    String
+  description String?
+  isSystem    Boolean      @default(false)
+  isEncrypted Boolean      @default(false)
+  userId      String?      // User-specific settings
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  @@index([category])
+  @@index([userId])
+  @@map("settings")
+}
+
+model APIKey {
+  id          String    @id @default(cuid())
+  name        String
+  service     String    // OpenAI, Claude, etc.
+  keyPreview  String    // First few chars + masked
+  isActive    Boolean   @default(true)
+  lastUsed    DateTime?
+  usageCount  Int       @default(0)
+  createdBy   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([service])
+  @@index([isActive])
+  @@map("api_keys")
+}
+
+model PromptTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  template    String
+  variables   String[] // Available template variables
+  description String?
+  version     String   @default("1.0")
+  isActive    Boolean  @default(true)
+  usage       Int      @default(0)
+  rating      Float?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([category])
+  @@index([isActive])
+  @@map("prompt_templates")
+}
+
+// New Enums
+enum TrainingEventType {
+  FINE_TUNING
+  RETRY
+  OPTIMIZATION
+  PERFORMANCE_UPDATE
+  MODEL_SWITCH
+  VALIDATION
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  TEXT
+  DOCUMENT
+  TEMPLATE
+  DESIGN
+  ANIMATION
+  DATASET
+}
+
+enum AssetStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+  DRAFT
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REQUIRES_CHANGES
+}
+
+enum SettingType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+  ARRAY
+  ENCRYPTED
+}
