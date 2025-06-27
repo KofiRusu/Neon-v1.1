@@ -43,7 +43,7 @@ test.describe('Neon0.2 Application', () => {
 
     // Check that the page loads and main content is visible
     await expect(page.locator('h1')).toBeVisible();
-    
+
     // Check that navigation cards stack properly on mobile
     await expect(page.locator('.grid')).toBeVisible();
   });
@@ -52,7 +52,7 @@ test.describe('Neon0.2 Application', () => {
     // Test that the page loads dynamic content (which would come from API)
     // Look for elements that indicate the app is working
     await expect(page.locator('.stat-card, .glass')).toBeVisible();
-    
+
     // Test that we can navigate to a page that likely uses API data
     await page.click('a[href="/analytics"]');
     await expect(page).toHaveURL(/\/analytics$/);
@@ -61,7 +61,7 @@ test.describe('Neon0.2 Application', () => {
   test('should handle error states gracefully', async ({ page }) => {
     // Test navigation to a non-existent page
     await page.goto('/non-existent-page');
-    
+
     // Should show 404 or redirect gracefully
     await expect(page.locator('body')).toBeVisible();
   });
@@ -77,7 +77,7 @@ test.describe('Neon0.2 Application', () => {
 
     // Check for keyboard navigation (search input should be focusable)
     const searchInput = page.locator('input[placeholder*="Search"]');
-    if (await searchInput.count() > 0) {
+    if ((await searchInput.count()) > 0) {
       await searchInput.focus();
       await expect(searchInput).toBeFocused();
     }

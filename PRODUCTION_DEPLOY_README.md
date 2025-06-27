@@ -2,7 +2,8 @@
 
 ## 📋 **System Overview**
 
-NeonHub v0.3 is a comprehensive AI-powered marketing automation platform featuring:
+NeonHub v0.3 is a comprehensive AI-powered marketing automation platform
+featuring:
 
 - **9 AI Agents** for content, SEO, email, social media, and customer support
 - **tRPC API** with 24+ endpoints across 9 routers
@@ -31,11 +32,13 @@ NeonHub v0.3 is a comprehensive AI-powered marketing automation platform featuri
 ## 🔧 **Prerequisites**
 
 ### Required Software:
+
 - **Node.js** 18.17+ and npm 9+
 - **PostgreSQL** 15+ database
 - **Git** for version control
 
 ### Environment Variables:
+
 ```bash
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/neonhub"
@@ -54,6 +57,7 @@ STRIPE_SECRET_KEY=your_stripe_key_here
 ## 🚀 **Quick Start**
 
 ### 1. **Clone & Install**
+
 ```bash
 git clone https://github.com/KofiRusu/Neon-v0.3.git
 cd Neon-v0.3
@@ -61,6 +65,7 @@ npm install
 ```
 
 ### 2. **Database Setup**
+
 ```bash
 cd packages/data-model
 npx prisma db push
@@ -68,6 +73,7 @@ npx prisma generate
 ```
 
 ### 3. **Development Mode**
+
 ```bash
 # Terminal 1: Start API
 cd apps/api && npm run dev
@@ -77,6 +83,7 @@ cd apps/dashboard && npm run dev
 ```
 
 ### 4. **Production Build**
+
 ```bash
 npm run build
 npm run start
@@ -86,23 +93,24 @@ npm run start
 
 ## 📊 **AI Agents Status**
 
-| Agent | Status | Functionality |
-|-------|--------|---------------|
-| **ContentAgent** | ✅ Production Ready | Blog posts, social content, emails |
-| **SEOAgent** | ✅ Production Ready | Meta tags, keyword optimization |
-| **EmailAgent** | ✅ Production Ready | Campaign automation, sequences |
-| **SocialAgent** | ✅ Production Ready | Multi-platform posting, scheduling |
-| **CustomerSupportAgent** | ✅ Production Ready | WhatsApp, tickets, auto-responses |
-| **CampaignAgent** | ✅ Production Ready | Campaign management, analytics |
-| **MetricsAgent** | ✅ Production Ready | Performance tracking, reporting |
-| **UserAgent** | ✅ Production Ready | User management, authentication |
-| **AgentCoordinator** | ✅ Production Ready | Inter-agent communication |
+| Agent                    | Status              | Functionality                      |
+| ------------------------ | ------------------- | ---------------------------------- |
+| **ContentAgent**         | ✅ Production Ready | Blog posts, social content, emails |
+| **SEOAgent**             | ✅ Production Ready | Meta tags, keyword optimization    |
+| **EmailAgent**           | ✅ Production Ready | Campaign automation, sequences     |
+| **SocialAgent**          | ✅ Production Ready | Multi-platform posting, scheduling |
+| **CustomerSupportAgent** | ✅ Production Ready | WhatsApp, tickets, auto-responses  |
+| **CampaignAgent**        | ✅ Production Ready | Campaign management, analytics     |
+| **MetricsAgent**         | ✅ Production Ready | Performance tracking, reporting    |
+| **UserAgent**            | ✅ Production Ready | User management, authentication    |
+| **AgentCoordinator**     | ✅ Production Ready | Inter-agent communication          |
 
 ---
 
 ## 🔌 **API Endpoints**
 
 ### Available Routers:
+
 - **`/api/trpc/user.*`** - User management (5 endpoints)
 - **`/api/trpc/campaign.*`** - Campaign operations (8 endpoints)
 - **`/api/trpc/metrics.*`** - Analytics & metrics (6 endpoints)
@@ -118,6 +126,7 @@ npm run start
 ## 🎯 **Production Features**
 
 ### ✅ **Implemented & Working:**
+
 - Complete dashboard UI with all agent interfaces
 - Real-time tRPC communication between frontend/backend
 - Comprehensive database schema with 19+ tables
@@ -126,6 +135,7 @@ npm run start
 - Responsive design optimized for all devices
 
 ### 🔄 **For Enhanced Production:**
+
 - Stripe billing integration
 - OAuth credential management
 - Real-time WebSocket notifications
@@ -137,12 +147,14 @@ npm run start
 ## 🛡️ **Security & Performance**
 
 ### Built-in Security:
+
 - Input validation with Zod schemas
 - Type-safe API with tRPC
 - Sanitized database queries with Prisma
 - Environment variable protection
 
 ### Performance Optimizations:
+
 - Server-side rendering with Next.js
 - Optimized database queries with connection pooling
 - Efficient state management with React Query
@@ -153,12 +165,14 @@ npm run start
 ## 📱 **Dashboard Features**
 
 ### **Main Dashboard:**
+
 - Real-time agent status monitoring
 - Campaign performance metrics
 - Quick action buttons for common tasks
 - Recent activity feed
 
 ### **Agent Pages:**
+
 - `/agents` - AI agent management and configuration
 - `/campaigns` - Campaign creation and monitoring
 - `/email` - Email marketing automation
@@ -171,17 +185,20 @@ npm run start
 ## 🔧 **Deployment Options**
 
 ### **Option 1: Vercel (Recommended)**
+
 ```bash
 npm i -g vercel
 vercel --prod
 ```
 
 ### **Option 2: Docker**
+
 ```bash
 docker-compose up -d
 ```
 
 ### **Option 3: Traditional Server**
+
 ```bash
 npm run build
 npm run start
@@ -192,11 +209,13 @@ npm run start
 ## 📈 **Monitoring & Maintenance**
 
 ### Health Checks:
+
 - **API**: `GET /api/health` - Returns system status
 - **Database**: Connection monitoring via Prisma
 - **Agents**: Performance tracking via AgentRegistry
 
 ### Logs:
+
 - Application logs in `logs/` directory
 - Agent performance metrics in database
 - Error tracking with structured logging
@@ -211,4 +230,4 @@ npm run start
 
 ---
 
-**🎉 NeonHub v0.3 - Production-Ready AI Marketing Platform** 
+**🎉 NeonHub v0.3 - Production-Ready AI Marketing Platform**

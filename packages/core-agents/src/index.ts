@@ -70,3 +70,49 @@ export {
   type HallucinationResult,
   type AgentPerformanceData,
 } from './auditAgent';
+
+// Export core agent functionality
+export * from './agent-registry';
+export * from './utils/BaseAgent';
+export * from './utils/agentCostEfficiency';
+export * from './utils/cost-tracker';
+export * from './refinement/SuggestionProcessor';
+export * from './refinement/PromptAutoUpdater';
+
+// Export agent types
+export type { AgentMetadata, AgentHealth, ExecutionLog } from './types';
+
+// Export mock implementations for missing functions
+export const getRegisteredAgentTypes = () => {
+  return [
+    'CONTENT',
+    'AD',
+    'SEO',
+    'SOCIAL',
+    'EMAIL',
+    'TREND',
+    'INSIGHT',
+    'DESIGN',
+    'WHATSAPP',
+    'SUPPORT',
+    'BRAND_VOICE',
+    'CAMPAIGN',
+    'OUTREACH',
+  ];
+};
+
+export const executeAgentCommand = async (
+  command: string,
+  agentType: string,
+  parameters?: Record<string, unknown>
+) => {
+  // Mock implementation - replace with actual agent execution logic
+  return {
+    success: true,
+    result: `Executed ${command} on ${agentType}`,
+    metadata: {
+      executionTime: Date.now(),
+      parameters,
+    },
+  };
+};

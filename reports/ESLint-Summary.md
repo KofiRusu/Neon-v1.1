@@ -4,14 +4,14 @@ _Generated on 6/26/2025, 8:48:50 PM_
 
 ## 📊 Executive Summary
 
-| Module | Total Issues | Errors | Warnings | Files |
-|--------|-------------|--------|----------|-------|
-| **neon-core-agents** | 1306 | 968 | 338 | 63 |
-| **neon-dashboard** | 303 | 14 | 289 | 48 |
-| **neon-api** | 114 | 1 | 113 | 10 |
-| **neon-data-model** | 21 | 14 | 7 | 2 |
-| **neon-utils** | 0 | 0 | 0 | 0 |
-| **TOTAL** | **1744** | **997** | **747** | **123** |
+| Module               | Total Issues | Errors  | Warnings | Files   |
+| -------------------- | ------------ | ------- | -------- | ------- |
+| **neon-core-agents** | 1306         | 968     | 338      | 63      |
+| **neon-dashboard**   | 303          | 14      | 289      | 48      |
+| **neon-api**         | 114          | 1       | 113      | 10      |
+| **neon-data-model**  | 21           | 14      | 7        | 2       |
+| **neon-utils**       | 0            | 0       | 0        | 0       |
+| **TOTAL**            | **1744**     | **997** | **747**  | **123** |
 
 ## 🎯 Top 15 Rule Violations (Platform-wide)
 
@@ -41,6 +41,7 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - **Files Affected**: 63
 
 **Top Rule Violations**:
+
 - `@typescript-eslint/no-explicit-any`: 656
 - `@typescript-eslint/no-unused-vars`: 272
 - `no-console`: 227
@@ -48,11 +49,17 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - `@typescript-eslint/explicit-function-return-type`: 14
 
 **Most Problematic Files**:
-- `...kofirusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/agents/insight-agent.ts`: 124 issues
-- `.../kofirusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/agents/social-agent.ts`: 82 issues
-- `.../Neon-v0.2/Neon-v0.2/packages/core-agents/src/command-router/CommandRouter.ts`: 59 issues
-- `...ofirusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/agents/campaign-agent.ts`: 52 issues
-- `...irusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/__tests__/strategy.test.ts`: 41 issues
+
+- `...kofirusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/agents/insight-agent.ts`:
+  124 issues
+- `.../kofirusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/agents/social-agent.ts`:
+  82 issues
+- `.../Neon-v0.2/Neon-v0.2/packages/core-agents/src/command-router/CommandRouter.ts`:
+  59 issues
+- `...ofirusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/agents/campaign-agent.ts`:
+  52 issues
+- `...irusu/Neon-v0.2/Neon-v0.2/packages/core-agents/src/__tests__/strategy.test.ts`:
+  41 issues
 
 ---
 
@@ -64,6 +71,7 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - **Files Affected**: 48
 
 **Top Rule Violations**:
+
 - `@typescript-eslint/no-unused-vars`: 127
 - `@typescript-eslint/no-explicit-any`: 76
 - `no-console`: 40
@@ -71,11 +79,17 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - `@typescript-eslint/no-non-null-assertion`: 15
 
 **Most Problematic Files**:
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/dashboard/src/app/copilot/page.tsx`: 31 issues
-- `...u/Neon-v0.2/Neon-v0.2/apps/dashboard/src/components/VariantAnalyticsPanel.tsx`: 23 issues
-- `...u/Neon-v0.2/Neon-v0.2/apps/dashboard/src/components/CampaignCreationModal.tsx`: 20 issues
-- `.../kofirusu/Neon-v0.2/Neon-v0.2/apps/dashboard/src/components/CopilotWidget.tsx`: 17 issues
-- `...firusu/Neon-v0.2/Neon-v0.2/apps/dashboard/src/app/campaigns/strategy/page.tsx`: 16 issues
+
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/dashboard/src/app/copilot/page.tsx`:
+  31 issues
+- `...u/Neon-v0.2/Neon-v0.2/apps/dashboard/src/components/VariantAnalyticsPanel.tsx`:
+  23 issues
+- `...u/Neon-v0.2/Neon-v0.2/apps/dashboard/src/components/CampaignCreationModal.tsx`:
+  20 issues
+- `.../kofirusu/Neon-v0.2/Neon-v0.2/apps/dashboard/src/components/CopilotWidget.tsx`:
+  17 issues
+- `...firusu/Neon-v0.2/Neon-v0.2/apps/dashboard/src/app/campaigns/strategy/page.tsx`:
+  16 issues
 
 ---
 
@@ -87,6 +101,7 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - **Files Affected**: 10
 
 **Top Rule Violations**:
+
 - `no-console`: 57
 - `@typescript-eslint/no-unused-vars`: 26
 - `@typescript-eslint/no-explicit-any`: 22
@@ -94,11 +109,17 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - `prefer-template`: 1
 
 **Most Problematic Files**:
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/boardroom.ts`: 26 issues
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/ab-testing.ts`: 19 issues
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/strategy.ts`: 19 issues
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/insights.ts`: 14 issues
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/executive.ts`: 12 issues
+
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/boardroom.ts`:
+  26 issues
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/ab-testing.ts`:
+  19 issues
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/strategy.ts`:
+  19 issues
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/insights.ts`:
+  14 issues
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/apps/api/src/server/routers/executive.ts`:
+  12 issues
 
 ---
 
@@ -110,27 +131,35 @@ _Generated on 6/26/2025, 8:48:50 PM_
 - **Files Affected**: 2
 
 **Top Rule Violations**:
+
 - `@typescript-eslint/no-explicit-any`: 14
 - `@typescript-eslint/explicit-function-return-type`: 7
 
 **Most Problematic Files**:
-- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/packages/data-model/src/optimized-client.ts`: 18 issues
-- `...kofirusu/Neon-v0.2/Neon-v0.2/packages/data-model/src/optimized-client.test.ts`: 3 issues
+
+- `/Users/kofirusu/Neon-v0.2/Neon-v0.2/packages/data-model/src/optimized-client.ts`:
+  18 issues
+- `...kofirusu/Neon-v0.2/Neon-v0.2/packages/data-model/src/optimized-client.test.ts`:
+  3 issues
 
 ---
 
 ## 🎖️ Code Quality Assessment
 
-🔥 **EMERGENCY**: Extremely high number of issues - requires coordinated cleanup effort (1744 total)
+🔥 **EMERGENCY**: Extremely high number of issues - requires coordinated cleanup
+effort (1744 total)
 
 ## 🚨 Priority Actions
 
 ### Immediate Actions (This Week)
+
 1. **Focus on Errors First**: 997 errors need immediate attention
 2. **Top 3 Modules**: Address neon-core-agents, neon-dashboard, neon-api first
-3. **Auto-fix Rules**: Run automated fixes for rules like unused variables, formatting issues
+3. **Auto-fix Rules**: Run automated fixes for rules like unused variables,
+   formatting issues
 
 ### Medium Term (Next 2 Weeks)
+
 1. **Systematic Cleanup**: Work through remaining 747 warnings
 2. **Code Review Process**: Implement stricter pre-commit hooks
 3. **ESLint Configuration**: Review and adjust rules for team consistency
@@ -167,29 +196,36 @@ npm run test
 ## 🎯 Module-Specific Action Plans
 
 ### neon-core-agents
+
 **Status**: 1306 issues (968 errors, 338 warnings)
 
 **Immediate Actions**:
+
 - Fix `@typescript-eslint/no-explicit-any` violations (656 occurrences)
 - Address `@typescript-eslint/no-unused-vars` issues (272 occurrences)
 - Start with `insight-agent.ts` (124 issues)
 
 ### neon-dashboard
+
 **Status**: 303 issues (14 errors, 289 warnings)
 
 **Immediate Actions**:
+
 - Fix `@typescript-eslint/no-unused-vars` violations (127 occurrences)
 - Address `@typescript-eslint/no-explicit-any` issues (76 occurrences)
 - Start with `page.tsx` (31 issues)
 
 ### neon-api
+
 **Status**: 114 issues (1 errors, 113 warnings)
 
 **Immediate Actions**:
+
 - Fix `no-console` violations (57 occurrences)
 - Address `@typescript-eslint/no-unused-vars` issues (26 occurrences)
 - Start with `boardroom.ts` (26 issues)
 
 ---
-*Report generated by NeonHub Comprehensive Lint Analysis Tool*
-*Analysis completed at 2025-06-26T18:48:50.809Z*
+
+_Report generated by NeonHub Comprehensive Lint Analysis Tool_ _Analysis
+completed at 2025-06-26T18:48:50.809Z_

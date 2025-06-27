@@ -2,7 +2,11 @@
 
 ## Overview
 
-The Agent Memory Engine + Performance Tuning Layer is a comprehensive system that enables NeonHub agents to learn from their interactions, track performance metrics, and automatically optimize their behavior over time. This system provides personalized responses, historical awareness, and autonomous performance optimization.
+The Agent Memory Engine + Performance Tuning Layer is a comprehensive system
+that enables NeonHub agents to learn from their interactions, track performance
+metrics, and automatically optimize their behavior over time. This system
+provides personalized responses, historical awareness, and autonomous
+performance optimization.
 
 ## Architecture
 
@@ -23,16 +27,23 @@ graph TB
 
 **Location**: `packages/core-agents/src/memory/AgentMemoryStore.ts`
 
-The central component for tracking agent interactions and results per session/user.
+The central component for tracking agent interactions and results per
+session/user.
 
 #### Key Features:
-- **Memory Storage**: Stores input, output, metadata, and performance metrics for each agent execution
-- **Metrics Calculation**: Generates comprehensive performance metrics including success rates, costs, and execution times
-- **Trend Analysis**: Tracks performance trends over time with daily aggregations
-- **Query Interface**: Flexible querying with filtering by agent, session, date range, and success status
+
+- **Memory Storage**: Stores input, output, metadata, and performance metrics
+  for each agent execution
+- **Metrics Calculation**: Generates comprehensive performance metrics including
+  success rates, costs, and execution times
+- **Trend Analysis**: Tracks performance trends over time with daily
+  aggregations
+- **Query Interface**: Flexible querying with filtering by agent, session, date
+  range, and success status
 - **Data Cleanup**: Automatic cleanup of old memory entries
 
 #### Core Methods:
+
 ```typescript
 // Store a new memory entry
 storeMemory(agentId, sessionId, input, output, metadata): Promise<MemoryEntry>
@@ -57,13 +68,18 @@ clearOldMemories(olderThanDays): Promise<number>
 Analyzes agent performance and generates optimization recommendations.
 
 #### Key Features:
-- **Performance Analysis**: Comprehensive analysis of cost, execution time, success rate, and token efficiency
-- **Benchmarking**: Compares agent performance against system benchmarks and peer agents
-- **Recommendation Engine**: Generates actionable recommendations with priority levels and expected impact
+
+- **Performance Analysis**: Comprehensive analysis of cost, execution time,
+  success rate, and token efficiency
+- **Benchmarking**: Compares agent performance against system benchmarks and
+  peer agents
+- **Recommendation Engine**: Generates actionable recommendations with priority
+  levels and expected impact
 - **Health Scoring**: Calculates overall health scores (0-100) for agents
 - **System-wide Analysis**: Provides insights across all agents
 
 #### Core Methods:
+
 ```typescript
 // Analyze performance for a specific agent
 analyzeAgent(agentId, days): Promise<AgentPerformanceProfile>
@@ -73,10 +89,13 @@ analyzeSystem(days): Promise<SystemWideAnalysis>
 ```
 
 #### Performance Benchmarks:
-- **Cost Per Run**: Excellent (<$0.01), Good (<$0.05), Fair (<$0.10), Poor (>$0.25)
+
+- **Cost Per Run**: Excellent (<$0.01), Good (<$0.05), Fair (<$0.10), Poor
+  (>$0.25)
 - **Execution Time**: Excellent (<1s), Good (<5s), Fair (<15s), Poor (>30s)
 - **Success Rate**: Excellent (>95%), Good (>90%), Fair (>80%), Poor (<70%)
-- **Token Efficiency**: Excellent (<100), Good (<500), Fair (<1000), Poor (>2000)
+- **Token Efficiency**: Excellent (<100), Good (<500), Fair (<1000), Poor
+  (>2000)
 
 ### 3. Database Schema
 
@@ -112,15 +131,18 @@ model AgentMemory {
 
 **Location**: `packages/core-agents/src/base-agent.ts`
 
-All agents now automatically store their execution results in memory for learning and analysis.
+All agents now automatically store their execution results in memory for
+learning and analysis.
 
 #### Enhanced Features:
+
 - **Automatic Memory Storage**: Every execution is automatically logged
 - **Context Awareness**: Agents can access their successful execution history
 - **Performance Tracking**: Built-in token and cost tracking
 - **Error Handling**: Failed executions are logged for analysis
 
 #### New Methods:
+
 ```typescript
 // Get last successful runs for context
 getLastSuccessfulRuns(count): Promise<any[]>
@@ -142,6 +164,7 @@ estimateCost(result): number
 Comprehensive API endpoints for memory and performance data.
 
 #### Available Endpoints:
+
 - `agentMemory.getMemory` - Get agent memory and metrics
 - `agentMemory.getSystemMemory` - Get system-wide analysis
 - `agentMemory.storeMemory` - Store new memory entry
@@ -160,6 +183,7 @@ Comprehensive API endpoints for memory and performance data.
 Interactive dashboard for viewing agent memory and performance metrics.
 
 #### Features:
+
 - **Agent Selection**: View metrics for any specific agent
 - **Time Range Filtering**: 7, 30, or 90-day views
 - **Real-time Charts**: Cost trends, performance trends, success rates
@@ -168,6 +192,7 @@ Interactive dashboard for viewing agent memory and performance metrics.
 - **Health Scoring**: Visual health indicators and trend analysis
 
 #### Key Metrics Displayed:
+
 - Health Score (0-100 with color-coded status)
 - Success Rate with trend indicators
 - Average Cost per execution
@@ -182,6 +207,7 @@ Interactive dashboard for viewing agent memory and performance metrics.
 Custom hooks for accessing agent memory data in React components.
 
 #### Available Hooks:
+
 ```typescript
 // Hook for individual agent memory
 useAgentMemory(options): {
@@ -206,7 +232,7 @@ class MyAgent extends AbstractAgent {
     return this.executeWithErrorHandling(payload, async () => {
       // Your agent logic here
       const result = await this.performTask(payload);
-      
+
       // Memory is automatically stored by executeWithErrorHandling
       return result;
     });
@@ -232,10 +258,10 @@ class MyAgent extends AbstractAgent {
   async execute(payload: AgentPayload): Promise<AgentResult> {
     // Get context from previous successful runs
     const previousRuns = await this.getLastSuccessfulRuns(3);
-    
+
     // Use previous context to improve current execution
     const context = this.buildContextFromHistory(previousRuns);
-    
+
     return this.executeWithErrorHandling(payload, async () => {
       return await this.performTaskWithContext(payload, context);
     });
@@ -283,7 +309,7 @@ function AgentDashboard({ agentId }: { agentId: string }) {
       <p>Health Score: {data?.healthScore}/100</p>
       <p>Success Rate: {data?.successRate.toFixed(1)}%</p>
       <p>Average Cost: ${data?.averageCost.toFixed(4)}</p>
-      
+
       {data?.recommendations.map((rec, i) => (
         <div key={i} className={`recommendation ${rec.severity}`}>
           <h3>{rec.title}</h3>
@@ -299,28 +325,37 @@ function AgentDashboard({ agentId }: { agentId: string }) {
 
 ## Performance Recommendations
 
-The system automatically generates recommendations based on performance analysis:
+The system automatically generates recommendations based on performance
+analysis:
 
 ### Cost Optimization
+
 - **High Cost Per Execution**: Switch to cheaper models, optimize prompts
 - **Inefficient Token Usage**: Refactor prompts, remove unnecessary context
 - **System-wide Cost Issues**: Implement centralized cost management
 
 ### Performance Optimization
-- **Slow Execution Time**: Implement caching, optimize API calls, consider async processing
+
+- **Slow Execution Time**: Implement caching, optimize API calls, consider async
+  processing
 - **Memory Inefficiency**: Optimize data structures, implement cleanup routines
 
 ### Reliability Improvements
-- **Low Success Rate**: Implement retry logic, improve error handling, add input validation
+
+- **Low Success Rate**: Implement retry logic, improve error handling, add input
+  validation
 - **High Error Rate**: Implement fallback strategies, improve monitoring
 
 ### Accuracy Enhancements
-- **Low Quality Scores**: Improve prompts, add validation, implement feedback loops
+
+- **Low Quality Scores**: Improve prompts, add validation, implement feedback
+  loops
 - **Inconsistent Results**: Standardize processes, improve quality control
 
 ## Configuration
 
 ### Environment Variables
+
 ```env
 DATABASE_URL=postgresql://...
 MEMORY_RETENTION_DAYS=90
@@ -329,6 +364,7 @@ PERFORMANCE_THRESHOLD_WARNING=10000
 ```
 
 ### Benchmarks Configuration
+
 Benchmarks can be customized in the PerformanceTuner constructor:
 
 ```typescript
@@ -348,31 +384,37 @@ const tuner = new PerformanceTuner(memoryStore, customBenchmarks);
 ## Monitoring and Alerts
 
 ### Health Monitoring
+
 - **Health Scores**: Continuous monitoring of agent health (0-100 scale)
 - **Trend Analysis**: Automatic detection of improving/declining performance
 - **Critical Issues**: Immediate alerts for critical performance degradation
 
 ### Cost Monitoring
+
 - **Budget Tracking**: Track spending per agent and system-wide
 - **Cost Alerts**: Automatic alerts when costs exceed thresholds
 - **Cost Optimization**: Recommendations for cost reduction
 
 ### Performance Monitoring
+
 - **Execution Time Tracking**: Monitor response times and performance trends
 - **Success Rate Monitoring**: Track reliability and identify failure patterns
 - **Token Usage Monitoring**: Optimize AI model usage and costs
 
 ## Testing
 
-Comprehensive test suite available in `packages/core-agents/src/__tests__/agent-memory.test.ts`
+Comprehensive test suite available in
+`packages/core-agents/src/__tests__/agent-memory.test.ts`
 
 ### Running Tests
+
 ```bash
 cd packages/core-agents
 npm test -- agent-memory.test.ts
 ```
 
 ### Test Coverage
+
 - Memory storage and retrieval
 - Metrics calculation and aggregation
 - Performance analysis and recommendations
@@ -383,21 +425,32 @@ npm test -- agent-memory.test.ts
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Machine Learning Integration**: Predictive performance modeling
 2. **Advanced Analytics**: Deeper insights and pattern recognition
 3. **Automated Optimization**: Self-tuning agents based on performance data
 4. **Cross-Agent Learning**: Agents learning from each other's experiences
 5. **Real-time Monitoring**: Live performance dashboards and alerts
-6. **Integration with External Analytics**: Connect with business intelligence tools
+6. **Integration with External Analytics**: Connect with business intelligence
+   tools
 
 ### Scalability Considerations
-- **Data Partitioning**: Partition memory data by time periods for better performance
+
+- **Data Partitioning**: Partition memory data by time periods for better
+  performance
 - **Caching Layer**: Implement Redis caching for frequently accessed metrics
 - **Batch Processing**: Process large volumes of memory data in batches
 - **Archive Strategy**: Move old memory data to cold storage
 
 ## Conclusion
 
-The Agent Memory Engine + Performance Tuning Layer provides a robust foundation for intelligent, self-improving AI agents in the NeonHub ecosystem. By automatically tracking performance, identifying optimization opportunities, and providing actionable recommendations, this system enables continuous improvement and optimal performance across all AI agents.
+The Agent Memory Engine + Performance Tuning Layer provides a robust foundation
+for intelligent, self-improving AI agents in the NeonHub ecosystem. By
+automatically tracking performance, identifying optimization opportunities, and
+providing actionable recommendations, this system enables continuous improvement
+and optimal performance across all AI agents.
 
-The modular design allows for easy extension and customization, while comprehensive testing ensures reliability and accuracy. The user-friendly dashboard provides clear visibility into agent performance and recommendations for optimization. 
+The modular design allows for easy extension and customization, while
+comprehensive testing ensures reliability and accuracy. The user-friendly
+dashboard provides clear visibility into agent performance and recommendations
+for optimization.

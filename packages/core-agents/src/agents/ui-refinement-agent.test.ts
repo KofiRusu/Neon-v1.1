@@ -24,7 +24,7 @@ describe('UIRefinementAgent', () => {
   let agent: UIRefinementAgent;
   const mockFiles = [
     'apps/dashboard/src/components/Button.tsx',
-    'apps/dashboard/src/components/Card.tsx'
+    'apps/dashboard/src/components/Card.tsx',
   ];
 
   beforeEach(() => {
@@ -59,7 +59,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'analyze_contrast',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -80,7 +80,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'analyze_contrast',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -103,7 +103,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'fix_contrast',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -123,7 +123,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'fix_contrast',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -145,7 +145,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'analyze_spacing',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -165,7 +165,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'analyze_spacing',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -186,7 +186,7 @@ describe('UIRefinementAgent', () => {
 
       const payload: UIRefinementPayload = {
         action: 'analyze_accessibility',
-        parameters: { files: mockFiles }
+        parameters: { files: mockFiles },
       };
 
       const result = await agent.execute(payload);
@@ -201,7 +201,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
       ]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-gray-900 text-gray-300">
           <p>Content</p>
@@ -225,7 +225,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
       ]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="w-[500px] overflow-hidden">
           <p>Fixed width content</p>
@@ -240,9 +240,7 @@ describe('UIRefinementAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(result.data.issues.some((issue: any) => 
-        issue.type === 'responsive'
-      )).toBe(true);
+      expect(result.data.issues.some((issue: any) => issue.type === 'responsive')).toBe(true);
     });
   });
 
@@ -251,7 +249,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
       ]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-white rounded-lg p-4">
           <button className="bg-blue-500">Click</button>
@@ -274,7 +272,7 @@ describe('UIRefinementAgent', () => {
       mockFs.readdir.mockResolvedValue([
         { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
       ]);
-      
+
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700 bg-gray-800">
           <img src="image.jpg" />

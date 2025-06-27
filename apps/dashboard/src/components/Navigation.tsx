@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { 
-  SparklesIcon, 
+import {
+  SparklesIcon,
   CogIcon,
   BellIcon,
   MagnifyingGlassIcon,
   ChartBarIcon,
   MegaphoneIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Navigation() {
@@ -48,21 +48,21 @@ export default function Navigation() {
                   placeholder="Search agents, campaigns..."
                   className="input pl-10 pr-4 w-64"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
-              
+
               {/* Notifications */}
               <button className="btn-secondary relative">
                 <BellIcon className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-neon-400 rounded-full animate-pulse"></span>
               </button>
-              
+
               {/* Settings */}
               <button className="btn-secondary">
                 <CogIcon className="h-5 w-5" />
               </button>
-              
+
               {/* User Avatar */}
               <div className="w-10 h-10 bg-gradient-to-r from-neon-400 to-neon-500 rounded-full flex items-center justify-center neon-glow">
                 <span className="text-white font-medium">N</span>
@@ -75,10 +75,10 @@ export default function Navigation() {
       {/* Sidebar */}
       <aside className="w-64 sidebar min-h-screen sticky top-20">
         <nav className="p-4 space-y-2">
-          {navigationItems.map((item) => {
+          {navigationItems.map(item => {
             const isActive = pathname === item.href;
             const IconComponent = item.icon;
-            
+
             return (
               <a
                 key={item.name}

@@ -9,6 +9,7 @@ This guide walks you through deploying NeonHub to Vercel for production use.
 ## 📋 Prerequisites
 
 ### 1. Vercel Account Setup
+
 ```bash
 # Install Vercel CLI
 npm install -g vercel@latest
@@ -18,7 +19,9 @@ vercel login
 ```
 
 ### 2. Required Services
+
 Before deploying, ensure you have accounts and API keys for:
+
 - **Database:** PlanetScale, Supabase, or PostgreSQL provider
 - **OpenAI:** API key for AI functionality
 - **Twilio:** Account SID, Auth Token, WhatsApp number
@@ -118,11 +121,13 @@ vercel --prod
 ## 🔍 Post-Deployment Verification
 
 ### 1. Health Check
+
 ```bash
 curl https://your-domain.vercel.app/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "healthy",
@@ -135,6 +140,7 @@ Expected response:
 ```
 
 ### 2. Feature Testing
+
 - ✅ AI Agent responses
 - ✅ Email sending (SendGrid)
 - ✅ WhatsApp messaging (Twilio)
@@ -142,7 +148,9 @@ Expected response:
 - ✅ Database connectivity
 
 ### 3. Logging Verification
+
 Check Vercel Function logs for:
+
 - AI fallback events in `/logs/ai-fallback.log`
 - Service integration logs
 - Error handling logs
@@ -152,14 +160,18 @@ Check Vercel Function logs for:
 ## 🛠️ Configuration Files
 
 ### vercel.json
+
 The deployment uses these key configurations:
+
 - **Monorepo support** for apps/dashboard and apps/api
 - **Environment variables** for all external services
 - **Function configuration** for API routes
 - **Redirect rules** for proper routing
 
 ### next.config.js
+
 Optimized for production with:
+
 - **Package transpilation** for monorepo
 - **External packages** configuration
 - **CORS headers** for API routes
@@ -172,6 +184,7 @@ Optimized for production with:
 ### Common Issues
 
 #### 1. Build Failures
+
 ```bash
 # Check build locally first
 npm run build:dashboard
@@ -183,6 +196,7 @@ npm run lint        # Fix linting issues
 ```
 
 #### 2. Environment Variable Issues
+
 ```bash
 # List current env vars
 vercel env ls
@@ -193,11 +207,13 @@ vercel env add VARIABLE_NAME
 ```
 
 #### 3. Database Connection Issues
+
 - Ensure DATABASE_URL includes SSL parameters for production
 - Check database provider's connection limits
 - Verify IP whitelist includes Vercel's IPs
 
 #### 4. External Service Issues
+
 ```bash
 # Test individual services
 curl -X POST https://your-domain.vercel.app/api/trpc/support.classifyMessage
@@ -205,7 +221,9 @@ curl -X POST https://your-domain.vercel.app/api/trpc/email.generateSequence
 ```
 
 ### Debug Mode
+
 Enable debug logging by setting:
+
 ```bash
 vercel env add DEBUG "neonhub:*"
 vercel env add LOG_LEVEL "debug"
@@ -216,20 +234,24 @@ vercel env add LOG_LEVEL "debug"
 ## 📊 Monitoring & Maintenance
 
 ### 1. Vercel Analytics
+
 - Enable Web Analytics in Vercel dashboard
 - Monitor Core Web Vitals and performance
 
 ### 2. Function Monitoring
+
 - Check function execution times
 - Monitor cold start performance
 - Review error rates
 
 ### 3. External Service Monitoring
+
 - Set up alerting for API rate limits
 - Monitor service availability
 - Track usage costs
 
 ### 4. Database Monitoring
+
 - Monitor connection pool usage
 - Track query performance
 - Set up backup schedules
@@ -250,18 +272,22 @@ vercel env add LOG_LEVEL "debug"
 ## 🎯 Performance Optimization
 
 ### 1. Vercel Edge Functions
+
 Consider migrating performance-critical APIs to Edge Functions:
+
 ```javascript
 // api/edge/classify.js
-export const config = { runtime: 'edge' }
+export const config = { runtime: 'edge' };
 ```
 
 ### 2. Caching Strategy
+
 - Enable Vercel's static file caching
 - Implement API response caching for stable data
 - Use Redis for session and temporary data
 
 ### 3. Bundle Optimization
+
 - Minimize package imports in client components
 - Use dynamic imports for heavy libraries
 - Optimize images and assets
@@ -271,16 +297,19 @@ export const config = { runtime: 'edge' }
 ## 🆘 Support & Resources
 
 ### Vercel Resources
+
 - [Vercel Documentation](https://vercel.com/docs)
 - [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
 - [Vercel CLI Reference](https://vercel.com/docs/cli)
 
 ### NeonHub Resources
+
 - Check `/logs/` directory for detailed error logs
 - Review `PHASE_4_COMPLETION_REPORT.md` for service integration details
 - Use health check endpoint for service status
 
 ### Getting Help
+
 1. Check Vercel Function logs in dashboard
 2. Review error logs in `/logs/` directory
 3. Test individual service integrations
@@ -290,4 +319,4 @@ export const config = { runtime: 'edge' }
 
 **Deployment Status:** ✅ Ready for Production  
 **Last Updated:** December 2024  
-**Next Review:** After first production deployment 
+**Next Review:** After first production deployment

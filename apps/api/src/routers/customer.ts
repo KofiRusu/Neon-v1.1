@@ -143,7 +143,7 @@ function generateMockCustomers(): Array<z.infer<typeof CustomerProfile>> {
     return {
       id: `customer_${index + 1}`,
       name,
-      email: `${name.toLowerCase().replace(' ', '.')  }@example.com`,
+      email: `${name.toLowerCase().replace(' ', '.')}@example.com`,
       avatar: `https://api.dicebear.com/7.x/personas/svg?seed=${name}`,
       engagementLevel,
       lastContact: new Date(Date.now() - Math.random() * 86400000 * 30), // Last 30 days

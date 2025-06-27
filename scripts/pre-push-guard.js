@@ -279,7 +279,7 @@ async function main() {
   const passed = errors.length === 0;
   logPushAttempt(user, passed, errors, coverageReport);
 
-  log(`\n${  '='.repeat(50)}`, colors.magenta);
+  log(`\n${'='.repeat(50)}`, colors.magenta);
   if (passed) {
     log('🎉 PRE-PUSH GUARD: ALL CHECKS PASSED!', colors.bold + colors.green);
     log('✅ Your code meets NeonHub enterprise standards', colors.green);

@@ -1,4 +1,4 @@
-import { OptimizedPrismaClient } from './optimized-client';
+import { OptimizedPrismaClient, QueryMetrics, ConnectionMetrics } from './optimized-client';
 
 describe('OptimizedPrismaClient', () => {
   let client: OptimizedPrismaClient;

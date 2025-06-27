@@ -14,6 +14,7 @@
 ## 🏗️ Project Structure
 
 This is a monorepo with the following structure:
+
 ```
 ├── apps/
 │   ├── dashboard/          # Next.js frontend application
@@ -32,6 +33,7 @@ This is a monorepo with the following structure:
 Create a `.env.local` file in the root directory with the following variables:
 
 ### Core Configuration
+
 ```bash
 NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
@@ -39,18 +41,21 @@ DATABASE_URL=postgresql://username:password@host:port/database
 ```
 
 ### Authentication
+
 ```bash
 NEXTAUTH_SECRET=your-super-secret-key-here
 NEXTAUTH_URL=https://your-app.vercel.app
 ```
 
 ### AI Services
+
 ```bash
 OPENAI_API_KEY=your-openai-api-key
 ANTHROPIC_API_KEY=your-anthropic-api-key-optional
 ```
 
 ### Communication Services
+
 ```bash
 TWILIO_ACCOUNT_SID=your-twilio-account-sid
 TWILIO_AUTH_TOKEN=your-twilio-auth-token
@@ -60,6 +65,7 @@ SENDGRID_FROM_EMAIL=noreply@yourdomain.com
 ```
 
 ### Social Media APIs
+
 ```bash
 FACEBOOK_APP_ID=your-facebook-app-id
 FACEBOOK_APP_SECRET=your-facebook-app-secret
@@ -68,6 +74,7 @@ INSTAGRAM_ACCESS_TOKEN=your-instagram-access-token
 ```
 
 ### Additional Services
+
 ```bash
 REDIS_URL=redis://localhost:6379
 ENCRYPTION_KEY=your-32-character-encryption-key
@@ -77,17 +84,20 @@ WEBHOOK_SECRET=your-webhook-secret
 ## 🚀 Deployment Steps
 
 ### 1. Fork/Clone Repository
+
 ```bash
 git clone https://github.com/KofiRusu/Neon-v1.1.git
 cd Neon-v1.1
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Database Setup
+
 ```bash
 # Generate Prisma client
 npm run db:generate
@@ -100,6 +110,7 @@ npm run db:migrate
 ```
 
 ### 4. Build and Test Locally
+
 ```bash
 # Build all packages
 npm run build
@@ -111,6 +122,7 @@ npm run dev
 ### 5. Deploy to Vercel
 
 #### Option A: Vercel CLI
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -125,6 +137,7 @@ vercel env add DATABASE_URL your-database-url
 ```
 
 #### Option B: Vercel Dashboard
+
 1. Import your GitHub repository
 2. Set up environment variables in the dashboard
 3. Deploy
@@ -147,7 +160,9 @@ After deployment, verify these endpoints:
 ## 🎯 Key Features Deployed
 
 ### AI Agents
-- **Content Agent**: Generates blog posts, social media content, and marketing copy
+
+- **Content Agent**: Generates blog posts, social media content, and marketing
+  copy
 - **SEO Agent**: Optimizes content for search engines and keyword targeting
 - **Email Agent**: Creates email campaigns and newsletter templates
 - **Social Agent**: Manages social media posts across platforms
@@ -157,12 +172,14 @@ After deployment, verify these endpoints:
 - **Insight Agent**: Provides analytics and performance insights
 
 ### Platforms Supported
+
 - **Social Media**: Facebook, Instagram, TikTok, Twitter, LinkedIn
 - **Email Marketing**: SendGrid integration
 - **WhatsApp Business**: Customer support and marketing
 - **E-commerce**: Shopify integration ready
 
 ### Analytics & Insights
+
 - Real-time performance tracking
 - Cross-platform analytics
 - Predictive trend analysis
@@ -184,18 +201,23 @@ The project is configured with:
 ## 🔧 Troubleshooting
 
 ### Build Issues
+
 If you encounter build issues:
 
-1. **TypeScript Errors**: Build configuration ignores TypeScript errors for deployment
-2. **Missing Dependencies**: Run `npm install` to ensure all dependencies are installed
+1. **TypeScript Errors**: Build configuration ignores TypeScript errors for
+   deployment
+2. **Missing Dependencies**: Run `npm install` to ensure all dependencies are
+   installed
 3. **Environment Variables**: Ensure all required environment variables are set
 
 ### Runtime Issues
+
 1. **Database Connection**: Verify DATABASE_URL is correct
 2. **API Keys**: Check all API keys are valid and have proper permissions
 3. **CORS Issues**: Ensure NEXT_PUBLIC_APP_URL is set correctly
 
 ### Performance Optimization
+
 1. **Images**: Use Next.js Image component for optimization
 2. **Fonts**: Leverage Next.js font optimization
 3. **Static Assets**: Store large files in cloud storage (S3, Cloudinary)
@@ -209,7 +231,8 @@ If you encounter build issues:
 
 ## 🎉 Success!
 
-Your NeonHub platform is now deployed and ready to revolutionize your marketing automation with AI-powered agents!
+Your NeonHub platform is now deployed and ready to revolutionize your marketing
+automation with AI-powered agents!
 
 Visit your deployment at: `https://your-app.vercel.app`
 
@@ -218,4 +241,4 @@ Visit your deployment at: `https://your-app.vercel.app`
 - Keep your `.env.local` file secure and never commit it to version control
 - Regularly rotate API keys and secrets
 - Monitor usage and set up alerts for unusual activity
-- Enable Vercel's security features like DDoS protection 
+- Enable Vercel's security features like DDoS protection

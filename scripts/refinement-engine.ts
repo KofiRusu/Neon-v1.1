@@ -434,7 +434,7 @@ async function main() {
   try {
     const session = await engine.runRefinementCycle(options);
 
-    console.log(`\n${  '='.repeat(60)}`);
+    console.log(`\n${'='.repeat(60)}`);
     console.log('🔧 REFINEMENT CYCLE COMPLETE');
     console.log('='.repeat(60));
     console.log(`📋 Tasks Processed: ${session.tasksProcessed}`);

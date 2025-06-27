@@ -74,7 +74,7 @@ async function main() {
   if (testFiles.length > 0) {
     if (
       !runCommand(
-        `npm run test -- --passWithNoTests --findRelatedTests ${  stagedFiles.join(' ')}`,
+        `npm run test -- --passWithNoTests --findRelatedTests ${stagedFiles.join(' ')}`,
         'Affected tests'
       )
     ) {
@@ -90,13 +90,13 @@ async function main() {
   if (designSystemFiles.length > 0) {
     console.log('🎨 Design system files detected, checking for conflicts...');
     // Add to staging if prettier/eslint made changes
-    execSync(`git add ${  designSystemFiles.join(' ')}`, { stdio: 'pipe' });
+    execSync(`git add ${designSystemFiles.join(' ')}`, { stdio: 'pipe' });
   }
 
   // 6. Re-stage any files that were formatted
   if (jstsFiles.length > 0 || cssFiles.length > 0 || jsonFiles.length > 0) {
     try {
-      execSync(`git add ${  [...jstsFiles, ...cssFiles, ...jsonFiles].join(' ')}`, { stdio: 'pipe' });
+      execSync(`git add ${[...jstsFiles, ...cssFiles, ...jsonFiles].join(' ')}`, { stdio: 'pipe' });
     } catch (e) {
       // Ignore errors if files were already staged
     }

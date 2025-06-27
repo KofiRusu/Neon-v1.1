@@ -154,9 +154,7 @@
       {
         "success": true,
         "description": "Dependencies installed successfully",
-        "commandsExecuted": [
-          "npm install"
-        ],
+        "commandsExecuted": ["npm install"],
         "timeSpent": 1859
       }
     ],

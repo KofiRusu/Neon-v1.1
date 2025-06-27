@@ -1,13 +1,19 @@
 # 🛰️ ErrorSentinel Agent
 
-The **ErrorSentinel** agent is NeonHub's autonomous error detection and resolution system that continuously monitors all repositories and development environments for build failures, CI issues, type errors, and misconfigured schemas. It automatically fixes or triages problems while maintaining system-wide execution integrity.
+The **ErrorSentinel** agent is NeonHub's autonomous error detection and
+resolution system that continuously monitors all repositories and development
+environments for build failures, CI issues, type errors, and misconfigured
+schemas. It automatically fixes or triages problems while maintaining
+system-wide execution integrity.
 
 ## 🎯 Overview
 
-ErrorSentinel guarantees 100% troubleshooting coverage and protects the full modular stack from cascading errors through:
+ErrorSentinel guarantees 100% troubleshooting coverage and protects the full
+modular stack from cascading errors through:
 
 - **Continuous Monitoring**: Real-time scanning of all repositories
-- **Intelligent Detection**: Advanced error classification and severity assessment  
+- **Intelligent Detection**: Advanced error classification and severity
+  assessment
 - **Autonomous Fixing**: Automatic resolution of common issues
 - **Proactive Alerting**: Early warning system for critical problems
 - **Comprehensive Reporting**: Detailed analysis and recommendations
@@ -23,14 +29,14 @@ ErrorSentinel guarantees 100% troubleshooting coverage and protects the full mod
 
 ## ✅ Monitored Failure Types
 
-| Category | Trigger Examples | Auto-Fixable |
-|----------|------------------|--------------|
-| **CI/CD Failures** | GitHub Actions red X, missing `ci.yml`, flaky steps | ⚠️ Partial |
-| **Type Errors** | `tsc --noEmit`, missing types, wrong imports | ✅ Yes |
-| **Build Errors** | Webpack/Vite/Next build crash, missing modules | ❌ Manual |
-| **Linting Issues** | ESLint or Prettier violations | ✅ Yes |
-| **Schema Mismatches** | Zod validation failure, Prisma error | ⚠️ Partial |
-| **Unhandled Promises** | Missing `await`, no try/catch, orphaned tasks | ⚠️ Partial |
+| Category               | Trigger Examples                                    | Auto-Fixable |
+| ---------------------- | --------------------------------------------------- | ------------ |
+| **CI/CD Failures**     | GitHub Actions red X, missing `ci.yml`, flaky steps | ⚠️ Partial   |
+| **Type Errors**        | `tsc --noEmit`, missing types, wrong imports        | ✅ Yes       |
+| **Build Errors**       | Webpack/Vite/Next build crash, missing modules      | ❌ Manual    |
+| **Linting Issues**     | ESLint or Prettier violations                       | ✅ Yes       |
+| **Schema Mismatches**  | Zod validation failure, Prisma error                | ⚠️ Partial   |
+| **Unhandled Promises** | Missing `await`, no try/catch, orphaned tasks       | ⚠️ Partial   |
 
 ## 📦 Agent Capabilities
 
@@ -38,29 +44,29 @@ ErrorSentinel guarantees 100% troubleshooting coverage and protects the full mod
 
 ```typescript
 // Available tasks
-type ErrorSentinelTask = 
-  | 'continuous_scan'      // Start background monitoring
-  | 'fix_build_errors'     // Target build failures
-  | 'fix_type_errors'      // Resolve TypeScript issues
-  | 'fix_lint_errors'      // Auto-fix ESLint violations
-  | 'fix_schema_errors'    // Repair schema mismatches
-  | 'fix_ci_errors'        // Fix CI/CD configuration
+type ErrorSentinelTask =
+  | 'continuous_scan' // Start background monitoring
+  | 'fix_build_errors' // Target build failures
+  | 'fix_type_errors' // Resolve TypeScript issues
+  | 'fix_lint_errors' // Auto-fix ESLint violations
+  | 'fix_schema_errors' // Repair schema mismatches
+  | 'fix_ci_errors' // Fix CI/CD configuration
   | 'fix_unhandled_promises' // Handle promise errors
-  | 'health_check'         // System health assessment
-  | 'emergency_recovery'   // Crisis recovery mode
-  | 'generate_report'      // Comprehensive reporting
+  | 'health_check' // System health assessment
+  | 'emergency_recovery' // Crisis recovery mode
+  | 'generate_report'; // Comprehensive reporting
 ```
 
 ### Monitoring Context
 
 ```typescript
 interface MonitoringContext {
-  repositories?: string[];           // Specific repos to monitor
-  workspace?: string;               // Working directory
+  repositories?: string[]; // Specific repos to monitor
+  workspace?: string; // Working directory
   priority: 'low' | 'medium' | 'high' | 'critical';
-  autoFix: boolean;                // Enable automatic fixing
-  maxRetries: number;              // Retry attempts
-  emergencyMode: boolean;          // Emergency recovery mode
+  autoFix: boolean; // Enable automatic fixing
+  maxRetries: number; // Retry attempts
+  emergencyMode: boolean; // Emergency recovery mode
 }
 ```
 
@@ -79,8 +85,8 @@ const result = await sentinel.execute({
   context: {
     priority: 'high',
     autoFix: true,
-    repositories: ['apps/dashboard', 'apps/api']
-  }
+    repositories: ['apps/dashboard', 'apps/api'],
+  },
 });
 
 console.log(`Monitoring active: ${result.data.systemHealth}`);
@@ -94,8 +100,8 @@ const lintResult = await sentinel.execute({
   task: 'fix_lint_errors',
   context: {
     autoFix: true,
-    priority: 'medium'
-  }
+    priority: 'medium',
+  },
 });
 
 console.log(`Fixed ${lintResult.data.errorsFixed.length} lint issues`);
@@ -108,8 +114,8 @@ console.log(`Fixed ${lintResult.data.errorsFixed.length} lint issues`);
 const healthCheck = await sentinel.execute({
   task: 'health_check',
   context: {
-    priority: 'low'
-  }
+    priority: 'low',
+  },
 });
 
 const { systemHealth, errorsDetected } = healthCheck.data;
@@ -125,8 +131,8 @@ const recovery = await sentinel.execute({
   task: 'emergency_recovery',
   context: {
     emergencyMode: true,
-    maxRetries: 5
-  }
+    maxRetries: 5,
+  },
 });
 
 console.log(`Recovery steps: ${recovery.data.errorsFixed[0].commandsExecuted}`);
@@ -140,14 +146,14 @@ console.log(`Recovery steps: ${recovery.data.errorsFixed[0].commandsExecuted}`);
 interface ErrorDetection {
   type: 'build' | 'type' | 'lint' | 'schema' | 'ci' | 'promise' | 'runtime';
   severity: 'low' | 'medium' | 'high' | 'critical';
-  source: string;           // Repository name
-  message: string;          // Error description
-  file?: string;           // Affected file
-  line?: number;           // Line number
-  column?: number;         // Column position
-  suggestion?: string;     // Fix recommendation
-  autoFixable: boolean;    // Can be auto-fixed
-  timestamp: Date;         // Detection time
+  source: string; // Repository name
+  message: string; // Error description
+  file?: string; // Affected file
+  line?: number; // Line number
+  column?: number; // Column position
+  suggestion?: string; // Fix recommendation
+  autoFixable: boolean; // Can be auto-fixed
+  timestamp: Date; // Detection time
 }
 ```
 
@@ -186,7 +192,7 @@ interface MonitoringReport {
 // Generate detailed report
 const report = await sentinel.execute({
   task: 'generate_report',
-  context: { priority: 'low' }
+  context: { priority: 'low' },
 });
 
 // Report saved to: reports/error-sentinel-report.json
@@ -196,12 +202,12 @@ const report = await sentinel.execute({
 
 ### Scan Intervals by Priority
 
-| Priority | Scan Interval | Use Case |
-|----------|---------------|----------|
-| **Critical** | 15 seconds | Production emergencies |
-| **High** | 30 seconds | Active development |
-| **Medium** | 2 minutes | Stable development |
-| **Low** | 5 minutes | Maintenance mode |
+| Priority     | Scan Interval | Use Case               |
+| ------------ | ------------- | ---------------------- |
+| **Critical** | 15 seconds    | Production emergencies |
+| **High**     | 30 seconds    | Active development     |
+| **Medium**   | 2 minutes     | Stable development     |
+| **Low**      | 5 minutes     | Maintenance mode       |
 
 ### Monitoring Lifecycle
 
@@ -275,13 +281,13 @@ When `emergency_recovery` is triggered:
 
 ```typescript
 interface PerformanceMetrics {
-  scanDuration: number;        // Time per scan
-  totalScans: number;          // Scans completed
-  fixAttempts: number;         // Fix attempts made
-  successfulFixes: number;     // Successful fixes
-  fixSuccessRate: number;      // Success percentage
+  scanDuration: number; // Time per scan
+  totalScans: number; // Scans completed
+  fixAttempts: number; // Fix attempts made
+  successfulFixes: number; // Successful fixes
+  fixSuccessRate: number; // Success percentage
   averageResponseTime: number; // Response time
-  systemUptimeImpact: number;  // Uptime improvement
+  systemUptimeImpact: number; // Uptime improvement
 }
 ```
 
@@ -292,7 +298,7 @@ interface PerformanceMetrics {
 function assessSystemHealth(errors: ErrorDetection[]): SystemHealth {
   const criticalErrors = errors.filter(e => e.severity === 'critical').length;
   const highErrors = errors.filter(e => e.severity === 'high').length;
-  
+
   if (criticalErrors > 0) return 'critical';
   if (highErrors > 3) return 'degraded';
   return 'healthy';
@@ -318,7 +324,7 @@ name: ErrorSentinel Monitoring
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes
+    - cron: '*/5 * * * *' # Every 5 minutes
   workflow_dispatch:
 
 jobs:
@@ -343,19 +349,19 @@ jobs:
 import { useErrorSentinel } from '@/hooks/useErrorSentinel';
 
 export function ErrorSentinelDashboard() {
-  const { 
-    systemHealth, 
-    errorsDetected, 
+  const {
+    systemHealth,
+    errorsDetected,
     monitoringActive,
     startMonitoring,
-    stopMonitoring 
+    stopMonitoring
   } = useErrorSentinel();
 
   return (
     <div className="error-sentinel-dashboard">
       <StatusIndicator health={systemHealth} />
       <ErrorList errors={errorsDetected} />
-      <MonitoringControls 
+      <MonitoringControls
         active={monitoringActive}
         onStart={startMonitoring}
         onStop={stopMonitoring}
@@ -387,11 +393,7 @@ ERROR_SENTINEL_ALERT_WEBHOOK=https://hooks.slack.com/...
   "scanInterval": 30000,
   "priority": "medium",
   "autoFix": true,
-  "repositories": [
-    "apps/dashboard",
-    "apps/api",
-    "packages/core-agents"
-  ],
+  "repositories": ["apps/dashboard", "apps/api", "packages/core-agents"],
   "alertThresholds": {
     "critical": 1,
     "high": 3,
@@ -417,7 +419,7 @@ node scripts/agents/error-sentinel-demo.js
 # Output:
 # 🛰️ ErrorSentinel Agent Demo
 # ==========================================
-# 
+#
 # [2024-01-15T10:30:00.000Z] 🚀 Starting ErrorSentinel demonstration...
 # [2024-01-15T10:30:01.234Z] 🔍 Demonstrating System Health Check...
 # [2024-01-15T10:30:02.456Z] 📊 Health Check Results: HEALTHY
@@ -440,7 +442,7 @@ describe('ErrorSentinelAgent', () => {
   it('should detect lint errors', async () => {
     const result = await agent.execute({
       task: 'fix_lint_errors',
-      context: { autoFix: false }
+      context: { autoFix: false },
     });
 
     expect(result.success).toBe(true);
@@ -450,7 +452,7 @@ describe('ErrorSentinelAgent', () => {
   it('should auto-fix fixable errors', async () => {
     const result = await agent.execute({
       task: 'fix_lint_errors',
-      context: { autoFix: true }
+      context: { autoFix: true },
     });
 
     expect(result.data.errorsFixed.length).toBeGreaterThan(0);
@@ -488,14 +490,14 @@ class ErrorSentinelService {
 
   async start() {
     this.isRunning = true;
-    
+
     // Start continuous monitoring
     await this.agent.execute({
       task: 'continuous_scan',
       context: {
         priority: 'high',
-        autoFix: true
-      }
+        autoFix: true,
+      },
     });
 
     console.log('🛰️ ErrorSentinel service started');
@@ -536,6 +538,7 @@ service.start();
 ### Common Issues
 
 **Issue**: Monitoring not starting
+
 ```bash
 # Check agent registration
 node -e "console.log(require('./packages/core-agents/src/agent-registry').getRegisteredAgentTypes())"
@@ -545,6 +548,7 @@ ls -la reports/
 ```
 
 **Issue**: Auto-fix not working
+
 ```bash
 # Check package.json scripts
 npm run lint:fix --dry-run
@@ -552,6 +556,7 @@ npm run type-check
 ```
 
 **Issue**: High memory usage
+
 ```bash
 # Reduce scan frequency
 export ERROR_SENTINEL_SCAN_INTERVAL=60000
@@ -572,6 +577,8 @@ tail -f logs/error-sentinel.log
 
 ---
 
-The ErrorSentinel agent represents a new paradigm in autonomous system maintenance, providing 24/7 vigilance and intelligent error resolution to keep NeonHub running at peak performance.
+The ErrorSentinel agent represents a new paradigm in autonomous system
+maintenance, providing 24/7 vigilance and intelligent error resolution to keep
+NeonHub running at peak performance.
 
 **🛰️ ErrorSentinel: Always watching, always fixing, always improving.**

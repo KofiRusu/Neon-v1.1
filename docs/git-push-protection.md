@@ -2,22 +2,27 @@
 
 ## Overview
 
-NeonHub implements comprehensive Git push protection to ensure code quality and prevent broken code from entering the repository. This system automatically validates code before allowing any Git pushes to proceed.
+NeonHub implements comprehensive Git push protection to ensure code quality and
+prevent broken code from entering the repository. This system automatically
+validates code before allowing any Git pushes to proceed.
 
 ## 🚀 Features
 
 ### **Automated Quality Checks**
+
 - **Type Checking**: Validates TypeScript types across all workspaces
 - **Code Linting**: Enforces ESLint rules and code style standards
 - **Unit Testing**: Runs all test suites to ensure functionality
 - **Build Validation**: Builds only affected workspaces for efficiency
 
 ### **Smart Workspace Detection**
+
 - **Selective Building**: Only builds workspaces affected by changes
 - **Dependency Tracking**: Rebuilds dependent apps when packages change
 - **Performance Optimization**: Avoids unnecessary build operations
 
 ### **Comprehensive Logging**
+
 - **Push Attempt Tracking**: Logs all validation attempts with timestamps
 - **User Activity Monitoring**: Tracks which users are pushing code
 - **Error Analysis**: Detailed error reporting for failed validations
@@ -34,6 +39,7 @@ npm install  # Triggers husky prepare hook
 ```
 
 ### Manual Setup (if needed)
+
 ```bash
 # Install Husky
 npm install --save-dev husky
@@ -71,7 +77,7 @@ The system analyzes changed files to determine which workspaces need building:
 ```
 📁 Change Detection Rules:
 ├── apps/dashboard/** → Build dashboard
-├── apps/api/** → Build api  
+├── apps/api/** → Build api
 ├── packages/** → Build both dashboard & api
 └── Root configs → Build all workspaces
 ```
@@ -81,6 +87,7 @@ The system analyzes changed files to determine which workspaces need building:
 ## 🎯 Usage Examples
 
 ### **Successful Push**
+
 ```bash
 $ git push origin main
 
@@ -110,6 +117,7 @@ $ git push origin main
 ```
 
 ### **Blocked Push**
+
 ```bash
 $ git push origin feature/new-component
 
@@ -141,6 +149,7 @@ $ git push origin feature/new-component
 ## 📊 Monitoring & Analytics
 
 ### **View Push Statistics**
+
 ```bash
 # Basic statistics
 npm run push-log
@@ -150,6 +159,7 @@ npm run push-log -- --detailed
 ```
 
 ### **Sample Output**
+
 ```
 📊 NeonHub Git Push Protection Log
 ==================================
@@ -181,6 +191,7 @@ npm run push-log -- --detailed
 ### **Common Issues & Solutions**
 
 #### **1. Type Check Failures**
+
 ```bash
 # Run type check manually to see detailed errors
 npm run type-check
@@ -190,6 +201,7 @@ npm run type-check
 ```
 
 #### **2. Lint Failures**
+
 ```bash
 # Run linter to see specific violations
 npm run lint
@@ -201,6 +213,7 @@ npm run lint:fix
 ```
 
 #### **3. Test Failures**
+
 ```bash
 # Run tests to see which tests are failing
 npm run test
@@ -212,6 +225,7 @@ npm run test:watch
 ```
 
 #### **4. Build Failures**
+
 ```bash
 # Run build manually to see compilation errors
 npm run build
@@ -221,6 +235,7 @@ npm run build --workspace=apps/dashboard
 ```
 
 ### **Emergency Bypass** (Use Sparingly)
+
 If you need to bypass the protection for urgent fixes:
 
 ```bash
@@ -234,7 +249,8 @@ git push origin main
 mv .husky/pre-push.disabled .husky/pre-push
 ```
 
-⚠️ **Warning**: Only use bypass for critical production fixes. Always fix the underlying issues afterward.
+⚠️ **Warning**: Only use bypass for critical production fixes. Always fix the
+underlying issues afterward.
 
 ---
 
@@ -258,7 +274,8 @@ const checks = [
 
 ### **Adjusting Workspace Detection**
 
-Modify `scripts/build-changed-workspaces.js` to customize which changes trigger builds:
+Modify `scripts/build-changed-workspaces.js` to customize which changes trigger
+builds:
 
 ```javascript
 // Add new workspace detection rules
@@ -280,13 +297,16 @@ if (file.match(/\.(md|txt|json)$/)) {
 ### **For Developers**
 
 1. **Run Checks Locally**: Before pushing, run validation commands manually:
+
    ```bash
    npm run type-check && npm run lint && npm run test
    ```
 
-2. **Fix Issues Incrementally**: Address validation failures one at a time rather than all at once
+2. **Fix Issues Incrementally**: Address validation failures one at a time
+   rather than all at once
 
 3. **Use Watch Mode**: During development, use watch modes for faster feedback:
+
    ```bash
    npm run test:watch
    ```
@@ -295,16 +315,20 @@ if (file.match(/\.(md|txt|json)$/)) {
 
 ### **For Team Leads**
 
-1. **Monitor Push Statistics**: Regularly check push logs to identify problem areas:
+1. **Monitor Push Statistics**: Regularly check push logs to identify problem
+   areas:
+
    ```bash
    npm run push-log -- --detailed
    ```
 
 2. **Review Blocked Pushes**: Analyze recent failures to identify training needs
 
-3. **Adjust Validation Rules**: Fine-tune checks based on team feedback and project needs
+3. **Adjust Validation Rules**: Fine-tune checks based on team feedback and
+   project needs
 
-4. **Set Up Alerts**: Consider integrating push log monitoring with team communication tools
+4. **Set Up Alerts**: Consider integrating push log monitoring with team
+   communication tools
 
 ---
 
@@ -344,6 +368,7 @@ console.log('Weekly push success trends:', weeklyStats);
 ## 📚 Technical Details
 
 ### **File Structure**
+
 ```
 ├── .husky/
 │   └── pre-push              # Git hook entry point
@@ -355,11 +380,13 @@ console.log('Weekly push success trends:', weeklyStats);
 ```
 
 ### **Dependencies**
+
 - **Husky**: Git hook management
 - **Node.js**: Script execution environment
 - **Git**: Version control integration
 
 ### **Performance Characteristics**
+
 - **Validation Time**: 30-120 seconds depending on changes
 - **Build Optimization**: Only affected workspaces are built
 - **Memory Usage**: Minimal overhead during validation
@@ -370,11 +397,13 @@ console.log('Weekly push success trends:', weeklyStats);
 ## 🆘 Support & Maintenance
 
 ### **Log File Management**
+
 - Push logs are automatically rotated (max 100 entries)
 - Logs are stored in `.pushlog` (should be gitignored)
 - Manual cleanup: `rm .pushlog` to reset history
 
 ### **System Health Checks**
+
 ```bash
 # Verify hook installation
 ls -la .husky/pre-push
@@ -387,6 +416,7 @@ node scripts/build-changed-workspaces.js
 ```
 
 ### **Getting Help**
+
 1. Check this documentation first
 2. Run individual validation commands to isolate issues
 3. Review push logs for patterns: `npm run push-log -- --detailed`
@@ -394,4 +424,6 @@ node scripts/build-changed-workspaces.js
 
 ---
 
-**🛡️ Remember: Git push protection is designed to maintain code quality and prevent issues. Work with the system, not against it, for the best development experience.**
+**🛡️ Remember: Git push protection is designed to maintain code quality and
+prevent issues. Work with the system, not against it, for the best development
+experience.**

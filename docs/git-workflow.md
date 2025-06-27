@@ -2,7 +2,9 @@
 
 ## 🚀 Frontend & UI/UX Development Workflow
 
-This document defines the optimal Git workflow for NeonHub's futuristic AI-driven marketing dashboard, ensuring smooth collaboration between developers, UI/UX designers, and AI agent systems.
+This document defines the optimal Git workflow for NeonHub's futuristic
+AI-driven marketing dashboard, ensuring smooth collaboration between developers,
+UI/UX designers, and AI agent systems.
 
 ## 📋 Table of Contents
 
@@ -34,21 +36,22 @@ main (production)
 
 ### Branch Types & Naming
 
-| Branch Type | Pattern | Purpose | Merges To |
-|-------------|---------|---------|-----------|
-| `main` | `main` | Production-ready code | - |
-| `develop` | `develop` | Integration & testing | `main` |
-| `staging` | `staging` | Pre-production validation | `main` |
-| `feature/` | `feature/feature-name` | General features | `develop` |
-| `ui/` | `ui/component-name` | UI components & pages | `develop` |
-| `agent-ui/` | `agent-ui/agent-name` | Agent interface updates | `develop` |
-| `design-system/` | `design-system/update-name` | Design tokens & components | `develop` |
-| `hotfix/` | `hotfix/issue-description` | Critical production fixes | `main` + `develop` |
-| `release/` | `release/v1.2.0` | Release preparation | `main` |
+| Branch Type      | Pattern                     | Purpose                    | Merges To          |
+| ---------------- | --------------------------- | -------------------------- | ------------------ |
+| `main`           | `main`                      | Production-ready code      | -                  |
+| `develop`        | `develop`                   | Integration & testing      | `main`             |
+| `staging`        | `staging`                   | Pre-production validation  | `main`             |
+| `feature/`       | `feature/feature-name`      | General features           | `develop`          |
+| `ui/`            | `ui/component-name`         | UI components & pages      | `develop`          |
+| `agent-ui/`      | `agent-ui/agent-name`       | Agent interface updates    | `develop`          |
+| `design-system/` | `design-system/update-name` | Design tokens & components | `develop`          |
+| `hotfix/`        | `hotfix/issue-description`  | Critical production fixes  | `main` + `develop` |
+| `release/`       | `release/v1.2.0`            | Release preparation        | `main`             |
 
 ### Branch Protection Rules
 
 #### Main Branch
+
 - ❌ Direct pushes blocked
 - ✅ 2 required PR reviews
 - ✅ Status checks: lint, test, build, e2e
@@ -56,12 +59,14 @@ main (production)
 - ✅ Code owner approval required
 
 #### Develop Branch
+
 - ❌ Direct pushes blocked
 - ✅ 1 required PR review
 - ✅ Status checks: lint, test, build
 - ✅ Auto-merge when all checks pass
 
 #### Staging Branch
+
 - ❌ Direct pushes blocked
 - ✅ 1 required PR review
 - ✅ Status checks: lint, test, build, e2e, lighthouse
@@ -71,12 +76,12 @@ main (production)
 
 ### Environment Mapping
 
-| Environment | Branch | Deployment | URL |
-|-------------|--------|------------|-----|
+| Environment     | Branch              | Deployment     | URL                            |
+| --------------- | ------------------- | -------------- | ------------------------------ |
 | **Development** | `feature/*`, `ui/*` | Vercel Preview | `*-git-branch-name.vercel.app` |
-| **Integration** | `develop` | Auto-deploy | `dev.neonhub.ai` |
-| **Staging** | `staging` | Auto-deploy | `staging.neonhub.ai` |
-| **Production** | `main` | Manual trigger | `app.neonhub.ai` |
+| **Integration** | `develop`           | Auto-deploy    | `dev.neonhub.ai`               |
+| **Staging**     | `staging`           | Auto-deploy    | `staging.neonhub.ai`           |
+| **Production**  | `main`              | Manual trigger | `app.neonhub.ai`               |
 
 ### Environment Variables
 
@@ -108,29 +113,29 @@ NEXT_PUBLIC_ENV=production
 
 ### Commit Types
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `feat` | New feature | `feat(ui): add neon-glass card component` |
-| `fix` | Bug fix | `fix(agent-ui): correct ContentAgent loading animation` |
-| `ui` | UI/UX changes | `ui(dashboard): implement futuristic sidebar navigation` |
-| `agent` | Agent-related changes | `agent(content): sync UI with ContentAgent API` |
-| `style` | Code style changes | `style(components): apply neon-glass theme tokens` |
-| `refactor` | Code refactoring | `refactor(ui): optimize component performance` |
-| `test` | Test additions/changes | `test(ui): add accessibility tests for components` |
-| `docs` | Documentation | `docs(workflow): update Git workflow guide` |
-| `build` | Build system changes | `build(storybook): add component documentation` |
-| `ci` | CI/CD changes | `ci(deploy): add staging environment pipeline` |
+| Type       | Description            | Example                                                  |
+| ---------- | ---------------------- | -------------------------------------------------------- |
+| `feat`     | New feature            | `feat(ui): add neon-glass card component`                |
+| `fix`      | Bug fix                | `fix(agent-ui): correct ContentAgent loading animation`  |
+| `ui`       | UI/UX changes          | `ui(dashboard): implement futuristic sidebar navigation` |
+| `agent`    | Agent-related changes  | `agent(content): sync UI with ContentAgent API`          |
+| `style`    | Code style changes     | `style(components): apply neon-glass theme tokens`       |
+| `refactor` | Code refactoring       | `refactor(ui): optimize component performance`           |
+| `test`     | Test additions/changes | `test(ui): add accessibility tests for components`       |
+| `docs`     | Documentation          | `docs(workflow): update Git workflow guide`              |
+| `build`    | Build system changes   | `build(storybook): add component documentation`          |
+| `ci`       | CI/CD changes          | `ci(deploy): add staging environment pipeline`           |
 
 ### Scope Guidelines
 
-| Scope | Description | Components |
-|-------|-------------|------------|
-| `ui` | UI components & layouts | `Button`, `Card`, `Modal`, `Layout` |
-| `agent-ui` | Agent interface components | `AgentPanel`, `ContentEditor`, `MetricsDashboard` |
-| `design-system` | Design tokens & theme | CSS variables, theme tokens, utilities |
-| `dashboard` | Main dashboard pages | Analytics, campaigns, insights |
-| `auth` | Authentication UI | Login, signup, profile |
-| `mobile` | Mobile-specific UI | Responsive components, mobile views |
+| Scope           | Description                | Components                                        |
+| --------------- | -------------------------- | ------------------------------------------------- |
+| `ui`            | UI components & layouts    | `Button`, `Card`, `Modal`, `Layout`               |
+| `agent-ui`      | Agent interface components | `AgentPanel`, `ContentEditor`, `MetricsDashboard` |
+| `design-system` | Design tokens & theme      | CSS variables, theme tokens, utilities            |
+| `dashboard`     | Main dashboard pages       | Analytics, campaigns, insights                    |
+| `auth`          | Authentication UI          | Login, signup, profile                            |
+| `mobile`        | Mobile-specific UI         | Responsive components, mobile views               |
 
 ### Examples
 
@@ -233,12 +238,12 @@ interface AgentUISync {
 
 ### Agent-Specific UI Patterns
 
-| Agent | UI Pattern | Components | Sync Method |
-|-------|------------|------------|-------------|
-| ContentAgent | Live editor | `ContentEditor`, `PreviewPane` | WebSocket |
-| TrendAgent | Animated charts | `TrendChart`, `PredictiveOverlay` | Polling (5s) |
-| SupportAgent | Chat interface | `ChatBot`, `TicketPanel` | WebSocket |
-| MetricAgent | Real-time dashboard | `MetricCards`, `AlertBanner` | Server-Sent Events |
+| Agent        | UI Pattern          | Components                        | Sync Method        |
+| ------------ | ------------------- | --------------------------------- | ------------------ |
+| ContentAgent | Live editor         | `ContentEditor`, `PreviewPane`    | WebSocket          |
+| TrendAgent   | Animated charts     | `TrendChart`, `PredictiveOverlay` | Polling (5s)       |
+| SupportAgent | Chat interface      | `ChatBot`, `TicketPanel`          | WebSocket          |
+| MetricAgent  | Real-time dashboard | `MetricCards`, `AlertBanner`      | Server-Sent Events |
 
 ## 🎨 Design System Coordination
 
@@ -275,12 +280,12 @@ export const tokens = {
     glass: {
       bg: 'rgba(17, 25, 40, 0.75)',
       border: 'rgba(255, 255, 255, 0.18)',
-    }
+    },
   },
   effects: {
     glassmorphism: 'backdrop-blur-md bg-opacity-75',
     neonGlow: 'shadow-lg shadow-neon-blue/25',
-  }
+  },
 } as const;
 ```
 
@@ -321,15 +326,15 @@ export const tokens = {
 ```yaml
 # GitHub Actions pipeline
 stages:
-  - install        # Dependencies
-  - lint          # ESLint + Prettier
-  - type-check    # TypeScript
-  - test          # Unit + Integration
-  - build         # Next.js build
-  - e2e           # Playwright tests
-  - lighthouse    # Performance audit
-  - storybook     # Component docs
-  - deploy        # Environment deployment
+  - install # Dependencies
+  - lint # ESLint + Prettier
+  - type-check # TypeScript
+  - test # Unit + Integration
+  - build # Next.js build
+  - e2e # Playwright tests
+  - lighthouse # Performance audit
+  - storybook # Component docs
+  - deploy # Environment deployment
 ```
 
 ## 🚀 Deployment Process
@@ -390,11 +395,11 @@ git push origin main
 
 ### Release Types
 
-| Type | Version | Trigger | Example |
-|------|---------|---------|---------|
+| Type      | Version       | Trigger          | Example           |
+| --------- | ------------- | ---------------- | ----------------- |
 | **Major** | 1.0.0 → 2.0.0 | Breaking changes | New design system |
-| **Minor** | 1.0.0 → 1.1.0 | New features | New components |
-| **Patch** | 1.0.0 → 1.0.1 | Bug fixes | Component fixes |
+| **Minor** | 1.0.0 → 1.1.0 | New features     | New components    |
+| **Patch** | 1.0.0 → 1.0.1 | Bug fixes        | Component fixes   |
 
 ### Auto-versioning
 
@@ -409,13 +414,13 @@ BREAKING CHANGE: ✅ major version bump
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| **Merge conflicts in design tokens** | Use `npm run tokens:migrate` |
-| **Agent UI out of sync** | Check WebSocket connection, restart dev server |
-| **Build failures** | Run `npm run clean && npm install` |
-| **Failed pre-push hooks** | Fix issues individually with `npm run lint:fix`, `npm run test` |
-| **Storybook build errors** | Update component stories, check imports |
+| Issue                                | Solution                                                        |
+| ------------------------------------ | --------------------------------------------------------------- |
+| **Merge conflicts in design tokens** | Use `npm run tokens:migrate`                                    |
+| **Agent UI out of sync**             | Check WebSocket connection, restart dev server                  |
+| **Build failures**                   | Run `npm run clean && npm install`                              |
+| **Failed pre-push hooks**            | Fix issues individually with `npm run lint:fix`, `npm run test` |
+| **Storybook build errors**           | Update component stories, check imports                         |
 
 ### Debug Commands
 

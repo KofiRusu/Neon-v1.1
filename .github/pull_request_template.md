@@ -3,14 +3,19 @@
 ## 📝 Description
 
 ### What does this PR do?
+
 <!-- Briefly describe the changes in this PR -->
 
 ### Related Issue(s)
+
 <!-- Link to related issues -->
+
 - Closes #[issue-number]
 
 ### Type of Change
+
 <!-- Mark with an 'x' all that apply -->
+
 - [ ] 🚀 New feature (`feat`)
 - [ ] 🐛 Bug fix (`fix`)
 - [ ] 🎨 UI/UX changes (`ui`)
@@ -25,10 +30,13 @@
 ## 🎨 UI/UX Impact Assessment
 
 ### Screenshots/Videos
+
 <!-- Include before/after screenshots or videos of UI changes -->
 
 ### Design System Impact
+
 <!-- Check all that apply -->
+
 - [ ] 🎨 Updates design tokens (colors, spacing, typography)
 - [ ] 🧩 Adds new components to the design system
 - [ ] 🔄 Modifies existing components
@@ -37,7 +45,9 @@
 - [ ] ♿ Impacts accessibility
 
 ### Browser Compatibility
+
 <!-- Check all that apply -->
+
 - [ ] 🌐 Tested in Chrome
 - [ ] 🦊 Tested in Firefox
 - [ ] 🧭 Tested in Safari
@@ -48,7 +58,9 @@
 ## 🤖 Agent Integration Notes
 
 ### Agent Synchronization
+
 <!-- Check all that apply -->
+
 - [ ] 🔄 Real-time agent data synchronization
 - [ ] 📊 Agent UI state management
 - [ ] 🔌 WebSocket connections
@@ -57,7 +69,9 @@
 - [ ] 🐛 Error handling for agent failures
 
 ### Affected Agents
+
 <!-- List which agents are affected by this PR -->
+
 - [ ] ContentAgent
 - [ ] TrendAgent
 - [ ] SupportAgent
@@ -69,17 +83,20 @@
 ## 📱 Responsive Design Checklist
 
 ### Mobile (320px - 768px)
+
 - [ ] ✅ Layout works on mobile
 - [ ] ✅ Touch targets are appropriate size
 - [ ] ✅ Text is readable
 - [ ] ✅ Navigation is accessible
 
 ### Tablet (768px - 1024px)
+
 - [ ] ✅ Layout adapts appropriately
 - [ ] ✅ Content is well-organized
 - [ ] ✅ Touch interactions work
 
 ### Desktop (1024px+)
+
 - [ ] ✅ Layout utilizes space effectively
 - [ ] ✅ Hover states work correctly
 - [ ] ✅ Keyboard navigation functions
@@ -87,6 +104,7 @@
 ## ♿ Accessibility Compliance
 
 ### WCAG 2.1 AA Standards
+
 - [ ] 🎯 Proper heading hierarchy (h1, h2, h3...)
 - [ ] 🏷️ Alt text for images
 - [ ] 🎨 Color contrast ratios meet standards
@@ -97,6 +115,7 @@
 - [ ] 📝 Form labels are descriptive
 
 ### Testing Tools Used
+
 - [ ] 🔍 axe DevTools
 - [ ] 📱 Screen reader testing
 - [ ] ⌨️ Keyboard-only navigation
@@ -105,6 +124,7 @@
 ## 🧪 Testing Checklist
 
 ### Manual Testing
+
 - [ ] ✅ Feature works as expected
 - [ ] ✅ No console errors
 - [ ] ✅ Performance is acceptable
@@ -112,6 +132,7 @@
 - [ ] ✅ Error states are handled
 
 ### Automated Testing
+
 - [ ] 🧪 Unit tests added/updated
 - [ ] 🎭 E2E tests added/updated
 - [ ] 📸 Visual regression tests pass
@@ -119,6 +140,7 @@
 - [ ] 🤖 Agent integration tests pass
 
 ### Performance Testing
+
 - [ ] 📊 Bundle size impact analyzed
 - [ ] ⚡ Lighthouse score maintained/improved
 - [ ] 🚀 Page load time acceptable
@@ -127,12 +149,14 @@
 ## 🔄 Build & Deploy
 
 ### Build Status
+
 - [ ] ✅ Local build succeeds
 - [ ] ✅ TypeScript compilation passes
 - [ ] ✅ Linting passes
 - [ ] ✅ Tests pass locally
 
 ### Environment Testing
+
 - [ ] 🧪 Works in development
 - [ ] 🎪 Tested in staging
 - [ ] 🚀 Ready for production
@@ -140,11 +164,14 @@
 ## 📦 Dependencies
 
 ### New Dependencies
+
 <!-- List any new packages added -->
+
 - [ ] No new dependencies
 - [ ] Dependencies listed below:
 
 ### Dependency Changes
+
 ```json
 {
   "added": [],
@@ -156,6 +183,7 @@
 ## 🔒 Security Considerations
 
 ### Security Review
+
 - [ ] 🔐 No sensitive data exposed
 - [ ] 🛡️ Input validation implemented
 - [ ] 🔒 Authentication/authorization respected
@@ -165,6 +193,7 @@
 ## 📚 Documentation
 
 ### Documentation Updates
+
 - [ ] 📝 README updated (if needed)
 - [ ] 📖 Storybook stories updated
 - [ ] 🎯 API documentation updated
@@ -174,17 +203,21 @@
 ## 🎯 Deployment Notes
 
 ### Deployment Checklist
+
 - [ ] 🌿 Branch follows naming convention
 - [ ] 🔄 Squash commits before merge
 - [ ] 📋 Release notes prepared
 - [ ] 🚦 Feature flags configured (if needed)
 
 ### Environment Variables
+
 <!-- List any new environment variables needed -->
+
 - [ ] No new environment variables
 - [ ] Environment variables listed below:
 
 ### Migration Requirements
+
 - [ ] 🗄️ Database migrations needed
 - [ ] 🔧 Configuration changes needed
 - [ ] 📦 Deployment script updates needed
@@ -192,12 +225,15 @@
 ## 🔮 Future Considerations
 
 ### Technical Debt
+
 <!-- Note any technical debt introduced or resolved -->
 
 ### Performance Optimizations
+
 <!-- Note any performance considerations for future -->
 
 ### Scalability Concerns
+
 <!-- Note any scalability implications -->
 
 ---
@@ -205,11 +241,13 @@
 ## 👥 Reviewers
 
 ### Required Reviewers
+
 - [ ] @frontend-team (UI/UX changes)
 - [ ] @agent-team (Agent integration)
 - [ ] @design-team (Design system changes)
 
 ### Optional Reviewers
+
 - [ ] @accessibility-team (A11y changes)
 - [ ] @performance-team (Performance impact)
 
@@ -218,6 +256,7 @@
 ## ✅ Final Checklist
 
 Before requesting review:
+
 - [ ] 📝 All sections of this template completed
 - [ ] 🔍 Self-review completed
 - [ ] 🧪 All tests passing locally

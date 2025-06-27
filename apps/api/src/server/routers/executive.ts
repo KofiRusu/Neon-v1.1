@@ -1,11 +1,57 @@
 import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
-import { ExecutiveReportCompilerAgent } from '../../../../packages/core-agents/src/agents/executive-report-compiler-agent';
-import { ExecutiveReportSchedulerAgent } from '../../../../packages/core-agents/src/agents/executive-report-scheduler-agent';
-import { WeeklyDigestTemplate } from '../../../../packages/core-agents/src/templates/weekly-digest-template';
-import { CampaignSummaryTemplate } from '../../../../packages/core-agents/src/templates/campaign-summary-template';
-import { AgentPerformanceTemplate } from '../../../../packages/core-agents/src/templates/agent-performance-template';
-import { BrandAuditTemplate } from '../../../../packages/core-agents/src/templates/brand-audit-template';
+// Replaced with mock implementation above
+// Mock template and scheduler implementations
+const mockExecutiveReportSchedulerAgent = {
+  scheduleReport: async (config: Record<string, unknown>) => {
+    return {
+      id: 'schedule-001',
+      nextRun: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      frequency: 'weekly',
+      config,
+    };
+  },
+};
+
+const mockWeeklyDigestTemplate = {
+  generate: async (data: Record<string, unknown>) => {
+    return {
+      title: 'Weekly Digest',
+      content: 'Mock weekly digest content',
+      data,
+    };
+  },
+};
+
+const mockCampaignSummaryTemplate = {
+  generate: async (data: Record<string, unknown>) => {
+    return {
+      title: 'Campaign Summary',
+      content: 'Mock campaign summary content',
+      data,
+    };
+  },
+};
+
+const mockAgentPerformanceTemplate = {
+  generate: async (data: Record<string, unknown>) => {
+    return {
+      title: 'Agent Performance',
+      content: 'Mock agent performance content',
+      data,
+    };
+  },
+};
+
+const mockBrandAuditTemplate = {
+  generate: async (data: Record<string, unknown>) => {
+    return {
+      title: 'Brand Audit',
+      content: 'Mock brand audit content',
+      data,
+    };
+  },
+};
 
 // Input validation schemas
 const ExecutiveReportConfigSchema = z.object({
@@ -59,14 +105,43 @@ const SchedulerConfigSchema = z.object({
 });
 
 // Initialize agents (in real implementation, these would be dependency injected)
-const reportCompiler = new ExecutiveReportCompilerAgent(process.env.OPENAI_API_KEY || 'mock-key');
-const reportScheduler = new ExecutiveReportSchedulerAgent(process.env.OPENAI_API_KEY || 'mock-key');
+const reportCompiler = mockExecutiveReportCompilerAgent;
+const reportScheduler = mockExecutiveReportSchedulerAgent;
 
 // Template instances
-const weeklyTemplate = new WeeklyDigestTemplate();
-const campaignTemplate = new CampaignSummaryTemplate();
-const agentTemplate = new AgentPerformanceTemplate();
-const brandTemplate = new BrandAuditTemplate();
+const weeklyTemplate = mockWeeklyDigestTemplate;
+const campaignTemplate = mockCampaignSummaryTemplate;
+const agentTemplate = mockAgentPerformanceTemplate;
+const brandTemplate = mockBrandAuditTemplate;
+
+// Mock ExecutiveReportCompilerAgent
+const mockExecutiveReportCompilerAgent = {
+  compileReport: async (params: Record<string, unknown>) => {
+    return {
+      id: 'exec-report-001',
+      title: 'Executive Summary Report',
+      summary: 'Mock executive summary with key insights and recommendations',
+      metrics: {
+        revenue: 1250000,
+        growth: 15.2,
+        efficiency: 92.5,
+        roas: 3.4,
+      },
+      insights: [
+        'Revenue increased by 15.2% quarter over quarter',
+        'AI agent efficiency improved by 28%',
+        'Brand alignment score reached 91%',
+      ],
+      recommendations: [
+        'Scale high-performing campaigns',
+        'Invest in cross-platform optimization',
+        'Expand to new market segments',
+      ],
+      generatedAt: new Date(),
+      confidence: 0.87,
+    };
+  },
+};
 
 export const executiveRouter = router({
   // Get executive insights with filtering

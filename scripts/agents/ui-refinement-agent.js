@@ -33,21 +33,20 @@ EXAMPLES:
 
 async function checkContrast(options = {}) {
   const { targetDir = 'apps/dashboard/src' } = options;
-  
+
   console.log('🔍 Analyzing contrast ratios...');
-  
+
   try {
     const files = await findTSXFiles(targetDir);
     const issues = [];
-    
+
     for (const file of files) {
       const content = await fs.readFile(file, 'utf-8');
       const fileIssues = analyzeContrastInFile(file, content);
       issues.push(...fileIssues);
     }
-    
+
     displayContrastResults(issues);
-    
   } catch {
     console.log('❌ Error analyzing contrast');
   }
@@ -55,20 +54,20 @@ async function checkContrast(options = {}) {
 
 async function fixContrast(options = {}) {
   const { targetDir = 'apps/dashboard/src', autoFix = false } = options;
-  
+
   console.log('🔧 Fixing contrast issues...');
-  
+
   const files = await findTSXFiles(targetDir);
   const fixedFiles = [];
-  
+
   for (const file of files) {
     try {
       const content = await fs.readFile(file, 'utf-8');
       const issues = analyzeContrastInFile(file, content);
-      
+
       if (issues.length > 0) {
         const fixedContent = applyContrastFixes(content, issues);
-        
+
         if (autoFix) {
           await fs.writeFile(file, fixedContent);
           fixedFiles.push(file);
@@ -80,7 +79,7 @@ async function fixContrast(options = {}) {
       console.log(`❌ Error processing ${file}`);
     }
   }
-  
+
   if (autoFix && fixedFiles.length > 0) {
     console.log(`✅ Fixed contrast issues in ${fixedFiles.length} files`);
   }
@@ -88,12 +87,12 @@ async function fixContrast(options = {}) {
 
 async function checkAccessibility(options = {}) {
   const { targetDir = 'apps/dashboard/src' } = options;
-  
+
   console.log('♿ Checking accessibility compliance...');
-  
+
   const files = await findTSXFiles(targetDir);
   const allIssues = [];
-  
+
   for (const file of files) {
     try {
       const content = await fs.readFile(file, 'utf-8');
@@ -103,31 +102,31 @@ async function checkAccessibility(options = {}) {
       console.log(`❌ Error checking ${file}`);
     }
   }
-  
+
   displayAccessibilityResults(allIssues);
 }
 
 async function auditFull(options = {}) {
   console.log('🔍 Running comprehensive UI audit...\n');
-  
+
   await checkContrast(options);
   console.log('');
   await checkAccessibility(options);
-  
+
   console.log('\n✅ Full UI audit completed');
 }
 
 function analyzeContrastInFile(file, content) {
   const issues = [];
   const lines = content.split('\n');
-  
+
   const contrastProblems = {
     'bg-neutral-900': ['text-neutral-700', 'text-neutral-600', 'text-neutral-500'],
     'bg-neutral-800': ['text-neutral-600', 'text-neutral-500'],
     'bg-blue-900': ['text-blue-700', 'text-blue-600'],
-    'bg-purple-900': ['text-purple-700', 'text-purple-600']
+    'bg-purple-900': ['text-purple-700', 'text-purple-600'],
   };
-  
+
   lines.forEach((line, index) => {
     Object.entries(contrastProblems).forEach(([bg, problematicTexts]) => {
       if (line.includes(bg)) {
@@ -140,21 +139,21 @@ function analyzeContrastInFile(file, content) {
               description: `Poor contrast: ${text} on ${bg}`,
               severity: 'high',
               current: `${bg} ${text}`,
-              suggested: `${bg} ${getContrastFix(bg, text)}`
+              suggested: `${bg} ${getContrastFix(bg, text)}`,
             });
           }
         });
       }
     });
   });
-  
+
   return issues;
 }
 
 function analyzeAccessibilityInFile(file, content) {
   const issues = [];
   const lines = content.split('\n');
-  
+
   lines.forEach((line, index) => {
     // Missing alt attributes
     if (line.includes('<img') && !line.includes('alt=')) {
@@ -163,10 +162,10 @@ function analyzeAccessibilityInFile(file, content) {
         line: index + 1,
         type: 'accessibility',
         description: 'Image missing alt attribute',
-        severity: 'high'
+        severity: 'high',
       });
     }
-    
+
     // Buttons without labels
     if (line.includes('<button') && !line.includes('aria-label') && !line.includes('>')) {
       issues.push({
@@ -174,10 +173,10 @@ function analyzeAccessibilityInFile(file, content) {
         line: index + 1,
         type: 'accessibility',
         description: 'Button may need aria-label',
-        severity: 'medium'
+        severity: 'medium',
       });
     }
-    
+
     // Form inputs without labels
     if (line.includes('<input') && !line.includes('aria-label') && !line.includes('placeholder')) {
       issues.push({
@@ -185,23 +184,23 @@ function analyzeAccessibilityInFile(file, content) {
         line: index + 1,
         type: 'accessibility',
         description: 'Input needs label or placeholder',
-        severity: 'medium'
+        severity: 'medium',
       });
     }
   });
-  
+
   return issues;
 }
 
 function applyContrastFixes(content, issues) {
   let fixedContent = content;
-  
+
   issues.forEach(issue => {
     if (issue.type === 'contrast' && issue.current && issue.suggested) {
       fixedContent = fixedContent.replace(issue.current, issue.suggested);
     }
   });
-  
+
   return fixedContent;
 }
 
@@ -210,9 +209,9 @@ function displayContrastResults(issues) {
     console.log('✅ No contrast issues found');
     return;
   }
-  
+
   console.log(`⚠️  Found ${issues.length} contrast issues:\n`);
-  
+
   issues.forEach(issue => {
     console.log(`● ${issue.file}:${issue.line}`);
     console.log(`  ${issue.description}`);
@@ -226,9 +225,9 @@ function displayAccessibilityResults(issues) {
     console.log('✅ No accessibility issues found');
     return;
   }
-  
+
   console.log(`⚠️  Found ${issues.length} accessibility issues:\n`);
-  
+
   issues.forEach(issue => {
     console.log(`● ${issue.file}:${issue.line}`);
     console.log(`  ${issue.description}\n`);
@@ -237,13 +236,13 @@ function displayAccessibilityResults(issues) {
 
 async function findTSXFiles(dir) {
   const files = [];
-  
+
   try {
     const entries = await fs.readdir(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
-      
+
       if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
         const subFiles = await findTSXFiles(fullPath);
         files.push(...subFiles);
@@ -254,7 +253,7 @@ async function findTSXFiles(dir) {
   } catch {
     // Directory might not exist, skip silently
   }
-  
+
   return files;
 }
 
@@ -263,22 +262,22 @@ function getContrastFix(bg, text) {
     'bg-neutral-900': {
       'text-neutral-700': 'text-neutral-100',
       'text-neutral-600': 'text-neutral-100',
-      'text-neutral-500': 'text-neutral-200'
+      'text-neutral-500': 'text-neutral-200',
     },
     'bg-neutral-800': {
       'text-neutral-600': 'text-neutral-100',
-      'text-neutral-500': 'text-neutral-200'
+      'text-neutral-500': 'text-neutral-200',
     },
     'bg-blue-900': {
       'text-blue-700': 'text-blue-100',
-      'text-blue-600': 'text-blue-100'
+      'text-blue-600': 'text-blue-100',
     },
     'bg-purple-900': {
       'text-purple-700': 'text-purple-100',
-      'text-purple-600': 'text-purple-100'
-    }
+      'text-purple-600': 'text-purple-100',
+    },
   };
-  
+
   return fixes[bg]?.[text] || text;
 }
 
@@ -286,11 +285,11 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const command = args[0] || 'help';
   const options = {};
-  
+
   for (let i = 1; i < args.length; i += 2) {
     const flag = args[i];
     const value = args[i + 1];
-    
+
     switch (flag) {
       case '--target-dir':
         options.targetDir = value;
@@ -301,13 +300,13 @@ function parseArgs() {
         break;
     }
   }
-  
+
   return { command, options };
 }
 
 async function main() {
   const { command, options } = parseArgs();
-  
+
   switch (command) {
     case 'check-contrast':
       await checkContrast(options);

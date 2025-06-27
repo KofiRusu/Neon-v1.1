@@ -255,3 +255,69 @@ export interface ROIAnalysis {
     nextQuarter: number;
   };
 }
+
+// Core agent type definitions
+
+export interface AgentMetadata {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  capabilities: string[];
+  status: 'active' | 'inactive' | 'error';
+  lastExecuted?: Date;
+  totalExecutions: number;
+  averageExecutionTime: number;
+}
+
+export interface AgentHealth {
+  agentId: string;
+  status: 'healthy' | 'warning' | 'critical';
+  uptime: number;
+  successRate: number;
+  errorRate: number;
+  lastHealthCheck: Date;
+  metrics: {
+    cpuUsage: number;
+    memoryUsage: number;
+    responseTime: number;
+  };
+}
+
+export interface ExecutionLog {
+  id: string;
+  agentId: string;
+  command: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  startTime: Date;
+  endTime?: Date;
+  duration?: number;
+  input: Record<string, unknown>;
+  output?: Record<string, unknown>;
+  error?: string;
+}
+
+export interface AgentExecutionResult {
+  success: boolean;
+  result?: unknown;
+  error?: string;
+  metadata?: {
+    executionTime: number;
+    parameters?: Record<string, unknown>;
+  };
+}
+
+export interface AgentCapability {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+}
+
+export interface AgentConfiguration {
+  id: string;
+  name: string;
+  type: string;
+  enabled: boolean;
+  config: Record<string, unknown>;
+  capabilities: AgentCapability[];
+}

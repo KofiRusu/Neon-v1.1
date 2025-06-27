@@ -96,4 +96,4 @@
     ],
     "cli_setup": "Use GitHub CLI: gh api repos/:owner/:repo/branches/main/protection -X PUT --input branch-protection.json"
   }
-} 
+}
