@@ -2,7 +2,8 @@ import OpenAI from 'openai';
 import { AbstractAgent } from '../base-agent';
 import type { AgentPayload, AgentResult } from '../base-agent';
 import type { AgentContext, ContentResult } from '../types';
-import { logger } from '@neon/utils';
+import { logger, BudgetTracker } from '@neon/utils';
+import { AgentType } from '@prisma/client';
 
 // Define local interfaces for content generation
 export interface ContentGenerationParams {
@@ -40,6 +41,7 @@ export interface ContentGenerationResult extends AgentResult {
   hashtags?: string[] | undefined;
   readingTime?: number;
   seoScore?: number | undefined;
+  tokensUsed?: number;
 }
 
 export class ContentAgent extends AbstractAgent {
@@ -75,23 +77,36 @@ export class ContentAgent extends AbstractAgent {
         throw new Error('Missing required context: topic, type, and audience are required');
       }
 
+      // Check budget before execution
+      const budgetStatus = await BudgetTracker.checkBudgetStatus();
+      if (!budgetStatus.canExecute) {
+        throw new Error(
+          `Budget exceeded. Current utilization: ${budgetStatus.utilizationPercentage.toFixed(1)}%`
+        );
+      }
+
       // Generate content based on type
-      const result = await this.generateContent(context);
+      const result = await this.generateContent(context, payload.context?.campaignId);
 
       return result;
     });
   }
 
   private async generateContent(
-    context: ContentGenerationContext
+    context: ContentGenerationContext,
+    campaignId?: string
   ): Promise<ContentGenerationResult> {
     // Try OpenAI first, fallback to template-based if unavailable
     let content: string;
+    let tokensUsed = 0;
 
     if (this.openai && process.env.OPENAI_API_KEY) {
-      content = await this.generateAIContent(context);
+      const result = await this.generateAIContent(context, campaignId);
+      content = result.content;
+      tokensUsed = result.tokensUsed;
     } else {
       content = await this.createContentTemplate(context);
+      tokensUsed = 50; // Estimate for template-based generation
     }
 
     const hashtags = context.type === 'social_post' ? this.generateHashtags(context) : undefined;
@@ -100,6 +115,23 @@ export class ContentAgent extends AbstractAgent {
       ? this.calculateSEOScore(content, context.keywords)
       : undefined;
 
+    // Track cost for content generation
+    await BudgetTracker.trackCost({
+      agentType: AgentType.CONTENT,
+      campaignId,
+      tokens: tokensUsed,
+      task: `generate_${context.type}`,
+      metadata: {
+        topic: context.topic,
+        audience: context.audience,
+        tone: context.tone,
+        platform: context.platform,
+        contentLength: content.length,
+      },
+      conversionAchieved: true,
+      qualityScore: seoScore ? seoScore / 100 : 0.8,
+    });
+
     return {
       content,
       suggestedTitle: this.generateTitle(context),
@@ -107,12 +139,17 @@ export class ContentAgent extends AbstractAgent {
       readingTime,
       seoScore,
       success: true,
+      tokensUsed,
     };
   }
 
-  private async generateAIContent(context: ContentGenerationContext): Promise<string> {
+  private async generateAIContent(
+    context: ContentGenerationContext,
+    campaignId?: string
+  ): Promise<{ content: string; tokensUsed: number }> {
     try {
       const prompt = this.buildContentPrompt(context);
+      const maxTokens = this.getMaxTokensForType(context.type);
 
       const response = await this.openai.chat.completions.create({
         model: 'gpt-4',
@@ -128,7 +165,7 @@ export class ContentAgent extends AbstractAgent {
           },
         ],
         temperature: 0.7,
-        max_tokens: this.getMaxTokensForType(context.type),
+        max_tokens: maxTokens,
       });
 
       const aiContent = response.choices[0]?.message?.content;
@@ -136,14 +173,38 @@ export class ContentAgent extends AbstractAgent {
         throw new Error('No response from OpenAI');
       }
 
-      return aiContent;
+      // Get actual token usage from OpenAI response
+      const tokensUsed = response.usage?.total_tokens || maxTokens;
+
+      return {
+        content: aiContent,
+        tokensUsed,
+      };
     } catch (error) {
       logger.error(
         'OpenAI content generation failed, using template fallback',
         { error },
         'ContentAgent'
       );
-      return await this.createContentTemplate(context);
+
+      // Track failed AI call
+      await BudgetTracker.trackCost({
+        agentType: AgentType.CONTENT,
+        campaignId,
+        tokens: 100, // Estimate for failed call
+        task: `generate_${context.type}_failed`,
+        metadata: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          fallback: true,
+        },
+        conversionAchieved: false,
+        qualityScore: 0,
+      });
+
+      return {
+        content: await this.createContentTemplate(context),
+        tokensUsed: 50, // Estimate for template generation
+      };
     }
   }
 

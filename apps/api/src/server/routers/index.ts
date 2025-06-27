@@ -18,6 +18,7 @@ import { executiveRouter } from './executive';
 import { copilotRouter } from './copilot';
 import { boardroomRouter } from './boardroom';
 import { billingRouter } from './billing';
+import { launchIntelligenceRouter } from './launch-intelligence';
 import { z } from 'zod';
 
 // Import enhanced routers from /routers directory
@@ -58,6 +59,7 @@ export const appRouter = createTRPCRouter({
   copilot: copilotRouter,
   boardroom: boardroomRouter,
   billing: billingRouter,
+  launchIntelligence: launchIntelligenceRouter,
 });
 
 // export type definition of API

@@ -670,7 +670,7 @@ export class UIRefinementAgent extends AbstractAgent {
         filesModified: result.filesModified.length,
       };
 
-      await fs.appendFile(this.logPath, `${JSON.stringify(logEntry)  }\n`);
+      await fs.appendFile(this.logPath, `${JSON.stringify(logEntry)}\n`);
     } catch {
       // Ignore logging errors
       logger.info('UI refinement completed', { action, result });

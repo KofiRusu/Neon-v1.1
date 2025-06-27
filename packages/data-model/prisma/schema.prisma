@@ -91,6 +91,21 @@ model Campaign {
   billingLogs     BillingLog[]
   campaignCost    CampaignCost?
 
+  // New relations for launch intelligence
+  executionMetrics   CampaignExecutionMetric[]
+  sentimentAnalysis  SentimentAnalysis[]
+  leadQualityMetrics LeadQualityMetric[]
+  budgetPacing       BudgetPacing[]
+  launchAlerts       LaunchAlert[]
+  budgetOptimizations BudgetOptimization[]
+  
+  // Launch configuration
+  launchDate         DateTime?
+  targetRegion       String?  @default("UAE")
+  targetLanguages    String[] @default(["ar", "en"])
+  dailyBudgetPlan    Float?
+  roiTarget          Float?   @default(2.0)
+
   @@map("campaigns")
 }
 
@@ -166,6 +181,9 @@ model B2BLead {
   // Relations
   campaigns       Campaign[]
   outreachHistory OutreachHistory[]
+
+  // New relations
+  qualityMetrics     LeadQualityMetric[]
 
   @@map("b2b_leads")
 }
@@ -1233,4 +1251,175 @@ model MonthlyBudget {
   updatedAt    DateTime @updatedAt
   
   @@map("monthly_budgets")
+}
+
+// Launch Intelligence & Campaign Monitoring Models
+
+model CampaignExecutionMetric {
+  id           String   @id @default(cuid())
+  campaignId   String
+  agentType    AgentType
+  executionCount Int    @default(0)
+  successCount Int      @default(0)
+  failureCount Int      @default(0)
+  avgExecutionTime Float @default(0.0) // milliseconds
+  totalCost    Float    @default(0.0)
+  date         DateTime @default(now())
+  hour         Int      // 0-23 for hourly tracking
+  region       String?  @default("UAE")
+  
+  // Relations
+  campaign     Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  @@unique([campaignId, agentType, date, hour])
+  @@index([campaignId, date])
+  @@index([region, date])
+  @@map("campaign_execution_metrics")
+}
+
+model SentimentAnalysis {
+  id           String   @id @default(cuid())
+  campaignId   String?
+  platform     Platform
+  language     String   // "ar", "en", "ar-AE"
+  text         String   @db.Text
+  sentiment    String   // "positive", "negative", "neutral"
+  score        Float    // -1.0 to 1.0
+  confidence   Float    // 0.0 to 1.0
+  region       String   @default("UAE")
+  source       String   // "social_mention", "review", "comment", "whatsapp"
+  metadata     Json?    // Additional context like post ID, user info
+  
+  // Relations
+  campaign     Campaign? @relation(fields: [campaignId], references: [id])
+  
+  createdAt    DateTime @default(now())
+  
+  @@index([campaignId, language, createdAt])
+  @@index([region, language, sentiment])
+  @@index([platform, createdAt])
+  @@map("sentiment_analysis")
+}
+
+model LeadQualityMetric {
+  id           String   @id @default(cuid())
+  campaignId   String
+  leadId       String?
+  source       String   // "whatsapp", "website", "social", "ad"
+  stage        String   // "inquiry", "qualified", "demo", "proposal", "closed"
+  score        Float    // 0-100 lead quality score
+  value        Float?   // Potential deal value
+  responseTime Int?     // Minutes to first response
+  conversionTime Int?   // Hours from lead to conversion
+  region       String   @default("UAE")
+  language     String   @default("ar")
+  
+  // WhatsApp specific fields
+  whatsappNumber String?
+  messageCount Int?     @default(0)
+  lastActivity DateTime?
+  
+  // Relations
+  campaign     Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  lead         B2BLead? @relation(fields: [leadId], references: [id])
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([campaignId, stage, createdAt])
+  @@index([source, region])
+  @@index([score])
+  @@map("lead_quality_metrics")
+}
+
+model BudgetPacing {
+  id           String   @id @default(cuid())
+  campaignId   String
+  plannedDaily Float    // Planned daily spend
+  actualSpend  Float    // Actual spend for the day
+  date         DateTime
+  dayOfCampaign Int     // Day 1, 2, 3... of campaign
+  variance     Float    // Actual vs planned (%)
+  cumulativeSpend Float // Total spend to date
+  cumulativePlan Float  // Total planned spend to date
+  projectedTotal Float? // Forecasted total spend
+  
+  // Performance metrics
+  impressions  Int?     @default(0)
+  clicks       Int?     @default(0)
+  conversions  Int?     @default(0)
+  revenue      Float?   @default(0.0)
+  roi          Float?   @default(0.0)
+  
+  // Relations
+  campaign     Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  @@unique([campaignId, date])
+  @@index([campaignId, dayOfCampaign])
+  @@map("budget_pacing")
+}
+
+model LaunchAlert {
+  id           String   @id @default(cuid())
+  campaignId   String?
+  alertType    String   // "budget_pacing", "roi_drop", "sentiment_negative", "execution_failure"
+  severity     String   // "info", "warning", "critical"
+  title        String
+  message      String   @db.Text
+  threshold    Float?   // The threshold that triggered this alert
+  currentValue Float?   // Current metric value
+  region       String   @default("UAE")
+  
+  // Alert status
+  isRead       Boolean  @default(false)
+  isResolved   Boolean  @default(false)
+  resolvedAt   DateTime?
+  resolvedBy   String?
+  
+  // Actions taken
+  autoAction   String?  // "budget_reallocation", "pause_campaign", "escalate"
+  actionResult Json?    // Result of auto-action
+  
+  // Relations
+  campaign     Campaign? @relation(fields: [campaignId], references: [id])
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([campaignId, severity, createdAt])
+  @@index([alertType, isResolved])
+  @@index([region, createdAt])
+  @@map("launch_alerts")
+}
+
+model BudgetOptimization {
+  id                  String   @id @default(cuid())
+  campaignId          String
+  recommendationType  String   // "increase_budget", "decrease_budget", "reallocate", "pause", "scale"
+  currentBudget       Float
+  recommendedBudget   Float
+  reasoning           String   @db.Text
+  confidence          Float    // 0-1 confidence in recommendation
+  expectedImprovement Float?   // Expected ROI/performance improvement
+  
+  // Supporting metrics
+  currentRoi          Float?
+  avgRoi              Float?   // Historical average
+  trendDirection      String?  // "up", "down", "stable"
+  competitorActivity  Float?   // Competitor spending index
+  
+  // Implementation status
+  status              String   @default("pending") // "pending", "applied", "rejected", "expired"
+  appliedAt           DateTime?
+  appliedBy           String?
+  
+  // Relations
+  campaign            Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime @default(now())
+  expiresAt           DateTime // Recommendations expire after 24-48 hours
+  
+  @@index([campaignId, status])
+  @@index([recommendationType, createdAt])
+  @@map("budget_optimizations")
 }

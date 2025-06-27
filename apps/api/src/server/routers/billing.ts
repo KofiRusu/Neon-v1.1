@@ -21,6 +21,9 @@ export const AGENT_COST_PER_1K_TOKENS = {
   SEGMENT_ANALYZER: 0.05,
 } as const;
 
+// Global budget override flag
+let BUDGET_OVERRIDE_ENABLED = false;
+
 export const billingRouter = createTRPCRouter({
   // Log agent execution cost
   logAgentCost: publicProcedure
@@ -222,7 +225,200 @@ export const billingRouter = createTRPCRouter({
       };
     }),
 
-  // Get monthly budget summary
+  // Get monthly spend summary (for admin dashboard)
+  getMonthlySpendSummary: publicProcedure
+    .input(
+      z.object({
+        month: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { month } = input;
+
+      // Get monthly budget
+      const monthlyBudget = await prisma.monthlyBudget.findUnique({
+        where: { month },
+      });
+
+      // Get all campaigns with costs this month
+      const campaignCosts = await prisma.campaignCost.findMany({
+        where: { currentMonth: month },
+        include: { campaign: true },
+        orderBy: { totalCost: 'desc' },
+      });
+
+      // Get billing logs for detailed breakdown
+      const billingLogs = await prisma.billingLog.findMany({
+        where: {
+          timestamp: {
+            gte: new Date(`${month}-01`),
+            lt: new Date(`${month}-31T23:59:59`),
+          },
+        },
+        include: { campaign: true },
+        orderBy: { timestamp: 'desc' },
+      });
+
+      // Prepare campaign breakdown with agent details
+      const campaignBreakdown = campaignCosts.map(campaignCost => {
+        const campaignLogs = billingLogs.filter(log => log.campaignId === campaignCost.campaignId);
+
+        // Group by agent type for this campaign
+        const agents = campaignLogs.reduce(
+          (acc, log) => {
+            const agentType = log.agentType;
+            if (!acc[agentType]) {
+              acc[agentType] = {
+                cost: 0,
+                tokens: 0,
+                executions: 0,
+              };
+            }
+            acc[agentType].cost += log.cost;
+            acc[agentType].tokens += log.tokens;
+            acc[agentType].executions++;
+            return acc;
+          },
+          {} as Record<string, { cost: number; tokens: number; executions: number }>
+        );
+
+        return {
+          id: campaignCost.campaignId,
+          name: campaignCost.campaign.name,
+          type: campaignCost.campaign.type,
+          cost: campaignCost.totalCost,
+          tokens: campaignLogs.reduce((sum, log) => sum + log.tokens, 0),
+          executions: campaignLogs.length,
+          agents,
+        };
+      });
+
+      const totalSpent = monthlyBudget?.totalSpent || 0;
+      const budgetAmount = monthlyBudget?.totalBudget || 1000;
+      const utilizationPercentage = (totalSpent / budgetAmount) * 100;
+      const remainingBudget = budgetAmount - totalSpent;
+      const isOverBudget = totalSpent > budgetAmount;
+      const isNearBudget = utilizationPercentage >= (monthlyBudget?.alertThreshold || 0.8) * 100;
+
+      return {
+        budgetAmount,
+        totalSpent,
+        utilizationPercentage,
+        remainingBudget,
+        isOverBudget,
+        isNearBudget,
+        totalExecutions: billingLogs.length,
+        campaignBreakdown,
+      };
+    }),
+
+  // Get all campaigns spend (for admin dashboard)
+  getAllCampaignsSpend: publicProcedure.input(z.object({})).query(async () => {
+    // Get all campaign costs
+    const campaignCosts = await prisma.campaignCost.findMany({
+      include: { campaign: true },
+      orderBy: { totalCost: 'desc' },
+    });
+
+    return campaignCosts.map(campaignCost => ({
+      id: campaignCost.campaignId,
+      name: campaignCost.campaign.name,
+      type: campaignCost.campaign.type,
+      totalCost: campaignCost.totalCost,
+      monthlyBudget: campaignCost.monthlyBudget,
+      currentMonth: campaignCost.currentMonth,
+      lastUpdated: campaignCost.lastUpdated,
+    }));
+  }),
+
+  // Set monthly budget cap (for admin dashboard)
+  setMonthlyBudgetCap: publicProcedure
+    .input(
+      z.object({
+        month: z.string(),
+        amount: z.number().min(0),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { month, amount } = input;
+
+      const updatedBudget = await prisma.monthlyBudget.upsert({
+        where: { month },
+        update: {
+          totalBudget: amount,
+        },
+        create: {
+          month,
+          totalBudget: amount,
+          totalSpent: 0,
+        },
+      });
+
+      return updatedBudget;
+    }),
+
+  // Set budget override (for admin dashboard)
+  setBudgetOverride: publicProcedure
+    .input(
+      z.object({
+        enabled: z.boolean(),
+        month: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { enabled } = input;
+
+      // Set global override flag
+      BUDGET_OVERRIDE_ENABLED = enabled;
+
+      // Log this action for audit purposes
+      console.log(
+        `Budget override ${enabled ? 'ENABLED' : 'DISABLED'} at ${new Date().toISOString()}`
+      );
+
+      return { success: true, overrideEnabled: BUDGET_OVERRIDE_ENABLED };
+    }),
+
+  // Check if budget is exceeded (for agents to use before executing)
+  checkBudgetStatus: publicProcedure
+    .input(
+      z.object({
+        month: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { month } = input;
+      const currentMonth = month || new Date().toISOString().substring(0, 7);
+
+      const monthlyBudget = await prisma.monthlyBudget.findUnique({
+        where: { month: currentMonth },
+      });
+
+      if (!monthlyBudget) {
+        return {
+          canExecute: true,
+          isOverBudget: false,
+          overrideEnabled: BUDGET_OVERRIDE_ENABLED,
+          utilizationPercentage: 0,
+        };
+      }
+
+      const isOverBudget = monthlyBudget.totalSpent > monthlyBudget.totalBudget;
+      const utilizationPercentage = (monthlyBudget.totalSpent / monthlyBudget.totalBudget) * 100;
+      const canExecute = !isOverBudget || BUDGET_OVERRIDE_ENABLED;
+
+      return {
+        canExecute,
+        isOverBudget,
+        overrideEnabled: BUDGET_OVERRIDE_ENABLED,
+        utilizationPercentage,
+        totalSpent: monthlyBudget.totalSpent,
+        totalBudget: monthlyBudget.totalBudget,
+        remainingBudget: monthlyBudget.totalBudget - monthlyBudget.totalSpent,
+      };
+    }),
+
+  // Get monthly budget summary (legacy method)
   getMonthlySummary: publicProcedure
     .input(
       z.object({

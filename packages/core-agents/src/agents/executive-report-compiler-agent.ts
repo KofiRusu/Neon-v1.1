@@ -1,4 +1,4 @@
-import { BaseAgent } from '../BaseAgent';
+import { BaseAgent } from '../utils/BaseAgent';
 import { AgentResult, AgentType } from '../../types';
 import {
   ExecutiveInsight,

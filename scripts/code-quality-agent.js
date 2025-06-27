@@ -43,7 +43,7 @@ class CodeQualityAgent {
     console.log(logEntry);
 
     // Append to log file
-    fs.appendFileSync(this.logFile, `${logEntry  }\n`);
+    fs.appendFileSync(this.logFile, `${logEntry}\n`);
   }
 
   async runCommand(command, cwd = process.cwd()) {
@@ -252,7 +252,7 @@ class CodeQualityAgent {
       return content;
     }
 
-    lines[error.line - 1] = `${targetLine.trimEnd()  };`;
+    lines[error.line - 1] = `${targetLine.trimEnd()};`;
     return lines.join('\n');
   }
 

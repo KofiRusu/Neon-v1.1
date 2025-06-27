@@ -29,7 +29,7 @@ for (const file of files) {
     for (const result of data) {
       if (!result.messages || result.messages.length === 0) continue;
 
-      const rel = result.filePath ? result.filePath.replace(`${process.cwd()  }/`, '') : 'unknown';
+      const rel = result.filePath ? result.filePath.replace(`${process.cwd()}/`, '') : 'unknown';
       const count = result.messages.length;
 
       total += count;
@@ -118,7 +118,7 @@ for (const stat of moduleStats) {
   if (stat.topFiles.length > 0) {
     md += `**Most Problematic Files**:\n`;
     for (const [file, count] of stat.topFiles) {
-      const shortFile = file.length > 80 ? `...${  file.slice(-77)}` : file;
+      const shortFile = file.length > 80 ? `...${file.slice(-77)}` : file;
       md += `- \`${shortFile}\`: ${count} issues\n`;
     }
     md += `\n`;
