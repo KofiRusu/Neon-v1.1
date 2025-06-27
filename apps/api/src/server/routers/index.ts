@@ -17,6 +17,7 @@ import { coordinationRouter } from './coordination';
 import { executiveRouter } from './executive';
 import { copilotRouter } from './copilot';
 import { boardroomRouter } from './boardroom';
+import { billingRouter } from './billing';
 import { z } from 'zod';
 
 // Import enhanced routers from /routers directory
@@ -56,6 +57,7 @@ export const appRouter = createTRPCRouter({
   executive: executiveRouter,
   copilot: copilotRouter,
   boardroom: boardroomRouter,
+  billing: billingRouter,
 });
 
 // export type definition of API

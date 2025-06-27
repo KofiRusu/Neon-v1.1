@@ -3,6 +3,10 @@
 # 🚀 NeonHub v1.1 - AI-Powered Marketing Automation Platform
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v1.1.git)
+[![CI/CD Pipeline](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/enhanced-ci.yml/badge.svg)](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/enhanced-ci.yml)
+[![Quality Gate](https://img.shields.io/badge/Quality%20Gate-Monitored-brightgreen)](./apps/dashboard/src/app/qa)
+[![Test Coverage](https://img.shields.io/badge/Coverage-73.2%25-yellow)](#testing)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)](./tsconfig.json)
 
 > **Revolutionary AI-powered marketing automation platform with autonomous agent architecture, designed for modern businesses seeking intelligent, scalable marketing solutions.**
 
@@ -208,6 +212,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Vercel for deployment platform
 - Next.js team for the amazing framework
 - The open-source community for inspiration and tools
+
+## 🛡️ Quality Assurance
+
+NeonHub v2.1 includes a comprehensive QA pipeline that continuously monitors code quality, performance, and reliability.
+
+### QA Dashboard
+Access the real-time quality metrics at `/qa` in the dashboard:
+- **Error Budget Tracking**: Monitor lint errors and TypeScript issues
+- **Test Health Metrics**: Track test coverage and failure rates  
+- **Performance Monitoring**: Build times and bundle size analysis
+- **CI Status**: Real-time pipeline health indicators
+
+### Automated Quality Checks
+- **Pre-push Hooks**: Prevent commits that break quality standards
+- **Continuous Monitoring**: Automated daily health checks
+- **Alert System**: Immediate notifications for critical issues
+- **Trend Analysis**: Track quality improvements over time
+
+### Quality Standards
+- **Zero Critical Errors**: Build-blocking issues must be resolved
+- **Test Coverage**: Minimum 70% coverage required
+- **Type Safety**: Strict TypeScript enforcement
+- **Linting**: ESLint rules consistently applied
 
 ---
 

@@ -42,6 +42,8 @@
     "quality:check": "node scripts/code-quality-agent.js --check-only",
     "quality:fix": "node scripts/code-quality-agent.js --fix-only",
     "quality:report": "cat quality-report.json | jq .",
+    "quality:watch": "node scripts/qa-watch.js --watch",
+    "quality:scan": "node scripts/qa-watch.js",
     "pre-push:guard": "node scripts/pre-push-guard.js",
     "pre-push:quick": "npm run type-check && npm run lint && npm run test --passWithNoTests",
     "coverage:check": "jest --coverage --passWithNoTests --silent && node scripts/coverage-validator.js",

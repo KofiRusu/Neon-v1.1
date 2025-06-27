@@ -4,5 +4,20 @@
 echo "🛡️ NeonHub Pre-Push Guard - Zero Bug Policy"
 echo "============================================="
 
+# Run comprehensive quality checks
+echo "🔍 Running QA checks..."
+npm run quality:scan
+
 # Run enhanced pre-push validation with coverage enforcement
 node scripts/pre-push-guard.js
+
+# Run quick lint and type check
+echo "⚡ Running quick validation..."
+npm run lint --workspaces --if-present
+npm run type-check --workspaces --if-present
+
+# Check test coverage
+echo "🧪 Checking test coverage..."
+npm run test:coverage:ci
+
+echo "✅ Pre-push validation complete"
