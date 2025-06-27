@@ -4,6 +4,7 @@
   "description": "Shared utility functions",
   "main": "src/index.ts",
   "scripts": {
+    "dev": "tsc --watch",
     "build": "tsc",
     "clean": "rm -rf dist",
     "test": "jest",

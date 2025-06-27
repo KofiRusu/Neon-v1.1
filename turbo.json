@@ -1,45 +1,47 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "pipeline": {
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "NEXTAUTH_SECRET",
+    "OPENAI_API_KEY"
+  ],
+  "globalDependencies": ["tsconfig.json", ".env*"],
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "lint": {
-      "outputs": []
-    },
-    "type-check": {
-      "dependsOn": ["^type-check"],
-      "outputs": []
+      "env": ["DATABASE_URL", "NEXTAUTH_SECRET", "NEXT_PUBLIC_*"],
+      "outputs": [".next/**", "dist/**", ".vercel/output/**", "!.next/cache/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "start": {
-      "cache": false,
-      "persistent": true
+    "lint": { "outputs": [] },
+    "test": { "outputs": [] },
+    "test:coverage": {
+      "outputs": ["coverage/**"],
+      "dependsOn": ["^build"]
     },
-    "test": {
+    "typecheck": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
-    },
-    "test:watch": {
-      "cache": false,
-      "persistent": true
+      "outputs": []
     },
     "clean": {
       "cache": false
     },
     "db:generate": {
+      "cache": false,
+      "outputs": ["node_modules/@prisma/client/**"]
+    },
+    "db:push": {
       "cache": false
     },
     "db:migrate": {
       "cache": false
-    },
-    "db:push": {
-      "cache": false
     }
+  },
+  "remoteCache": {
+    "enabled": true
   }
 }

@@ -1,86 +1,30 @@
 {
   "version": 2,
-  "monorepo": true,
-  "builds": [
+  "projects": [
     {
-      "src": "apps/dashboard/package.json",
-      "use": "@vercel/next",
-      "config": {
-        "distDir": ".next"
-      }
+      "rootDirectory": "apps/dashboard",
+      "buildCommand": "npm install && npx turbo run build --filter=@neonhub/dashboard",
+      "outputDirectory": "apps/dashboard/.next"
     },
     {
-      "src": "apps/api/package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["src/**", "prisma/**", "package.json", "tsconfig.json"]
-      }
+      "rootDirectory": "apps/api",
+      "buildCommand": "npm install && npx turbo run build --filter=@neon/api",
+      "outputDirectory": "apps/api/.vercel/output"
     }
   ],
+  "env": {
+    "TURBO_TEAM": "@neonhub/platform",
+    "TURBO_TOKEN": "@vercel-turbo-token"
+  },
+  "regions": ["iad1"],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "apps/api/src/app/api/$1"
+      "dest": "apps/api/$1"
     },
     {
       "src": "/(.*)",
       "dest": "apps/dashboard/$1"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "NEXT_PUBLIC_API_URL": "@api_url",
-    "DATABASE_URL": "@database_url",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "NEXTAUTH_URL": "@nextauth_url",
-    "OPENAI_API_KEY": "@openai_api_key",
-    "TWILIO_ACCOUNT_SID": "@twilio_sid",
-    "TWILIO_AUTH_TOKEN": "@twilio_auth",
-    "TWILIO_WHATSAPP_NUMBER": "@twilio_whatsapp",
-    "SENDGRID_API_KEY": "@sendgrid_key",
-    "SENDGRID_FROM_EMAIL": "@sendgrid_from",
-    "FACEBOOK_APP_ID": "@facebook_app_id",
-    "FACEBOOK_APP_SECRET": "@facebook_secret",
-    "FB_ACCESS_TOKEN": "@facebook_token",
-    "REDIS_URL": "@redis_url",
-    "ENCRYPTION_KEY": "@encryption_key",
-    "WEBHOOK_SECRET": "@webhook_secret"
-  },
-  "functions": {
-    "apps/api/src/app/api/**": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    }
-  },
-  "redirects": [
-    {
-      "source": "/health",
-      "destination": "/api/health",
-      "permanent": false
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ],
-  "installCommand": "npm install",
-  "buildCommand": "npm run build",
-  "outputDirectory": "apps/dashboard/.next",
-  "framework": "nextjs",
-  "regions": ["iad1"]
+  ]
 }

@@ -1,8 +1,8 @@
 <!-- AUTO-GENERATED DOCS: 2025-06-20T23:48:34.742Z -->
 
-# 🚀 NeonHub v1.1 - AI-Powered Marketing Automation Platform
+# 🚀 NeonHub v2.2 - AI-Powered Marketing Automation Platform
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v1.1.git)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v2.2.git)
 [![CI/CD Pipeline](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/enhanced-ci.yml/badge.svg)](https://github.com/KofiRusu/Neon-v0.2/actions/workflows/enhanced-ci.yml)
 [![Quality Gate](https://img.shields.io/badge/Quality%20Gate-Monitored-brightgreen)](./apps/dashboard/src/app/qa)
 [![Test Coverage](https://img.shields.io/badge/Coverage-73.2%25-yellow)](#testing)
@@ -59,8 +59,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/KofiRusu/Neon-v1.1.git
-cd Neon-v1.1
+git clone https://github.com/KofiRusu/Neon-v2.2.git
+cd Neon-v2.2
 
 # Install dependencies
 npm install
@@ -78,6 +78,101 @@ npm run dev
 ```
 
 Visit `http://localhost:3000` to see the application.
+
+## 🚀 NeonHub v2.2 - Turborepo + Vercel Deployment
+
+**New in v2.2**: Enhanced monorepo setup with Turborepo for optimized builds and Vercel for seamless deployment.
+
+### ⚡ Turborepo Features
+
+- **Build Pipeline Optimization**: Intelligent caching and parallel builds
+- **8 Packages Detected**: All workspace packages properly configured
+- **Dependency Mapping**: Automatic dependency resolution and build ordering
+- **Remote Caching**: Shared cache across team members and CI/CD
+
+### 🎯 Quick Deploy (v2.2)
+
+#### Option 1: Automated Setup (Recommended)
+```bash
+# Run the complete automation script
+./automated-turbo-vercel-setup.sh
+
+# Or use the interactive deployment script
+./deploy-turborepo.sh
+```
+
+#### Option 2: Manual Setup
+```bash
+# 1. Install Turborepo and Vercel CLI
+npm install -g turbo@2.5.4 vercel@44.2.7
+
+# 2. Authentication
+turbo login  # Optional for caching
+vercel login
+
+# 3. Link Vercel projects
+vercel link --root apps/dashboard
+vercel link --root apps/api
+
+# 4. Set environment variables
+vercel env add DATABASE_URL
+vercel env add NEXTAUTH_SECRET
+vercel env add OPENAI_API_KEY
+
+# 5. Deploy to production
+vercel --prod
+```
+
+### 🏗️ Development Workflow (v2.2)
+
+```bash
+# Start all development servers
+npm run dev
+
+# Build all packages
+npm run build
+
+# Build specific packages
+npm run build:dashboard
+npm run build:api
+
+# Run tests across all packages
+npm run test
+
+# Lint all packages
+npm run lint
+
+# Type check all packages
+npm run typecheck
+```
+
+### 📦 Package Structure (v2.2)
+
+```
+Packages in Scope: 8/8 ✅
+├── @neon/api              → apps/api
+├── @neonhub/dashboard     → apps/dashboard  
+├── @neon/core-agents      → packages/core-agents
+├── @neon/data-model       → packages/data-model
+├── @neon/reasoning-engine → packages/reasoning-engine
+├── @neon/types            → packages/types
+├── @neon/ui               → packages/ui
+└── @neon/utils            → packages/utils
+```
+
+### 🔧 Build Pipeline (v2.2)
+
+```bash
+# Dry run to see build order
+npx turbo run build --dry-run
+
+# Specific package builds
+npx turbo run build --filter=@neonhub/dashboard
+npx turbo run build --filter=@neon/api
+
+# Parallel development
+npx turbo run dev --parallel
+```
 
 ## 🏗️ Architecture
 
@@ -278,4 +373,4 @@ Access the real-time quality metrics at `/qa` in the dashboard:
 
 **Built with ❤️ by KofiRusu**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v1.1.git)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KofiRusu/Neon-v2.2.git)
