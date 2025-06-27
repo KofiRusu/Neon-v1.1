@@ -1,549 +1,565 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { api } from '@/utils/trpc';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+// Table component - will be added separately or create inline
+interface TableProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+const Table = ({ children, className }: TableProps) => (
+  <div className={`w-full ${className}`}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">{children}</table>
+    </div>
+  </div>
+);
+
+const TableHeader = ({ children }: { children: React.ReactNode }) => (
+  <thead className="bg-slate-800/50">{children}</thead>
+);
+
+const TableBody = ({ children }: { children: React.ReactNode }) => <tbody>{children}</tbody>;
+
+const TableRow = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <tr className={`border-b ${className}`}>{children}</tr>
+);
+
+const TableHead = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <th className={`px-4 py-3 text-left font-medium ${className}`}>{children}</th>
+);
+
+const TableCell = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <td className={`px-4 py-3 ${className}`}>{children}</td>
+);
 import {
-  TrendingUp,
-  TrendingDown,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+import {
   DollarSign,
+  TrendingUp,
   AlertTriangle,
   Activity,
   Calendar,
-  RefreshCw,
-  BarChart3,
+  Settings,
+  Target,
   Zap,
-  Bot,
 } from 'lucide-react';
 
-// Mock data interfaces (in real app, these would come from tRPC)
-interface MonthlyBudgetData {
-  month: string;
-  totalBudget: number;
-  totalSpent: number;
-  alertThreshold: number;
-  isAlertSent: boolean;
-  budgetUtilization: number;
-  isOverBudget: boolean;
-  isNearBudget: boolean;
-  projectedSpend: number;
-}
-
-interface AgentCostSummary {
-  agentType: string;
-  totalCost: number;
-  totalTokens: number;
-  executions: number;
-  campaignCount: number;
-  averageCostPerExecution: number;
-}
-
-interface CampaignCost {
-  id: string;
-  campaignId: string;
-  totalCost: number;
-  monthlyBudget?: number;
-  campaign: {
-    name: string;
-    type: string;
-    status: string;
-  };
-}
-
-interface BillingLog {
-  id: string;
-  agentType: string;
-  cost: number;
-  tokens: number;
-  task?: string;
-  timestamp: string;
-  campaign?: {
-    name: string;
-  };
-}
-
-const AGENT_COST_CONSTANTS = {
-  CONTENT: 0.04,
-  SEO: 0.03,
-  EMAIL_MARKETING: 0.05,
-  SOCIAL_POSTING: 0.03,
-  CUSTOMER_SUPPORT: 0.04,
-  AD: 0.06,
-  OUTREACH: 0.04,
-  TREND: 0.03,
-  INSIGHT: 0.05,
-  DESIGN: 0.07,
-  BRAND_VOICE: 0.04,
-  GOAL_PLANNER: 0.05,
-  PATTERN_MINER: 0.04,
-  SEGMENT_ANALYZER: 0.05,
-};
+const COLORS = ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#6366F1'];
 
 export default function AdminBudgetPage() {
-  const [monthlyData, setMonthlyData] = useState<MonthlyBudgetData | null>(null);
-  const [agentCosts, setAgentCosts] = useState<AgentCostSummary[]>([]);
-  const [campaignCosts, setCampaignCosts] = useState<CampaignCost[]>([]);
-  const [recentTransactions, setRecentTransactions] = useState<BillingLog[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().substring(0, 7));
-  const [newBudget, setNewBudget] = useState<number[]>([1000]);
-  const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    return new Date().toISOString().slice(0, 7); // YYYY-MM format
+  });
+  const [budgetAmount, setBudgetAmount] = useState<string>('1000');
+  const [budgetOverride, setBudgetOverride] = useState<boolean>(false);
 
-  // Mock data loading - in real app, this would use tRPC
-  useEffect(() => {
-    loadBudgetData();
-  }, [selectedMonth]);
-
-  const loadBudgetData = async () => {
-    setLoading(true);
-
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Mock monthly budget data
-    const mockSpent = Math.random() * 800 + 200; // $200-$1000
-    const mockBudget = 1000;
-    const mockProjected = mockSpent * 1.2;
-
-    setMonthlyData({
+  // tRPC queries
+  const { data: monthlyData, refetch: refetchMonthly } =
+    api.billing.getMonthlySpendSummary.useQuery({
       month: selectedMonth,
-      totalBudget: mockBudget,
-      totalSpent: mockSpent,
-      alertThreshold: 0.8,
-      isAlertSent: false,
-      budgetUtilization: (mockSpent / mockBudget) * 100,
-      isOverBudget: mockSpent > mockBudget,
-      isNearBudget: mockSpent / mockBudget >= 0.8,
-      projectedSpend: mockProjected,
     });
 
-    // Mock agent costs
-    const mockAgentCosts: AgentCostSummary[] = Object.entries(AGENT_COST_CONSTANTS)
-      .map(([agentType, rate]) => ({
-        agentType,
-        totalCost: Math.random() * 100 + 10,
-        totalTokens: Math.floor(Math.random() * 50000 + 5000),
-        executions: Math.floor(Math.random() * 50 + 5),
-        campaignCount: Math.floor(Math.random() * 5 + 1),
-        averageCostPerExecution: 0,
-      }))
-      .map(agent => ({
-        ...agent,
-        averageCostPerExecution: agent.totalCost / agent.executions,
-      }));
+  const { data: campaignsData } = api.billing.getAllCampaignsSpend.useQuery({});
 
-    setAgentCosts(mockAgentCosts.sort((a, b) => b.totalCost - a.totalCost));
+  // tRPC mutations
+  const setBudgetMutation = api.billing.setMonthlyBudgetCap.useMutation({
+    onSuccess: () => {
+      refetchMonthly();
+    },
+  });
 
-    // Mock campaign costs
-    setCampaignCosts([
-      {
-        id: '1',
-        campaignId: 'camp1',
-        totalCost: 250.75,
-        monthlyBudget: 300,
-        campaign: { name: 'Holiday Social Campaign', type: 'SOCIAL_MEDIA', status: 'ACTIVE' },
-      },
-      {
-        id: '2',
-        campaignId: 'camp2',
-        totalCost: 180.5,
-        monthlyBudget: 200,
-        campaign: { name: 'Product Launch Ads', type: 'ADS', status: 'ACTIVE' },
-      },
-      {
-        id: '3',
-        campaignId: 'camp3',
-        totalCost: 95.25,
-        monthlyBudget: 150,
-        campaign: { name: 'Email Newsletter', type: 'EMAIL', status: 'COMPLETED' },
-      },
-    ]);
+  const setBudgetOverrideMutation = api.billing.setBudgetOverride.useMutation({
+    onSuccess: () => {
+      // Could add success notification here
+    },
+  });
 
-    // Mock recent transactions
-    setRecentTransactions([
-      {
-        id: '1',
-        agentType: 'CONTENT',
-        cost: 2.45,
-        tokens: 612,
-        task: 'Generate social media post',
-        timestamp: new Date(Date.now() - 30000).toISOString(),
-        campaign: { name: 'Holiday Social Campaign' },
-      },
-      {
-        id: '2',
-        agentType: 'AD',
-        cost: 3.6,
-        tokens: 600,
-        task: 'Optimize ad copy',
-        timestamp: new Date(Date.now() - 180000).toISOString(),
-        campaign: { name: 'Product Launch Ads' },
-      },
-      {
-        id: '3',
-        agentType: 'EMAIL_MARKETING',
-        cost: 1.85,
-        tokens: 370,
-        task: 'Create newsletter content',
-        timestamp: new Date(Date.now() - 600000).toISOString(),
-        campaign: { name: 'Email Newsletter' },
-      },
-    ]);
-
-    setLoading(false);
-  };
-
-  const updateBudget = async () => {
-    // Mock budget update - in real app, this would call tRPC mutation
-    if (monthlyData) {
-      setMonthlyData({
-        ...monthlyData,
-        totalBudget: newBudget[0],
-        budgetUtilization: (monthlyData.totalSpent / newBudget[0]) * 100,
-        isOverBudget: monthlyData.totalSpent > newBudget[0],
-        isNearBudget: monthlyData.totalSpent / newBudget[0] >= monthlyData.alertThreshold,
+  const handleSetBudget = async () => {
+    try {
+      await setBudgetMutation.mutateAsync({
+        month: selectedMonth,
+        amount: parseFloat(budgetAmount),
       });
+    } catch (error) {
+      console.error('Failed to set budget:', error);
     }
   };
 
-  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleString();
-
-  const getAgentIcon = (agentType: string) => {
-    switch (agentType) {
-      case 'CONTENT':
-        return <Bot className="w-4 h-4" />;
-      case 'AD':
-        return <Zap className="w-4 h-4" />;
-      case 'EMAIL_MARKETING':
-        return <Activity className="w-4 h-4" />;
-      default:
-        return <Bot className="w-4 h-4" />;
+  const handleBudgetOverrideToggle = async (enabled: boolean) => {
+    try {
+      setBudgetOverride(enabled);
+      await setBudgetOverrideMutation.mutateAsync({
+        enabled,
+        month: selectedMonth,
+      });
+    } catch (error) {
+      console.error('Failed to set budget override:', error);
+      // Revert the toggle state on error
+      setBudgetOverride(!enabled);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-400"></div>
-        </div>
-      </div>
-    );
-  }
+  // Prepare chart data
+  const campaignChartData =
+    monthlyData?.campaignBreakdown?.map((campaign: any, index: number) => ({
+      name: campaign.name,
+      cost: parseFloat(campaign.cost.toFixed(2)),
+      tokens: campaign.tokens,
+      color: COLORS[index % COLORS.length],
+    })) || [];
+
+  const agentUsageData = monthlyData?.campaignBreakdown?.reduce(
+    (acc: Record<string, any>, campaign: any) => {
+      Object.entries(campaign.agents).forEach(([agentType, data]: [string, any]) => {
+        if (!acc[agentType]) {
+          acc[agentType] = { name: agentType, cost: 0, executions: 0 };
+        }
+        acc[agentType].cost += data.cost;
+        acc[agentType].executions += data.executions;
+      });
+      return acc;
+    },
+    {} as Record<string, any>
+  );
+
+  const agentChartData = Object.values(agentUsageData || {});
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      {/* Header */}
-      <div className="mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Enterprise Budget Control
-            </h1>
-            <p className="text-slate-400 mt-2">Monitor and manage AI agent execution costs</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Enterprise Budget Dashboard</h1>
+            <p className="text-slate-400">Monitor AI agent spend and manage budget caps</p>
           </div>
           <div className="flex items-center gap-4">
-            <select
-              value={selectedMonth}
-              onChange={e => setSelectedMonth(e.target.value)}
-              className="bg-slate-800/50 border border-cyan-500/30 rounded-lg px-4 py-2 text-cyan-100 backdrop-blur-sm"
-            >
-              <option value="2024-01">January 2024</option>
-              <option value="2024-02">February 2024</option>
-              <option value="2024-03">March 2024</option>
-              <option value="2024-04">April 2024</option>
-              <option value="2024-05">May 2024</option>
-            </select>
-            <Button
-              onClick={loadBudgetData}
-              variant="outline"
-              className="border-cyan-500/50 text-cyan-100 hover:bg-cyan-500/10"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-slate-400" />
+              <Input
+                type="month"
+                value={selectedMonth}
+                onChange={e => setSelectedMonth(e.target.value)}
+                className="bg-slate-800 border-slate-700 text-white"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Budget Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-slate-800/50 border-cyan-500/30 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Total Budget</CardTitle>
-            <DollarSign className="h-4 w-4 text-cyan-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-cyan-100">
-              {formatCurrency(monthlyData?.totalBudget || 0)}
-            </div>
-            <p className="text-xs text-slate-400 mt-1">Monthly allocation</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Total Spent</CardTitle>
-            <TrendingUp className="h-4 w-4 text-purple-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-100">
-              {formatCurrency(monthlyData?.totalSpent || 0)}
-            </div>
-            <p className="text-xs text-slate-400 mt-1">
-              {monthlyData?.budgetUtilization.toFixed(1)}% of budget
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-amber-500/30 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Projected Spend</CardTitle>
-            <BarChart3 className="h-4 w-4 text-amber-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-100">
-              {formatCurrency(monthlyData?.projectedSpend || 0)}
-            </div>
-            <p className="text-xs text-slate-400 mt-1">End of month estimate</p>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={`bg-slate-800/50 backdrop-blur-sm ${
-            monthlyData?.isOverBudget
-              ? 'border-red-500/50'
-              : monthlyData?.isNearBudget
-                ? 'border-yellow-500/50'
-                : 'border-green-500/30'
-          }`}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Budget Status</CardTitle>
-            <AlertTriangle
-              className={`h-4 w-4 ${
-                monthlyData?.isOverBudget
-                  ? 'text-red-400'
-                  : monthlyData?.isNearBudget
-                    ? 'text-yellow-400'
-                    : 'text-green-400'
-              }`}
-            />
-          </CardHeader>
-          <CardContent>
-            <Badge
-              variant={
-                monthlyData?.isOverBudget
-                  ? 'destructive'
-                  : monthlyData?.isNearBudget
-                    ? 'default'
-                    : 'secondary'
-              }
-            >
-              {monthlyData?.isOverBudget
-                ? 'Over Budget'
-                : monthlyData?.isNearBudget
-                  ? 'Near Limit'
-                  : 'On Track'}
-            </Badge>
-            <p className="text-xs text-slate-400 mt-2">
-              Remaining:{' '}
-              {formatCurrency(
-                Math.max(0, (monthlyData?.totalBudget || 0) - (monthlyData?.totalSpent || 0))
-              )}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Budget Control Panel */}
-      <Card className="bg-slate-800/50 border-cyan-500/30 backdrop-blur-sm mb-8">
-        <CardHeader>
-          <CardTitle className="text-cyan-100">Monthly Budget Configuration</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div>
-              <label className="text-sm font-medium text-slate-300 mb-2 block">
-                Budget Limit: {formatCurrency(newBudget[0])}
-              </label>
-              <Slider
-                value={newBudget}
-                onValueChange={setNewBudget}
-                max={5000}
-                min={100}
-                step={50}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>$100</span>
-                <span>$5,000</span>
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-slate-200">Monthly Budget</CardTitle>
+              <Target className="h-4 w-4 text-blue-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                ${monthlyData?.budgetAmount?.toFixed(2) || '0.00'}
               </div>
-            </div>
-            <Button
-              onClick={updateBudget}
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
-            >
-              Update Budget
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+              <p className="text-xs text-slate-400 mt-1">Set for {selectedMonth}</p>
+            </CardContent>
+          </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Agent Cost Breakdown */}
-        <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-purple-100">Agent Cost Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {agentCosts.slice(0, 8).map((agent, index) => (
-                <div
-                  key={agent.agentType}
-                  className="flex items-center justify-between p-3 rounded-lg bg-slate-900/30"
-                >
-                  <div className="flex items-center gap-3">
-                    {getAgentIcon(agent.agentType)}
-                    <div>
-                      <p className="font-medium text-slate-200">
-                        {agent.agentType.replace('_', ' ')}
-                      </p>
-                      <p className="text-sm text-slate-400">{agent.executions} executions</p>
-                    </div>
+          <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-slate-200">Total Spent</CardTitle>
+              <DollarSign className="h-4 w-4 text-green-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                ${monthlyData?.totalSpent?.toFixed(2) || '0.00'}
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                {monthlyData?.utilizationPercentage?.toFixed(1) || '0'}% of budget
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-slate-200">Remaining Budget</CardTitle>
+              <TrendingUp className="h-4 w-4 text-purple-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                ${monthlyData?.remainingBudget?.toFixed(2) || '0.00'}
+              </div>
+              <p className="text-xs text-slate-400 mt-1">Available to spend</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-slate-200">Agent Executions</CardTitle>
+              <Activity className="h-4 w-4 text-cyan-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                {monthlyData?.totalExecutions || 0}
+              </div>
+              <p className="text-xs text-slate-400 mt-1">This month</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Budget Alerts */}
+        {monthlyData?.isNearBudget && (
+          <Alert className="bg-orange-900/20 border-orange-600">
+            <AlertTriangle className="h-4 w-4 text-orange-400" />
+            <AlertDescription className="text-orange-200">
+              {monthlyData.isOverBudget
+                ? `🔥 Budget exceeded! You've spent $${monthlyData.totalSpent.toFixed(2)} of your $${monthlyData.budgetAmount.toFixed(2)} budget.`
+                : `⚠️ Approaching budget limit! You've used ${monthlyData.utilizationPercentage.toFixed(1)}% of your monthly budget.`}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="bg-slate-800 border-slate-700">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="campaigns" className="data-[state=active]:bg-purple-600">
+              Campaigns
+            </TabsTrigger>
+            <TabsTrigger value="agents" className="data-[state=active]:bg-purple-600">
+              Agents
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
+              Settings
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Campaign Spend Chart */}
+              <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white">Campaign Spend Breakdown</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Cost distribution across campaigns
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={campaignChartData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, value }) => `${name}: $${value}`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="cost"
+                        >
+                          {campaignChartData.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-cyan-100">{formatCurrency(agent.totalCost)}</p>
-                    <p className="text-xs text-slate-400">
-                      {formatCurrency(agent.averageCostPerExecution)}/exec
-                    </p>
+                </CardContent>
+              </Card>
+
+              {/* Agent Usage Chart */}
+              <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white">Agent Usage by Cost</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Which agents are consuming the most budget
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={agentChartData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                        <XAxis
+                          dataKey="name"
+                          stroke="#9CA3AF"
+                          fontSize={12}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                        />
+                        <YAxis stroke="#9CA3AF" fontSize={12} />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#1F2937',
+                            border: '1px solid #374151',
+                            borderRadius: '8px',
+                          }}
+                        />
+                        <Bar dataKey="cost" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="campaigns" className="space-y-6">
+            <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white">Campaign Spend Details</CardTitle>
+                <CardDescription className="text-slate-400">
+                  Detailed breakdown of spending per campaign
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-slate-700">
+                      <TableHead className="text-slate-300">Campaign</TableHead>
+                      <TableHead className="text-slate-300">Type</TableHead>
+                      <TableHead className="text-slate-300">Total Cost</TableHead>
+                      <TableHead className="text-slate-300">Executions</TableHead>
+                      <TableHead className="text-slate-300">Top Agent</TableHead>
+                      <TableHead className="text-slate-300">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {monthlyData?.campaignBreakdown?.map((campaign: any) => {
+                      const topAgent = Object.entries(campaign.agents).sort(
+                        ([, a], [, b]) => (b as any).cost - (a as any).cost
+                      )[0];
+
+                      return (
+                        <TableRow key={campaign.id} className="border-slate-700">
+                          <TableCell className="text-white font-medium">{campaign.name}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="border-slate-600 text-slate-300">
+                              {campaign.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-white">${campaign.cost.toFixed(2)}</TableCell>
+                          <TableCell className="text-slate-300">{campaign.executions}</TableCell>
+                          <TableCell>
+                            {topAgent && (
+                              <div className="flex items-center gap-2">
+                                <Zap className="h-3 w-3 text-purple-400" />
+                                <span className="text-slate-300 text-sm">
+                                  {topAgent[0]} (${(topAgent[1] as any).cost.toFixed(2)})
+                                </span>
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={campaign.cost > 50 ? 'destructive' : 'default'}
+                              className={campaign.cost > 50 ? 'bg-red-900' : 'bg-green-900'}
+                            >
+                              {campaign.cost > 50 ? '🔥 High' : '✅ Normal'}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="agents" className="space-y-6">
+            <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white">Agent Performance & Costs</CardTitle>
+                <CardDescription className="text-slate-400">
+                  Detailed breakdown of agent usage and costs
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Object.entries(agentUsageData || {}).map(([agentType, data]: [string, any]) => (
+                    <Card key={agentType} className="bg-slate-800/50 border-slate-700">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm text-slate-200 flex items-center gap-2">
+                          <Zap className="h-4 w-4 text-purple-400" />
+                          {agentType}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-xs text-slate-400">Total Cost</span>
+                          <span className="text-sm font-medium text-white">
+                            ${data.cost.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-xs text-slate-400">Executions</span>
+                          <span className="text-sm font-medium text-slate-300">
+                            {data.executions}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-xs text-slate-400">Avg Cost</span>
+                          <span className="text-sm font-medium text-slate-300">
+                            ${(data.cost / data.executions).toFixed(3)}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Campaign Budget Tracking */}
-        <Card className="bg-slate-800/50 border-amber-500/30 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-amber-100">Campaign Budget Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {campaignCosts.map(campaign => (
-                <div key={campaign.id} className="p-4 rounded-lg bg-slate-900/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-slate-200">{campaign.campaign.name}</h4>
-                    <Badge
-                      variant={campaign.campaign.status === 'ACTIVE' ? 'default' : 'secondary'}
-                    >
-                      {campaign.campaign.status}
-                    </Badge>
+          <TabsContent value="settings" className="space-y-6">
+            <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Budget Management
+                </CardTitle>
+                <CardDescription className="text-slate-400">
+                  Set monthly budget caps and manage spending limits
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <label className="text-sm font-medium text-slate-200 mb-2 block">
+                      Monthly Budget for {selectedMonth}
+                    </label>
+                    <Input
+                      type="number"
+                      value={budgetAmount}
+                      onChange={e => setBudgetAmount(e.target.value)}
+                      className="bg-slate-800 border-slate-700 text-white"
+                      placeholder="Enter budget amount"
+                    />
                   </div>
+                  <Button
+                    onClick={handleSetBudget}
+                    disabled={setBudgetMutation.isLoading}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full font-medium transition-all duration-200 transform hover:scale-105"
+                  >
+                    {setBudgetMutation.isLoading ? 'Setting...' : 'Set Budget'}
+                  </Button>
+                </div>
+
+                {/* Budget Override Controls */}
+                <div className="p-6 bg-slate-800/70 rounded-xl border border-slate-600 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">
-                      {formatCurrency(campaign.totalCost)} /{' '}
-                      {formatCurrency(campaign.monthlyBudget || 0)}
-                    </span>
-                    <span className="text-sm font-medium text-cyan-100">
-                      {campaign.monthlyBudget
-                        ? `${((campaign.totalCost / campaign.monthlyBudget) * 100).toFixed(1)}%`
-                        : 'No limit'}
-                    </span>
-                  </div>
-                  {campaign.monthlyBudget && (
-                    <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          campaign.totalCost / campaign.monthlyBudget > 0.9
-                            ? 'bg-red-500'
-                            : campaign.totalCost / campaign.monthlyBudget > 0.8
-                              ? 'bg-yellow-500'
-                              : 'bg-green-500'
-                        }`}
-                        style={{
-                          width: `${Math.min(100, (campaign.totalCost / campaign.monthlyBudget) * 100)}%`,
-                        }}
-                      ></div>
+                    <div className="space-y-1">
+                      <Label htmlFor="budget-override" className="text-white font-medium">
+                        Budget Override Control
+                      </Label>
+                      <p className="text-sm text-slate-400">
+                        Temporarily allow agents to run despite exceeding monthly budget
+                      </p>
                     </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              id="budget-override"
+                              checked={budgetOverride}
+                              onCheckedChange={handleBudgetOverrideToggle}
+                              disabled={setBudgetOverrideMutation.isLoading}
+                              className="data-[state=checked]:bg-orange-500"
+                            />
+                            <Label htmlFor="budget-override" className="text-sm text-slate-300">
+                              {budgetOverride ? 'Override Enabled' : 'Override Disabled'}
+                            </Label>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-slate-800 border-slate-600 text-white max-w-xs">
+                          <p>
+                            When enabled, agents can execute tasks even when the monthly budget is
+                            exceeded. All override executions are logged for audit purposes.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  {budgetOverride && (
+                    <Alert className="bg-orange-900/20 border-orange-600">
+                      <AlertTriangle className="h-4 w-4 text-orange-400" />
+                      <AlertDescription className="text-orange-200">
+                        ⚠️ Budget override is currently enabled. Agents can execute tasks despite
+                        budget limits. All executions are being logged in{' '}
+                        <code className="bg-slate-700 px-1 rounded">
+                          logs/budget/override-executions.md
+                        </code>
+                      </AlertDescription>
+                    </Alert>
                   )}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+
+                <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                  <h4 className="text-sm font-medium text-slate-200 mb-2">
+                    Budget Enforcement Configuration
+                  </h4>
+                  <div className="space-y-2 text-sm text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                      <span>Warning at 80% budget utilization</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <span>Hard block when budget exceeded (unless override enabled)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                      <span>
+                        All blocked/override executions logged to{' '}
+                        <code className="bg-slate-700 px-1 rounded text-xs">logs/budget/</code>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-gradient-to-r from-purple-900/20 to-blue-900/20 rounded-lg border border-purple-700/50">
+                  <h4 className="text-sm font-medium text-purple-200 mb-2 flex items-center gap-2">
+                    <Target className="h-4 w-4" />
+                    Environment Variables
+                  </h4>
+                  <div className="space-y-1 text-xs font-mono text-slate-300">
+                    <div>ALLOW_BUDGET_OVERRIDE={budgetOverride ? 'true' : 'false'}</div>
+                    <div>MAX_MONTHLY_BUDGET=${budgetAmount}</div>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2">
+                    These values are set dynamically and override environment file settings.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {/* Recent Transactions */}
-      <Card className="bg-slate-800/50 border-slate-500/30 backdrop-blur-sm mt-8">
-        <CardHeader>
-          <CardTitle className="text-slate-100">Recent Agent Executions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-slate-300">Agent</th>
-                  <th className="text-left py-3 px-4 text-slate-300">Task</th>
-                  <th className="text-left py-3 px-4 text-slate-300">Campaign</th>
-                  <th className="text-right py-3 px-4 text-slate-300">Tokens</th>
-                  <th className="text-right py-3 px-4 text-slate-300">Cost</th>
-                  <th className="text-right py-3 px-4 text-slate-300">Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentTransactions.map(transaction => (
-                  <tr key={transaction.id} className="border-b border-slate-800">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        {getAgentIcon(transaction.agentType)}
-                        <span className="text-slate-200">
-                          {transaction.agentType.replace('_', ' ')}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-slate-300">{transaction.task || 'N/A'}</td>
-                    <td className="py-3 px-4 text-slate-300">
-                      {transaction.campaign?.name || 'No campaign'}
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-300">
-                      {transaction.tokens.toLocaleString()}
-                    </td>
-                    <td className="py-3 px-4 text-right font-medium text-cyan-100">
-                      {formatCurrency(transaction.cost)}
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-400 text-sm">
-                      {formatDate(transaction.timestamp)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Cost Rate Reference */}
-      <Card className="bg-slate-800/50 border-slate-500/30 backdrop-blur-sm mt-8">
-        <CardHeader>
-          <CardTitle className="text-slate-100">Agent Cost Rates (per 1K tokens)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {Object.entries(AGENT_COST_CONSTANTS).map(([agent, rate]) => (
-              <div key={agent} className="text-center p-3 rounded-lg bg-slate-900/30">
-                <div className="flex justify-center mb-2">{getAgentIcon(agent)}</div>
-                <p className="text-xs text-slate-400 mb-1">{agent.replace('_', ' ')}</p>
-                <p className="font-bold text-cyan-100">${rate.toFixed(3)}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

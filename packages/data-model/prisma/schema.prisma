@@ -1188,12 +1188,21 @@ model BillingLog {
   metadata     Json?
   timestamp    DateTime @default(now())
   
+  // Cost-Efficiency Tracking
+  impactScore        Float?   @default(0.0) // 0-1 score from system feedback
+  conversionAchieved Boolean  @default(false)
+  qualityScore       Float?   @default(0.0) // 0-1 score for output quality
+  retryCount         Int      @default(0)   // Number of retries needed
+  executionTime      Int?     // Milliseconds to complete
+  
   // Relations
   campaign     Campaign? @relation(fields: [campaignId], references: [id])
   
   @@index([campaignId])
   @@index([agentType])
   @@index([timestamp])
+  @@index([impactScore])
+  @@index([conversionAchieved])
   @@map("billing_logs")
 }
 
