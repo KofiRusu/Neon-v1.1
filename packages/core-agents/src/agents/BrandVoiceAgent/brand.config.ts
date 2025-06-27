@@ -78,52 +78,38 @@ export interface BrandVoiceConfig {
 }
 
 export const brandVoiceConfig: BrandVoiceConfig = {
-  tagline: "Illuminate Your Brand's Potential",
-  mission: "Empowering businesses to achieve consistent, intelligent, and impactful brand communication through AI-powered automation",
-  tone: "professional, innovative, customer-centric",
-  targetEmotions: ["confidence", "empowerment", "trust", "excitement", "clarity"],
-  adjectives: ["intelligent", "efficient", "innovative", "reliable", "scalable", "premium", "cutting-edge"],
+  tagline: "Illuminate Your Brand's Potential - Dubai's #1 Custom LED Neon Brand 🇦🇪",
+  mission: "Transform spaces across the UAE with stunning custom LED neon signs that blend creativity, quality, and cultural authenticity. We empower businesses and individuals to express their unique identity through premium lighting solutions.",
+  tone: "Creative, Premium, Inspiring, Culturally-Aware",
+  targetEmotions: ["Excitement", "Inspiration", "Pride", "Amazement", "Trust", "Cultural Connection"],
+  adjectives: ["Stunning", "Custom", "Premium", "Instagram-worthy", "Authentic", "Innovative", "Vibrant", "Elegant"],
   
   idealCustomer: {
-    persona: "Growth-focused business owner or marketing professional seeking to scale their brand presence efficiently",
-    intentions: [
-      "automate marketing workflows",
-      "maintain consistent brand voice",
-      "scale content creation",
-      "improve campaign performance",
-      "integrate AI into marketing strategy"
-    ]
+    persona: "UAE-based entrepreneurs, business owners, and creative individuals aged 25-50 who value quality, aesthetics, and cultural authenticity in their space design",
+    intentions: ["Create memorable brand presence", "Design Instagram-worthy spaces", "Express cultural identity", "Stand out from competition", "Celebrate special occasions with style"]
   },
   
   contentFilters: {
-    avoidWords: [
-      "cheap", "basic", "simple", "easy", "quick fix", "magic", "overnight success",
-      "guaranteed", "instant", "effortless", "amateur", "outdated", "traditional"
-    ],
+    avoidWords: ["cheap", "basic", "generic", "ordinary", "mass-produced", "disposable"],
     enforceToneCheck: true,
     flagOffToneContent: true
   },
   
   slogans: [
-    "Power Your Brand with Intelligence",
-    "Where AI Meets Brand Excellence",
-    "Transform. Automate. Dominate.",
-    "Your Brand, Amplified by AI",
-    "Intelligent Marketing, Exponential Growth"
+    "Turn up the brightness with NeonHub!",
+    "Dubai's brightest custom neon destination",
+    "Where creativity meets illumination",
+    "Your vision, our craftsmanship",
+    "Lighting up the UAE, one sign at a time"
   ],
   
   localization: {
-    strategy: "region-specific with cultural adaptation",
-    fallbackLanguage: "en",
+    strategy: "Bilingual Arabic-English approach with cultural sensitivity",
+    fallbackLanguage: "English",
     regionToneOverrides: {
-      "en-US": "confident and results-driven",
-      "en-GB": "professional and refined",
-      "en-AU": "friendly and approachable",
-      "fr": "sophisticated and elegant",
-      "de": "precise and technical",
-      "es": "warm and relationship-focused",
-      "ja": "respectful and detail-oriented",
-      "zh": "harmonious and growth-oriented"
+      "UAE": "Premium yet approachable, culturally respectful",
+      "Saudi Arabia": "Conservative, family-focused, traditional values",
+      "Qatar": "Luxury-oriented, sophisticated, prestigious"
     }
   },
   
@@ -133,121 +119,103 @@ export const brandVoiceConfig: BrandVoiceConfig = {
   },
   
   feedback: {
-    reviewExample: "NeonHub transformed our marketing approach - our brand voice is now consistent across all channels and our engagement rates have tripled.",
-    dreamQuote: "Finally, an AI solution that understands our brand as well as we do, but executes it better than we ever could."
+    reviewExample: "NeonHub transformed our café in Dubai Marina! The Arabic calligraphy neon sign is absolutely stunning and our customers love taking photos with it. Quality is exceptional and the team understood our vision perfectly. Five stars! 🌟",
+    dreamQuote: "We dream of illuminating every corner of the UAE with beautiful, meaningful neon art that tells each customer's unique story"
   },
   
   contentPreferences: {
-    types: [
-      "landing pages", "email campaigns", "social media posts", "blog articles",
-      "ad copy", "product descriptions", "case studies", "whitepapers",
-      "video scripts", "webinar content", "sales presentations"
-    ],
+    types: ["Behind-the-scenes creation videos", "Customer transformation reveals", "Arabic calligraphy showcases", "Cultural celebration themes", "Business success stories"],
     holidayAdaptation: true,
     trendIntegration: true
   },
   
   compliance: {
-    protectedElements: ["brand name", "logo usage", "visual identity", "core messaging", "value propositions"],
-    approvalProtocol: "automated scoring with human review for high-stakes content",
-    alertTerms: [
-      "NSFW", "political", "controversial", "competitors", "negative sentiment",
-      "off-brand", "low quality", "misleading", "compliance risk"
-    ]
+    protectedElements: ["NeonHub brand name", "Dubai #1 positioning", "AED pricing", "UAE location references"],
+    approvalProtocol: "Cultural sensitivity review required for religious/cultural content",
+    alertTerms: ["haram", "inappropriate cultural references", "pricing in wrong currency"]
   },
   
   brandDNA: {
-    personalityAsHuman: "A forward-thinking technology executive who combines deep industry expertise with genuine care for client success - confident, articulate, and always seeking innovative solutions",
-    referenceBrands: ["HubSpot", "Salesforce", "Shopify", "Mailchimp", "Canva"],
+    personalityAsHuman: "A skilled Dubai artisan who speaks both Arabic and English fluently, passionate about bringing creative visions to life while respecting local culture and traditions",
+    referenceBrands: ["Apple (premium quality)", "Nike (inspiring)", "Local UAE crafts (authentic)", "Instagram (visual-first)"],
     voiceSwitch: {
-      b2b: "authoritative and solution-focused with industry expertise",
-      b2c: "approachable and benefit-driven with clear value communication"
+      b2b: "Professional, results-focused, ROI-conscious while maintaining creative inspiration",
+      b2c: "Warm, personal, celebratory, focused on emotional transformation and memorable moments"
     }
   },
   
   // Extended NeonHub-specific configurations
   messaging: {
-    valueProposition: "Transform your marketing with intelligent automation that maintains perfect brand consistency while scaling your content creation and campaign performance.",
+    valueProposition: "Dubai's premier custom LED neon sign creators, blending traditional craftsmanship with modern technology to deliver Instagram-worthy lighting solutions that honor your cultural identity and business aspirations",
     keyMessages: [
-      "AI-powered marketing automation that understands your brand",
-      "Scale your content without sacrificing quality or consistency",
-      "Turn marketing complexity into competitive advantage",
-      "Your brand voice, amplified by artificial intelligence",
-      "From fragmented campaigns to unified brand experience"
+      "Custom LED neon signs crafted in Dubai",
+      "Bilingual Arabic-English design expertise", 
+      "24-hour rush delivery available",
+      "Cultural authenticity meets modern innovation",
+      "Transform your space, elevate your brand"
     ],
     uniqueSellingPropositions: [
-      "Only AI platform that learns and maintains your specific brand voice",
-      "Complete marketing automation suite with built-in brand intelligence",
-      "Seamless integration across all marketing channels and platforms",
-      "Predictive analytics that optimize campaigns in real-time",
-      "White-glove onboarding with dedicated brand voice training"
+      "Dubai's #1 rated custom LED neon brand with 1000+ reviews",
+      "Only UAE neon company offering authentic Arabic calligraphy integration",
+      "Fastest delivery in region with same-day installation",
+      "Bilingual design team understanding local culture",
+      "Energy-efficient LED technology perfect for Dubai climate"
     ]
   },
   
   vocabulary: {
     preferred: [
-      "innovative", "intelligent", "optimize", "efficiency", "solution", "strategy",
-      "automation", "scalable", "insights", "performance", "growth", "transformation",
-      "streamline", "integration", "analytics", "personalization", "engagement",
-      "conversion", "ROI", "data-driven", "cutting-edge", "breakthrough"
+      "illuminate", "transform", "custom", "premium", "stunning", "authentic", "creative",
+      "Dubai", "UAE", "Arabic", "cultural", "Instagram-worthy", "artisan", "craftsmanship",
+      "LED", "neon", "lighting", "design", "celebration", "heritage", "modern", "innovative"
     ],
     prohibited: [
-      "cheap", "basic", "simple", "easy", "quick fix", "magic", "hack",
-      "secret", "trick", "guaranteed", "instant", "effortless", "amateur",
-      "outdated", "old-school", "traditional", "boring", "generic"
+      "cheap", "basic", "mass-produced", "generic", "ordinary", "low-quality",
+      "culturally insensitive terms", "outdated technology references"
     ],
     brandTerms: [
-      "NeonHub", "AI-powered", "intelligent automation", "brand intelligence",
-      "unified marketing", "smart campaigns", "predictive optimization",
-      "brand consistency engine", "marketing amplification"
+      "NeonHub", "Dubai's #1", "LED neon signs", "custom lighting", "Arabic calligraphy neon",
+      "UAE craftsmanship", "premium lighting solutions"
     ],
     industryTerms: [
-      "marketing automation", "brand management", "content marketing", "social media marketing",
-      "email marketing", "digital advertising", "customer journey", "lead generation",
-      "conversion optimization", "marketing analytics", "customer acquisition",
-      "brand awareness", "thought leadership", "omnichannel marketing"
+      "LED technology", "custom fabrication", "installation", "design consultation",
+      "3D mockup", "energy efficiency", "weather-resistant", "dimming control"
     ]
   },
   
   styleGuide: {
-    sentenceLength: "medium (15-25 words average)",
-    paragraphLength: "short-to-medium (3-5 sentences)",
-    readingLevel: "professional (grade 12-14)",
-    punctuation: "standard with strategic use of em-dashes and colons for emphasis",
+    sentenceLength: "Mix of short impactful statements and medium descriptive sentences",
+    paragraphLength: "2-4 sentences for social media, longer for detailed descriptions",
+    readingLevel: "Accessible to diverse UAE population, avoiding complex jargon",
+    punctuation: "Enthusiastic use of emojis appropriate to UAE culture, professional in B2B",
     formatting: {
-      headlines: "Title case with power words and clear value",
-      subheadings: "Sentence case with action orientation",
-      bulletPoints: "Parallel structure with strong verbs",
-      callToAction: "Imperative voice with specific benefit",
-      testimonials: "First person with specific results"
+      "social_posts": "Engaging hooks, clear value, call-to-action, relevant hashtags",
+      "email": "Personal greeting, clear benefit, cultural consideration, strong CTA",
+      "website": "SEO-optimized, benefit-focused, culturally inclusive, conversion-oriented",
+      "ads": "Attention-grabbing, benefit-clear, local relevance, urgent but respectful"
     }
   },
   
   audienceSegments: {
-    "enterprise": {
-      tone: "authoritative and strategic",
-      vocabulary: ["enterprise-grade", "scalability", "ROI", "integration", "security", "compliance"],
-      messagingFocus: ["cost reduction", "efficiency gains", "competitive advantage", "risk mitigation"]
+    "uae_businesses": {
+      tone: "Professional yet creative, ROI-focused with aesthetic appeal",
+      vocabulary: ["storefront", "branding", "customer attraction", "business growth", "professional image"],
+      messagingFocus: ["Increase foot traffic", "Stand out from competition", "Professional brand presence", "Dubai business success"]
     },
-    "smb": {
-      tone: "approachable and growth-focused",
-      vocabulary: ["affordable", "easy-to-use", "quick setup", "support", "results", "growth"],
-      messagingFocus: ["time savings", "simple implementation", "immediate impact", "business growth"]
+    "wedding_planners": {
+      tone: "Romantic, celebratory, detail-oriented, culturally sensitive",
+      vocabulary: ["celebration", "memories", "special day", "romantic", "elegant", "traditional", "modern"],
+      messagingFocus: ["Create unforgettable moments", "Instagram-worthy celebrations", "Cultural authenticity", "Personalized touches"]
     },
-    "agencies": {
-      tone: "collaborative and expertise-driven",
-      vocabulary: ["client results", "campaign performance", "reporting", "white-label", "scalability"],
-      messagingFocus: ["client success", "operational efficiency", "competitive differentiation", "revenue growth"]
+    "home_decorators": {
+      tone: "Personal, inspiring, lifestyle-focused, trend-aware",
+      vocabulary: ["home", "personal style", "comfort", "family", "lifestyle", "inspiration", "unique"],
+      messagingFocus: ["Express personality", "Transform living spaces", "Create ambiance", "Family celebrations"]
     },
-    "ecommerce": {
-      tone: "results-driven and conversion-focused",
-      vocabulary: ["sales", "conversion", "revenue", "customer lifetime value", "retention", "personalization"],
-      messagingFocus: ["increased sales", "customer experience", "conversion optimization", "market expansion"]
-    },
-    "saas": {
-      tone: "technical and innovation-focused",
-      vocabulary: ["integration", "API", "automation", "workflow", "efficiency", "user experience"],
-      messagingFocus: ["product-market fit", "user engagement", "growth metrics", "technical excellence"]
+    "event_organizers": {
+      tone: "Efficient, reliable, creative, results-oriented",
+      vocabulary: ["event success", "memorable", "impact", "coordination", "seamless", "professional"],
+      messagingFocus: ["Event impact", "Professional execution", "Memorable experiences", "Reliable partnership"]
     }
   }
 };

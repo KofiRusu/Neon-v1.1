@@ -2,182 +2,187 @@
   "campaigns": [
     {
       "id": "camp-1",
-      "name": "Summer Neon Collection 2024",
+      "name": "Ramadan Neon Collection 2024",
       "type": "social_media",
       "status": "active",
-      "budget": 15000,
-      "spent": 8750,
-      "roi": 4.2,
-      "impressions": 2450000,
-      "clicks": 83300,
-      "conversions": 2830,
-      "revenue": 36750,
-      "ctr": 3.4,
-      "conversionRate": 3.4,
-      "cpc": 0.11,
-      "cpm": 3.57,
-      "startDate": "2024-06-01T00:00:00Z",
-      "endDate": "2024-08-31T23:59:59Z",
-      "targetAudience": "Young Adults 18-35",
+      "budget": 18000,
+      "spent": 12500,
+      "roi": 4.8,
+      "impressions": 3200000,
+      "clicks": 128000,
+      "conversions": 4200,
+      "revenue": 60000,
+      "ctr": 4.0,
+      "conversionRate": 3.3,
+      "cpc": 0.10,
+      "cpm": 3.90,
+      "startDate": "2024-03-01T00:00:00Z",
+      "endDate": "2024-04-30T23:59:59Z",
+      "targetAudience": "UAE Muslim Families & Businesses",
       "platforms": ["instagram", "facebook", "tiktok"],
-      "agentsAssigned": ["content", "design", "trend"],
+      "agentsAssigned": ["content", "design", "social"],
       "performance": {
         "weeklyMetrics": [
           {
-            "week": "2024-W25",
-            "impressions": 98000,
-            "clicks": 3330,
-            "conversions": 113,
-            "spent": 350,
-            "revenue": 1470
+            "week": "2024-W12",
+            "impressions": 280000,
+            "clicks": 11200,
+            "conversions": 370,
+            "spent": 1100,
+            "revenue": 5280
           },
           {
-            "week": "2024-W26",
-            "impressions": 124000,
-            "clicks": 4216,
-            "conversions": 143,
-            "spent": 440,
-            "revenue": 1858
+            "week": "2024-W13",
+            "impressions": 320000,
+            "clicks": 12800,
+            "conversions": 422,
+            "spent": 1280,
+            "revenue": 6064
           },
           {
-            "week": "2024-W27",
-            "impressions": 135000,
-            "clicks": 4590,
-            "conversions": 156,
-            "spent": 480,
-            "revenue": 2028
+            "week": "2024-W14",
+            "impressions": 340000,
+            "clicks": 13600,
+            "conversions": 448,
+            "spent": 1360,
+            "revenue": 6432
           }
         ],
         "topContent": [
           {
-            "id": "post-neon-process-video",
+            "id": "ramadan-arabic-calligraphy-neon",
             "type": "video",
             "platform": "instagram",
-            "impressions": 245000,
-            "engagement": 12.8,
-            "shares": 1240,
-            "saves": 3200
+            "impressions": 450000,
+            "engagement": 15.2,
+            "shares": 2800,
+            "saves": 6400
           },
           {
-            "id": "custom-business-sign-showcase",
+            "id": "eid-family-home-transformation",
             "type": "carousel",
             "platform": "facebook",
-            "impressions": 189000,
-            "engagement": 8.4,
-            "shares": 890,
-            "saves": 2100
+            "impressions": 320000,
+            "engagement": 11.7,
+            "shares": 1900,
+            "saves": 4200
           }
         ]
       },
-      "createdAt": "2024-05-15T10:30:00Z",
-      "lastModified": "2024-12-19T14:22:00Z"
+      "createdAt": "2024-02-15T10:30:00Z",
+      "lastModified": "2024-04-28T14:22:00Z"
     },
     {
-      "id": "camp-2",
-      "name": "B2B Outreach Q4 2024",
+      "id": "camp-2", 
+      "name": "Dubai Business Storefront Campaign",
       "type": "email",
       "status": "active",
-      "budget": 8000,
-      "spent": 6200,
-      "roi": 3.8,
-      "impressions": 890000,
-      "clicks": 34200,
-      "conversions": 1150,
-      "revenue": 23560,
-      "ctr": 3.8,
-      "conversionRate": 3.4,
-      "cpc": 0.18,
-      "cpm": 6.97,
-      "startDate": "2024-10-01T00:00:00Z",
+      "budget": 12000,
+      "spent": 8400,
+      "roi": 5.2,
+      "impressions": 680000,
+      "clicks": 27200,
+      "conversions": 950,
+      "revenue": 43680,
+      "ctr": 4.0,
+      "conversionRate": 3.5,
+      "cpc": 0.31,
+      "cpm": 12.35,
+      "startDate": "2024-09-01T00:00:00Z",
       "endDate": "2024-12-31T23:59:59Z",
-      "targetAudience": "Business Decision Makers",
-      "platforms": ["email", "linkedin"],
-      "agentsAssigned": ["outreach", "content"],
+      "targetAudience": "Dubai Business Owners & Entrepreneurs",
+      "platforms": ["email", "linkedin", "whatsapp"],
+      "agentsAssigned": ["outreach", "content", "support"],
       "performance": {
         "weeklyMetrics": [
           {
-            "week": "2024-W40",
-            "impressions": 45000,
-            "clicks": 1710,
-            "conversions": 58,
-            "spent": 310,
-            "revenue": 1178
+            "week": "2024-W45",
+            "impressions": 42000,
+            "clicks": 1680,
+            "conversions": 59,
+            "spent": 520,
+            "revenue": 2708
           },
           {
-            "week": "2024-W41",
-            "impressions": 52000,
-            "clicks": 1976,
+            "week": "2024-W46", 
+            "impressions": 48000,
+            "clicks": 1920,
             "conversions": 67,
-            "spent": 356,
-            "revenue": 1361
+            "spent": 595,
+            "revenue": 3084
           }
         ],
         "emailMetrics": {
-          "openRate": 24.5,
-          "clickRate": 3.8,
-          "bounceRate": 2.1,
-          "unsubscribeRate": 0.3,
-          "deliveryRate": 97.9
+          "openRate": 28.7,
+          "clickRate": 4.2,
+          "bounceRate": 1.8,
+          "unsubscribeRate": 0.2,
+          "deliveryRate": 98.2
+        },
+        "whatsappMetrics": {
+          "responseRate": 65.3,
+          "conversionRate": 12.8,
+          "averageResponseTime": "8 minutes"
         }
       },
-      "createdAt": "2024-09-15T09:15:00Z",
+      "createdAt": "2024-08-15T09:15:00Z",
       "lastModified": "2024-12-18T16:45:00Z"
     },
     {
       "id": "camp-3",
-      "name": "Black Friday Special 2024",
+      "name": "UAE National Day Special 2024",
       "type": "display",
       "status": "completed",
-      "budget": 25000,
-      "spent": 24800,
-      "roi": 5.1,
-      "impressions": 1850000,
-      "clicks": 67800,
-      "conversions": 3420,
-      "revenue": 126480,
-      "ctr": 3.7,
+      "budget": 35000,
+      "spent": 34200,
+      "roi": 6.1,
+      "impressions": 2800000,
+      "clicks": 112000,
+      "conversions": 5600,
+      "revenue": 208320,
+      "ctr": 4.0,
       "conversionRate": 5.0,
-      "cpc": 0.37,
-      "cpm": 13.41,
+      "cpc": 0.31,
+      "cpm": 12.21,
       "startDate": "2024-11-20T00:00:00Z",
-      "endDate": "2024-11-30T23:59:59Z",
-      "targetAudience": "Holiday Shoppers",
-      "platforms": ["google_ads", "meta_ads"],
-      "agentsAssigned": ["ad", "design", "insight"],
+      "endDate": "2024-12-05T23:59:59Z",
+      "targetAudience": "UAE Residents & Patriotic Celebrations",
+      "platforms": ["google_ads", "meta_ads", "snapchat"],
+      "agentsAssigned": ["ad", "design", "trend"],
       "performance": {
         "dailyMetrics": [
           {
-            "date": "2024-11-24",
-            "impressions": 234000,
-            "clicks": 8658,
-            "conversions": 437,
-            "spent": 3200,
-            "revenue": 16352
+            "date": "2024-12-02",
+            "impressions": 420000,
+            "clicks": 16800,
+            "conversions": 840,
+            "spent": 5200,
+            "revenue": 31752
           },
           {
-            "date": "2024-11-25",
-            "impressions": 198000,
-            "clicks": 7326,
-            "conversions": 369,
-            "spent": 2710,
-            "revenue": 13824
+            "date": "2024-12-03",
+            "impressions": 380000,
+            "clicks": 15200,
+            "conversions": 760,
+            "spent": 4712,
+            "revenue": 28728
           }
         ],
-        "hourlyPeaks": [
-          { "hour": 10, "conversions": 142 },
-          { "hour": 14, "conversions": 189 },
-          { "hour": 20, "conversions": 167 }
+        "demographicPerformance": [
+          { "segment": "UAE Nationals", "conversions": 2240, "conversionRate": 5.8 },
+          { "segment": "Expatriate Families", "conversions": 1960, "conversionRate": 4.7 },
+          { "segment": "Local Business", "conversions": 1400, "conversionRate": 4.2 }
         ]
       },
       "createdAt": "2024-11-01T08:00:00Z",
-      "lastModified": "2024-12-01T12:00:00Z"
+      "lastModified": "2024-12-06T12:00:00Z"
     },
     {
       "id": "camp-4",
-      "name": "New Year Resolution Fitness",
+      "name": "Wedding Season UAE 2025",
       "type": "video",
       "status": "draft",
-      "budget": 12000,
+      "budget": 25000,
       "spent": 0,
       "roi": 0,
       "impressions": 0,
@@ -188,85 +193,157 @@
       "conversionRate": 0,
       "cpc": 0,
       "cpm": 0,
-      "startDate": "2025-01-01T00:00:00Z",
-      "endDate": "2025-01-31T23:59:59Z",
-      "targetAudience": "Fitness Enthusiasts",
-      "platforms": ["youtube", "tiktok", "instagram"],
-      "agentsAssigned": ["content", "design"],
+      "startDate": "2025-02-01T00:00:00Z",
+      "endDate": "2025-05-31T23:59:59Z",
+      "targetAudience": "UAE Couples & Wedding Planners",
+      "platforms": ["youtube", "tiktok", "instagram", "pinterest"],
+      "agentsAssigned": ["content", "design", "social"],
       "performance": {
         "projectedMetrics": {
-          "expectedImpressions": 980000,
-          "expectedClicks": 39200,
-          "expectedConversions": 1372,
-          "expectedRevenue": 45876,
-          "projectedROI": 3.8
-        }
+          "expectedImpressions": 1800000,
+          "expectedClicks": 72000,
+          "expectedConversions": 2520,
+          "expectedRevenue": 126000,
+          "projectedROI": 5.0
+        },
+        "targetKeywords": [
+          "UAE wedding neon signs",
+          "Arabic wedding decorations",
+          "Dubai wedding lighting",
+          "Custom wedding signs UAE"
+        ]
       },
       "createdAt": "2024-12-10T11:30:00Z",
-      "lastModified": "2024-12-15T09:45:00Z"
+      "lastModified": "2024-12-20T09:45:00Z"
     },
     {
       "id": "camp-5",
-      "name": "Spring Launch Campaign",
+      "name": "Dubai Shopping Festival Promotion",
       "type": "search",
-      "status": "paused",
-      "budget": 18000,
-      "spent": 4500,
-      "roi": 2.1,
-      "impressions": 456000,
-      "clicks": 12400,
-      "conversions": 340,
-      "revenue": 9450,
-      "ctr": 2.7,
-      "conversionRate": 2.7,
-      "cpc": 0.36,
-      "cpm": 9.87,
-      "startDate": "2024-03-01T00:00:00Z",
-      "endDate": "2024-05-31T23:59:59Z",
-      "targetAudience": "Fashion Forward Consumers",
-      "platforms": ["google_ads"],
-      "agentsAssigned": ["ad", "trend"],
-      "pauseReason": "Seasonal budget reallocation",
+      "status": "active",
+      "budget": 22000,
+      "spent": 16800,
+      "roi": 4.3,
+      "impressions": 1240000,
+      "clicks": 49600,
+      "conversions": 1736,
+      "revenue": 72240,
+      "ctr": 4.0,
+      "conversionRate": 3.5,
+      "cpc": 0.34,
+      "cpm": 13.55,
+      "startDate": "2024-12-26T00:00:00Z",
+      "endDate": "2025-02-02T23:59:59Z",
+      "targetAudience": "Dubai Shoppers & Business Owners",
+      "platforms": ["google_ads", "bing_ads"],
+      "agentsAssigned": ["ad", "seo", "trend"],
       "performance": {
         "keywords": [
           {
-            "keyword": "custom neon signs",
-            "impressions": 89000,
-            "clicks": 2403,
-            "conversions": 67,
-            "cpc": 0.42,
-            "position": 2.3
-          },
-          {
-            "keyword": "led business signs",
-            "impressions": 134000,
-            "clicks": 3618,
-            "conversions": 102,
+            "keyword": "custom neon signs Dubai",
+            "impressions": 186000,
+            "clicks": 7440,
+            "conversions": 260,
             "cpc": 0.38,
             "position": 1.8
+          },
+          {
+            "keyword": "LED business signs UAE",
+            "impressions": 248000,
+            "clicks": 9920,
+            "conversions": 347,
+            "cpc": 0.35,
+            "position": 2.1
+          },
+          {
+            "keyword": "Arabic neon calligraphy",
+            "impressions": 124000,
+            "clicks": 4960,
+            "conversions": 173,
+            "cpc": 0.42,
+            "position": 1.6
           }
+        ],
+        "geoPerformance": [
+          { "location": "Dubai", "conversions": 868, "conversionRate": 4.2 },
+          { "location": "Abu Dhabi", "conversions": 347, "conversionRate": 3.8 },
+          { "location": "Sharjah", "conversions": 260, "conversionRate": 3.5 }
         ]
       },
-      "createdAt": "2024-02-15T14:20:00Z",
-      "lastModified": "2024-04-20T16:30:00Z"
+      "createdAt": "2024-12-15T14:20:00Z",
+      "lastModified": "2024-12-20T16:30:00Z"
+    },
+    {
+      "id": "camp-6",
+      "name": "Instagram Influencer Partnership UAE",
+      "type": "influencer",
+      "status": "active", 
+      "budget": 28000,
+      "spent": 19600,
+      "roi": 3.8,
+      "impressions": 1680000,
+      "clicks": 50400,
+      "conversions": 1512,
+      "revenue": 74480,
+      "ctr": 3.0,
+      "conversionRate": 3.0,
+      "cpc": 0.39,
+      "cpm": 11.67,
+      "startDate": "2024-10-01T00:00:00Z",
+      "endDate": "2024-12-31T23:59:59Z",
+      "targetAudience": "UAE Instagram Users & Home Decorators",
+      "platforms": ["instagram", "tiktok"],
+      "agentsAssigned": ["social", "outreach", "design"],
+      "performance": {
+        "influencerMetrics": [
+          {
+            "influencer": "@dubaihomestyle",
+            "followers": 280000,
+            "engagement": 8.2,
+            "conversions": 420,
+            "revenue": 20160
+          },
+          {
+            "influencer": "@uaeweddingplanner",
+            "followers": 195000,
+            "engagement": 12.1,
+            "conversions": 312,
+            "revenue": 14976
+          },
+          {
+            "influencer": "@emirateslifestyle",
+            "followers": 340000,
+            "engagement": 6.8,
+            "conversions": 476,
+            "revenue": 22848
+          }
+        ],
+        "contentTypes": [
+          { "type": "Home transformation", "engagement": 11.4, "conversions": 680 },
+          { "type": "Behind-the-scenes", "engagement": 9.8, "conversions": 420 },
+          { "type": "Arabic calligraphy process", "engagement": 14.2, "conversions": 412 }
+        ]
+      },
+      "createdAt": "2024-09-15T08:00:00Z",
+      "lastModified": "2024-12-20T18:30:00Z"
     }
   ],
   "summary": {
-    "totalCampaigns": 5,
-    "activeCampaigns": 2,
+    "totalCampaigns": 6,
+    "activeCampaigns": 4,
     "completedCampaigns": 1,
     "draftCampaigns": 1,
-    "pausedCampaigns": 1,
-    "totalBudget": 78000,
-    "totalSpent": 44250,
-    "totalRevenue": 196766,
-    "overallROI": 4.4,
-    "totalImpressions": 5636000,
-    "totalClicks": 197700,
-    "totalConversions": 7740,
-    "averageCTR": 3.5,
-    "averageConversionRate": 3.9,
-    "budgetUtilization": 56.7
+    "pausedCampaigns": 0,
+    "totalBudget": 140000,
+    "totalSpent": 91500,
+    "totalRevenue": 458720,
+    "overallROI": 5.0,
+    "totalImpressions": 10680000,
+    "totalClicks": 417200,
+    "totalConversions": 13998,
+    "averageCTR": 3.9,
+    "averageConversionRate": 3.4,
+    "budgetUtilization": 65.4
   },
   "benchmarks": {
     "industry": {
@@ -275,14 +352,51 @@
       "averageConversionRate": 2.4,
       "averageCPC": 0.45
     },
+    "uaeMarket": {
+      "averageROI": 3.8,
+      "averageCTR": 3.2,
+      "averageConversionRate": 2.8,
+      "averageCPC": 0.38,
+      "seasonalTrends": {
+        "ramadan": "40% higher engagement",
+        "nationalDay": "60% higher conversions", 
+        "weddingSeason": "80% higher revenue"
+      }
+    },
     "goals": {
-      "targetROI": 4.0,
-      "targetCTR": 3.5,
+      "targetROI": 4.5,
+      "targetCTR": 4.0,
       "targetConversionRate": 3.5,
-      "maxCPC": 0.50
+      "maxCPC": 0.40
+    }
+  },
+  "marketInsights": {
+    "topPerformingContent": [
+      "Arabic calligraphy neon signs",
+      "Wedding decoration transformations",
+      "Dubai business storefront makeovers",
+      "Cultural celebration themes"
+    ],
+    "bestPerformingPlatforms": [
+      { "platform": "Instagram", "roi": 5.2, "engagement": "12.4%" },
+      { "platform": "Facebook", "roi": 4.8, "engagement": "8.7%" },
+      { "platform": "WhatsApp", "roi": 6.1, "engagement": "65.3%" },
+      { "platform": "Google Ads", "roi": 4.3, "engagement": "3.5%" }
+    ],
+    "audienceInsights": {
+      "demographics": {
+        "uaeNationals": { "conversionRate": 4.2, "averageOrderValue": "AED 1840" },
+        "expatriates": { "conversionRate": 3.6, "averageOrderValue": "AED 1560" },
+        "businesses": { "conversionRate": 3.1, "averageOrderValue": "AED 3200" }
+      },
+      "preferences": {
+        "arabicCalligraphy": "28% of orders",
+        "englishText": "42% of orders", 
+        "bilingual": "30% of orders"
+      }
     }
   },
   "lastUpdated": "2024-12-23T19:30:00Z",
   "dataSource": "integrated_analytics_platform",
-  "version": "1.2.0"
+  "version": "2.0.0"
 } 
