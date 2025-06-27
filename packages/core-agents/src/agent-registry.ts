@@ -9,6 +9,7 @@ import { OutreachAgent } from './agents/outreach-agent';
 import { TrendAgent } from './agents/trend-agent';
 import { InsightAgent } from './agents/insight-agent';
 import { DesignAgent } from './agents/design-agent';
+import { UIRefinementAgent } from './agents/ui-refinement-agent';
 import { EmailMarketingAgent } from './agents/email-agent';
 import { CustomerSupportAgent } from './agents/support-agent';
 import { ErrorSentinelAgent } from './agents/error-sentinel-agent';
@@ -80,6 +81,7 @@ export function registerAllAgents(): void {
   AgentFactory.registerAgent('trend', TrendAgent);
   AgentFactory.registerAgent('insight', InsightAgent);
   AgentFactory.registerAgent('design', DesignAgent);
+  AgentFactory.registerAgent('ui-refinement', UIRefinementAgent);
   AgentFactory.registerAgent('email', EmailMarketingAgent);
   AgentFactory.registerAgent('support', CustomerSupportAgent);
   AgentFactory.registerAgent('error-sentinel', ErrorSentinelAgent);
@@ -233,6 +235,8 @@ function createAgentInstance(agentType: string): any {
       return new InsightAgent();
     case 'design':
       return new DesignAgent();
+    case 'ui-refinement':
+      return new UIRefinementAgent('ui-refinement', 'UI Refinement Agent');
     case 'email':
       return new EmailMarketingAgent();
     case 'support':

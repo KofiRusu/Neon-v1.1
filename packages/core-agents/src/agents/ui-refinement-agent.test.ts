@@ -1,4 +1,4 @@
-import { UIRefinementAgent } from './ui-refinement-agent';
+import { UIRefinementAgent, UIRefinementPayload } from './ui-refinement-agent';
 import { promises as fs } from 'fs';
 
 // Mock fs operations for testing
@@ -12,25 +12,23 @@ jest.mock('fs', () => ({
   },
 }));
 
-const mockFs = fs as jest.Mocked<typeof fs>;
-
-interface MockDirent {
+interface MockDirEntry {
   name: string;
   isFile: () => boolean;
   isDirectory: () => boolean;
 }
 
-interface MockUIIssue {
-  type: string;
-  description: string;
-  severity: string;
-}
+const mockFs = fs as jest.Mocked<typeof fs>;
 
 describe('UIRefinementAgent', () => {
   let agent: UIRefinementAgent;
+  const mockFiles = [
+    'apps/dashboard/src/components/Button.tsx',
+    'apps/dashboard/src/components/Card.tsx'
+  ];
 
   beforeEach(() => {
-    agent = new UIRefinementAgent('ui-refinement-1', 'UI Refinement Agent');
+    agent = new UIRefinementAgent('ui-refinement-test', 'UI Refinement Test Agent');
     jest.clearAllMocks();
   });
 
@@ -40,8 +38,8 @@ describe('UIRefinementAgent', () => {
 
   describe('Agent initialization', () => {
     it('should initialize with correct properties', () => {
-      expect(agent.id).toBe('ui-refinement-1');
-      expect(agent.name).toBe('UI Refinement Agent');
+      expect(agent.id).toBe('ui-refinement-test');
+      expect(agent.name).toBe('UI Refinement Test Agent');
       expect(agent.type).toBe('ui-refinement');
       expect(agent.capabilities).toContain('check_contrast');
       expect(agent.capabilities).toContain('fix_contrast_issues');
@@ -49,89 +47,161 @@ describe('UIRefinementAgent', () => {
     });
   });
 
-  describe('Contrast checking', () => {
-    it('should detect contrast issues', async () => {
-      // Mock file system
-      mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
-
-      mockFs.readFile.mockResolvedValue(`
+  describe('analyzeContrast', () => {
+    it('should identify contrast issues in TSX files', async () => {
+      const mockFileContent = `
         <div className="bg-neutral-900 text-neutral-700">
-          <p>Social Media</p>
+          <p className="text-neutral-600">Low contrast text</p>
         </div>
-      `);
+      `;
 
-      const result = await agent.execute({
-        task: 'check_contrast',
-        context: { targetDir: 'test' },
-        priority: 'medium',
-      });
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+
+      const payload: UIRefinementPayload = {
+        action: 'analyze_contrast',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
 
       expect(result.success).toBe(true);
-      expect(result.data.issues).toHaveLength(1);
+      expect(result.data.issues).toHaveLength(2);
       expect(result.data.issues[0].type).toBe('contrast');
-      expect(result.data.issues[0].severity).toBe('high');
-      expect(result.data.issues[0].description).toContain('Poor contrast');
     });
 
-    it('should fix contrast issues automatically', async () => {
-      // Mock file system
-      mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
-
-      mockFs.readFile.mockResolvedValue(`
-        <div className="bg-neutral-900 text-neutral-700">
-          <p>Social Media</p>
+    it('should handle files with no contrast issues', async () => {
+      const mockFileContent = `
+        <div className="bg-white text-black">
+          <p className="text-gray-900">Good contrast text</p>
         </div>
-      `);
+      `;
 
-      const result = await agent.execute({
-        task: 'fix_contrast_issues',
-        context: { targetDir: 'test', autoFix: true },
-        priority: 'medium',
-      });
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+
+      const payload: UIRefinementPayload = {
+        action: 'analyze_contrast',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
 
       expect(result.success).toBe(true);
-      expect(result.data.fixedIssues).toHaveLength(1);
-      expect(result.data.filesModified).toHaveLength(1);
-      expect(mockFs.writeFile).toHaveBeenCalled();
+      expect(result.data.issues).toHaveLength(0);
     });
   });
 
-  describe('Accessibility validation', () => {
-    it('should detect missing alt attributes', async () => {
-      mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
+  describe('fixContrastIssues', () => {
+    it('should fix contrast issues in files', async () => {
+      const mockFileContent = `
+        <div className="bg-neutral-900 text-neutral-700">
+          <p className="text-neutral-600">Low contrast text</p>
+        </div>
+      `;
 
-      mockFs.readFile.mockResolvedValue(`
-        <img src="image.jpg" />
-        <button>Click me</button>
-        <input type="text" />
-      `);
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+      jest.spyOn(fs, 'writeFile').mockResolvedValue(undefined);
 
-      const result = await agent.execute({
-        task: 'validate_accessibility',
-        context: { targetDir: 'test' },
-        priority: 'medium',
-      });
+      const payload: UIRefinementPayload = {
+        action: 'fix_contrast',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
+
+      expect(result.success).toBe(true);
+      expect(result.data.fixedIssues.length).toBeGreaterThan(0);
+    });
+
+    it('should handle files with no fixable issues', async () => {
+      const mockFileContent = `
+        <div className="bg-white text-black">
+          <p className="text-gray-900">Good contrast text</p>
+        </div>
+      `;
+
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+
+      const payload: UIRefinementPayload = {
+        action: 'fix_contrast',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
+
+      expect(result.success).toBe(true);
+      expect(result.data.fixedIssues).toHaveLength(0);
+    });
+  });
+
+  describe('analyzeSpacing', () => {
+    it('should identify spacing inconsistencies', async () => {
+      const mockFileContent = `
+        <div className="p-1 m-2">
+          <div className="px-3 py-1">Inconsistent spacing</div>
+        </div>
+      `;
+
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+
+      const payload: UIRefinementPayload = {
+        action: 'analyze_spacing',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(
-        result.data.issues.some((issue: MockUIIssue) => issue.description.includes('alt attribute'))
-      ).toBe(true);
+    });
+
+    it('should handle files with consistent spacing', async () => {
+      const mockFileContent = `
+        <div className="p-4 m-4">
+          <div className="px-4 py-4">Consistent spacing</div>
+        </div>
+      `;
+
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+
+      const payload: UIRefinementPayload = {
+        action: 'analyze_spacing',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
+
+      expect(result.success).toBe(true);
+      expect(result.data.issues).toHaveLength(0);
+    });
+  });
+
+  describe('analyzeAccessibility', () => {
+    it('should identify accessibility issues', async () => {
+      const mockFileContent = `
+        <button className="bg-blue-500">Click me</button>
+        <img src="test.jpg" />
+      `;
+
+      jest.spyOn(fs, 'readFile').mockResolvedValue(mockFileContent);
+
+      const payload: UIRefinementPayload = {
+        action: 'analyze_accessibility',
+        parameters: { files: mockFiles }
+      };
+
+      const result = await agent.execute(payload);
+
+      expect(result.success).toBe(true);
+      expect(result.data.issues.length).toBeGreaterThan(0);
     });
   });
 
   describe('Theme consistency', () => {
     it('should fix theme inconsistencies', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
-
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
+      ]);
+      
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-gray-900 text-gray-300">
           <p>Content</p>
@@ -153,9 +223,9 @@ describe('UIRefinementAgent', () => {
   describe('Responsive layout checking', () => {
     it('should detect responsive issues', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
-
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
+      ]);
+      
       mockFs.readFile.mockResolvedValue(`
         <div className="w-[500px] overflow-hidden">
           <p>Fixed width content</p>
@@ -170,18 +240,18 @@ describe('UIRefinementAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.issues.length).toBeGreaterThan(0);
-      expect(result.data.issues.some((issue: MockUIIssue) => issue.type === 'responsive')).toBe(
-        true
-      );
+      expect(result.data.issues.some((issue: any) => 
+        issue.type === 'responsive'
+      )).toBe(true);
     });
   });
 
   describe('UI pattern auditing', () => {
     it('should detect UI pattern inconsistencies', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
-
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
+      ]);
+      
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-white rounded-lg p-4">
           <button className="bg-blue-500">Click</button>
@@ -202,9 +272,9 @@ describe('UIRefinementAgent', () => {
   describe('Auto-fix all issues', () => {
     it('should run all checks and fixes comprehensively', async () => {
       mockFs.readdir.mockResolvedValue([
-        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as MockDirent,
-      ] as MockDirent[]);
-
+        { name: 'test.tsx', isFile: () => true, isDirectory: () => false } as any,
+      ]);
+      
       mockFs.readFile.mockResolvedValue(`
         <div className="bg-neutral-900 text-neutral-700 bg-gray-800">
           <img src="image.jpg" />

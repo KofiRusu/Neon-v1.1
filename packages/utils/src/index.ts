@@ -4,6 +4,9 @@
 
 import type { Result } from '@neon/types';
 
+// Export logger
+export { logger, type Logger } from './logger';
+
 /**
  * Delay execution for specified milliseconds
  */
