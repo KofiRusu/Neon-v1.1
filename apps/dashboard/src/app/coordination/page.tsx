@@ -1,453 +1,364 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PlanViewerPanel } from '@/components/PlanViewerPanel';
-import { MeshActivityLog } from '@/components/MeshActivityLog';
-import { AgentIntentionsGrid } from '@/components/AgentIntentionsGrid';
-import { ExecutionProgressMonitor } from '@/components/ExecutionProgressMonitor';
-import { SystemMetrics } from '@/components/SystemMetrics';
-import { trpc } from '@/utils/trpc';
+import { useState } from 'react';
+import { api } from '../../utils/trpc';
+import {
+  CogIcon,
+  BoltIcon,
+  PlayIcon,
+  PauseIcon,
+  StopIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  CpuChipIcon,
+  ArrowPathIcon,
+  LinkIcon,
+  ChartBarIcon,
+  CommandLineIcon,
+  RocketLaunchIcon,
+} from '@heroicons/react/24/outline';
 
-interface CoordinationState {
-  activePlans: number;
-  queuedRequests: number;
-  agentsInUse: Array<{ agentType: string; goalPlanId: string }>;
-  systemLoad: number;
-  averageConsensusTime: number;
-  successRate: number;
-}
+export default function CoordinationPage(): JSX.Element {
+  const [selectedWorkflow, setSelectedWorkflow] = useState('campaign-launch');
+  const [isRunning, setIsRunning] = useState(false);
 
-interface ExecutionMonitor {
-  goalPlanId: string;
-  currentPhase: number;
-  executingAgent: string;
-  status: string;
-  progress: number;
-  startedAt: string;
-  expectedCompletion: string;
-  blockers: string[];
-  fallbacksAvailable: string[];
-}
+  const workflows = [
+    {
+      id: 'campaign-launch',
+      name: 'Campaign Launch Sequence',
+      description: 'Coordinated campaign deployment across all channels',
+      status: 'active',
+      progress: 75,
+      agents: ['ContentAgent', 'SocialAgent', 'EmailAgent', 'AdAgent'],
+      duration: '45 min',
+      priority: 'high',
+    },
+    {
+      id: 'content-optimization',
+      name: 'Content Optimization Pipeline',
+      description: 'SEO and engagement optimization workflow',
+      status: 'running',
+      progress: 60,
+      agents: ['SEOAgent', 'ContentAgent', 'InsightAgent'],
+      duration: '30 min',
+      priority: 'medium',
+    },
+    {
+      id: 'customer-nurture',
+      name: 'Customer Nurture Flow',
+      description: 'Automated customer engagement and retention',
+      status: 'scheduled',
+      progress: 0,
+      agents: ['EmailAgent', 'SupportAgent', 'InsightAgent'],
+      duration: '2 hours',
+      priority: 'low',
+    },
+  ];
 
-interface MeshActivity {
-  id: string;
-  timestamp: string;
-  type:
-    | 'GOAL_SUBMITTED'
-    | 'PLAN_PROPOSED'
-    | 'CONSENSUS_REACHED'
-    | 'EXECUTION_STARTED'
-    | 'REPLANNING_TRIGGERED';
-  agentType?: string;
-  goalPlanId?: string;
-  message: string;
-  metadata?: any;
-}
+  const activeAgents = [
+    {
+      id: 'content',
+      name: 'ContentAgent',
+      status: 'processing',
+      task: 'Generating blog post variants',
+      progress: 85,
+      eta: '3 min',
+      connections: ['seo', 'social'],
+    },
+    {
+      id: 'seo',
+      name: 'SEOAgent',
+      status: 'waiting',
+      task: 'Awaiting content for optimization',
+      progress: 0,
+      eta: '5 min',
+      connections: ['content', 'insight'],
+    },
+    {
+      id: 'social',
+      name: 'SocialAgent',
+      status: 'active',
+      task: 'Scheduling cross-platform posts',
+      progress: 45,
+      eta: '8 min',
+      connections: ['content', 'ad'],
+    },
+    {
+      id: 'email',
+      name: 'EmailAgent',
+      status: 'active',
+      task: 'Deploying email sequence',
+      progress: 92,
+      eta: '2 min',
+      connections: ['insight', 'support'],
+    },
+    {
+      id: 'ad',
+      name: 'AdAgent',
+      status: 'processing',
+      task: 'Optimizing ad spend allocation',
+      progress: 67,
+      eta: '4 min',
+      connections: ['social', 'insight'],
+    },
+    {
+      id: 'insight',
+      name: 'InsightAgent',
+      status: 'monitoring',
+      task: 'Analyzing performance metrics',
+      progress: 100,
+      eta: 'Continuous',
+      connections: ['seo', 'email', 'ad'],
+    },
+  ];
 
-export default function CoordinationDashboard() {
-  const [coordinationState, setCoordinationState] = useState<CoordinationState>({
-    activePlans: 0,
-    queuedRequests: 0,
-    agentsInUse: [],
-    systemLoad: 0,
-    averageConsensusTime: 0,
-    successRate: 0,
-  });
-
-  const [executionMonitors, setExecutionMonitors] = useState<ExecutionMonitor[]>([]);
-  const [meshActivities, setMeshActivities] = useState<MeshActivity[]>([]);
-  const [selectedGoalPlan, setSelectedGoalPlan] = useState<string | null>(null);
-  const [isRealTimeMode, setIsRealTimeMode] = useState(true);
-
-  // Mock tRPC hooks (in production, these would be real API calls)
-  const engineStateQuery = {
-    data: coordinationState,
-    isLoading: false,
-    refetch: () => Promise.resolve(),
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'text-neon-green';
+      case 'processing':
+        return 'text-neon-blue';
+      case 'waiting':
+        return 'text-neon-orange';
+      case 'monitoring':
+        return 'text-neon-purple';
+      case 'running':
+        return 'text-neon-green';
+      case 'scheduled':
+        return 'text-secondary';
+      default:
+        return 'text-secondary';
+    }
   };
 
-  const executionMonitorsQuery = {
-    data: executionMonitors,
-    isLoading: false,
-  };
-
-  const meshActivityQuery = {
-    data: meshActivities,
-    isLoading: false,
-  };
-
-  // Real-time updates simulation
-  useEffect(() => {
-    if (!isRealTimeMode) return;
-
-    const interval = setInterval(() => {
-      // Simulate real-time state updates
-      setCoordinationState(prev => ({
-        ...prev,
-        activePlans: Math.max(0, prev.activePlans + (Math.random() > 0.7 ? 1 : -1)),
-        queuedRequests: Math.max(0, prev.queuedRequests + (Math.random() > 0.8 ? 1 : 0)),
-        systemLoad: Math.max(0, Math.min(1, prev.systemLoad + (Math.random() - 0.5) * 0.1)),
-        successRate: Math.max(0, Math.min(1, prev.successRate + (Math.random() - 0.5) * 0.05)),
-      }));
-
-      // Simulate new mesh activities
-      if (Math.random() > 0.6) {
-        const activities: MeshActivity['type'][] = [
-          'GOAL_SUBMITTED',
-          'PLAN_PROPOSED',
-          'CONSENSUS_REACHED',
-          'EXECUTION_STARTED',
-          'REPLANNING_TRIGGERED',
-        ];
-        const agentTypes = ['CONTENT', 'SEO', 'BRAND_VOICE', 'TREND', 'AD'];
-
-        const newActivity: MeshActivity = {
-          id: `activity_${Date.now()}`,
-          timestamp: new Date().toISOString(),
-          type: activities[Math.floor(Math.random() * activities.length)],
-          agentType: agentTypes[Math.floor(Math.random() * agentTypes.length)],
-          goalPlanId: `goal_${Math.floor(Math.random() * 100)}`,
-          message: generateActivityMessage(
-            activities[Math.floor(Math.random() * activities.length)]
-          ),
-        };
-
-        setMeshActivities(prev => [newActivity, ...prev.slice(0, 19)]); // Keep last 20
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [isRealTimeMode]);
-
-  // Initialize with mock data
-  useEffect(() => {
-    setCoordinationState({
-      activePlans: 7,
-      queuedRequests: 3,
-      agentsInUse: [
-        { agentType: 'CONTENT', goalPlanId: 'goal_001' },
-        { agentType: 'SEO', goalPlanId: 'goal_002' },
-        { agentType: 'BRAND_VOICE', goalPlanId: 'goal_003' },
-      ],
-      systemLoad: 0.65,
-      averageConsensusTime: 12500,
-      successRate: 0.847,
-    });
-
-    setExecutionMonitors([
-      {
-        goalPlanId: 'goal_001',
-        currentPhase: 2,
-        executingAgent: 'content-agent-001',
-        status: 'RUNNING',
-        progress: 0.68,
-        startedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-        expectedCompletion: new Date(Date.now() + 25 * 60 * 1000).toISOString(),
-        blockers: [],
-        fallbacksAvailable: ['design-agent-001', 'content-agent-002'],
-      },
-      {
-        goalPlanId: 'goal_002',
-        currentPhase: 1,
-        executingAgent: 'seo-agent-001',
-        status: 'RUNNING',
-        progress: 0.34,
-        startedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
-        expectedCompletion: new Date(Date.now() + 40 * 60 * 1000).toISOString(),
-        blockers: ['API_RATE_LIMIT'],
-        fallbacksAvailable: ['seo-agent-002'],
-      },
-    ]);
-
-    setMeshActivities([
-      {
-        id: 'activity_001',
-        timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-        type: 'CONSENSUS_REACHED',
-        agentType: 'GOAL_PLANNER',
-        goalPlanId: 'goal_001',
-        message: 'Plan accepted by consensus with quorum 8/9 agents (score: 0.89)',
-      },
-      {
-        id: 'activity_002',
-        timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        type: 'PLAN_PROPOSED',
-        agentType: 'CONTENT',
-        goalPlanId: 'goal_003',
-        message: "Agent 'ContentAgent' proposed plan with 92% brand alignment",
-      },
-      {
-        id: 'activity_003',
-        timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
-        type: 'EXECUTION_STARTED',
-        agentType: 'SEO',
-        goalPlanId: 'goal_002',
-        message: 'Phase 1 execution started: Market Research & Competitive Analysis',
-      },
-    ]);
-  }, []);
-
-  const getSystemStatusColor = (load: number) => {
-    if (load < 0.5) return 'text-green-400';
-    if (load < 0.8) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
-  const getSystemStatusText = (load: number) => {
-    if (load < 0.5) return 'OPTIMAL';
-    if (load < 0.8) return 'MODERATE';
-    return 'HIGH LOAD';
-  };
-
-  const handleEmergencyStop = () => {
-    console.log('🛑 Emergency stop triggered');
-    // In production, would call emergency stop API
-  };
-
-  const handleTriggerReplan = (goalPlanId: string) => {
-    console.log(`🔄 Triggering replan for ${goalPlanId}`);
-    // In production, would call replan API
-  };
-
-  const handleNewGoalSubmission = () => {
-    console.log('➕ New goal submission dialog would open');
-    // In production, would open goal submission modal
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+        return PlayIcon;
+      case 'processing':
+        return ArrowPathIcon;
+      case 'waiting':
+        return ClockIcon;
+      case 'monitoring':
+        return ChartBarIcon;
+      case 'running':
+        return BoltIcon;
+      case 'scheduled':
+        return ClockIcon;
+      default:
+        return CogIcon;
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
+    <div className="min-h-screen p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-              Multi-Agent Coordination Console
-            </h1>
-            <p className="text-slate-400 mt-2">
-              Real-time orchestration of the NeonHub reasoning mesh
+            <h1 className="text-4xl font-bold text-primary mb-2">Agent Coordination</h1>
+            <p className="text-secondary text-lg">
+              Multi-agent workflow orchestration and task management
             </p>
           </div>
-
-          <div className="flex items-center gap-4">
-            <Button
-              variant={isRealTimeMode ? 'default' : 'outline'}
-              onClick={() => setIsRealTimeMode(!isRealTimeMode)}
-              className="bg-blue-600 hover:bg-blue-700 text-white border-blue-500"
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setIsRunning(!isRunning)}
+              className={`btn-neon ${isRunning ? 'bg-neon-orange' : ''}`}
             >
-              {isRealTimeMode ? '🟢 Live' : '⏸️ Paused'}
-            </Button>
-
-            <Button
-              onClick={handleNewGoalSubmission}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium px-6"
-            >
-              ➕ Submit New Goal
-            </Button>
-
-            <Button
-              variant="destructive"
-              onClick={handleEmergencyStop}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              🛑 Emergency Stop
-            </Button>
+              {isRunning ? (
+                <PauseIcon className="h-5 w-5 mr-2" />
+              ) : (
+                <PlayIcon className="h-5 w-5 mr-2" />
+              )}
+              {isRunning ? 'Pause All' : 'Start All'}
+            </button>
+            <button className="btn-neon-purple">
+              <RocketLaunchIcon className="h-5 w-5 mr-2" />
+              New Workflow
+            </button>
           </div>
         </div>
       </div>
 
-      {/* System Status Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">System Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
+      {/* Workflow Status */}
+      <div className="glass-strong p-6 rounded-2xl mb-8">
+        <h2 className="text-2xl font-bold text-primary mb-6">Active Workflows</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {workflows.map(workflow => {
+            const StatusIcon = getStatusIcon(workflow.status);
+            return (
               <div
-                className={`text-2xl font-bold ${getSystemStatusColor(coordinationState.systemLoad)}`}
+                key={workflow.id}
+                onClick={() => setSelectedWorkflow(workflow.id)}
+                className={`card-neon cursor-pointer transition-all duration-300 ${
+                  selectedWorkflow === workflow.id ? 'ring-2 ring-neon-blue scale-105' : ''
+                }`}
               >
-                {getSystemStatusText(coordinationState.systemLoad)}
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-slate-400">Load</div>
-                <div className="text-lg font-semibold">
-                  {Math.round(coordinationState.systemLoad * 100)}%
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">Active Plans</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-3xl font-bold text-blue-400">
-                {coordinationState.activePlans}
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-slate-400">Queued</div>
-                <div className="text-lg font-semibold text-purple-400">
-                  {coordinationState.queuedRequests}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">Success Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-3xl font-bold text-green-400">
-                {Math.round(coordinationState.successRate * 100)}%
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-slate-400">Avg Consensus</div>
-                <div className="text-lg font-semibold text-blue-400">
-                  {Math.round(coordinationState.averageConsensusTime / 1000)}s
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">Agents in Use</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-3xl font-bold text-purple-400">
-                {coordinationState.agentsInUse.length}
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {coordinationState.agentsInUse.slice(0, 3).map((agent, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="bg-blue-600/20 text-blue-300 border-blue-500/30 text-xs"
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <StatusIcon className={`h-6 w-6 ${getStatusColor(workflow.status)}`} />
+                    <div>
+                      <h3 className="font-bold text-primary">{workflow.name}</h3>
+                      <p className="text-xs text-secondary">{workflow.description}</p>
+                    </div>
+                  </div>
+                  <div
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      workflow.priority === 'high'
+                        ? 'bg-neon-pink text-black'
+                        : workflow.priority === 'medium'
+                          ? 'bg-neon-orange text-black'
+                          : 'bg-neon-green text-black'
+                    }`}
                   >
-                    {agent.agentType}
-                  </Badge>
-                ))}
+                    {workflow.priority}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-secondary">Progress</span>
+                    <span className="text-sm font-medium text-primary">{workflow.progress}%</span>
+                  </div>
+
+                  <div className="progress-neon">
+                    <div className="progress-fill" style={{ width: `${workflow.progress}%` }}></div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-secondary">Duration</span>
+                    <span className="text-sm text-primary">{workflow.duration}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-secondary">Agents</span>
+                    <span className="text-sm text-neon-blue">{workflow.agents.length}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Main Dashboard Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-slate-800/50 border-slate-700">
-          <TabsTrigger
-            value="overview"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="plans"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Plan Viewer
-          </TabsTrigger>
-          <TabsTrigger
-            value="execution"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Execution Monitor
-          </TabsTrigger>
-          <TabsTrigger
-            value="intentions"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Agent Intentions
-          </TabsTrigger>
-          <TabsTrigger
-            value="activity"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Activity Log
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <SystemMetrics
-              coordinationState={coordinationState}
-              executionMonitors={executionMonitors}
-            />
-            <MeshActivityLog activities={meshActivities.slice(0, 8)} isRealTime={isRealTimeMode} />
+      {/* Agent Network */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Active Agents */}
+        <div className="glass-strong p-6 rounded-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-primary">Agent Network</h2>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
+              <span className="text-xs text-secondary">{activeAgents.length} active</span>
+            </div>
           </div>
 
-          <ExecutionProgressMonitor
-            monitors={executionMonitors}
-            onTriggerReplan={handleTriggerReplan}
-            selectedGoalPlan={selectedGoalPlan}
-            onSelectGoalPlan={setSelectedGoalPlan}
-          />
-        </TabsContent>
+          <div className="space-y-4">
+            {activeAgents.map(agent => {
+              const StatusIcon = getStatusIcon(agent.status);
+              return (
+                <div key={agent.id} className="glass p-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-neon-blue to-neon-purple rounded-lg flex items-center justify-center">
+                        <CpuChipIcon className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-primary">{agent.name}</h3>
+                        <p className="text-xs text-secondary">{agent.task}</p>
+                      </div>
+                    </div>
+                    <StatusIcon className={`h-5 w-5 ${getStatusColor(agent.status)}`} />
+                  </div>
 
-        {/* Plan Viewer Tab */}
-        <TabsContent value="plans">
-          <PlanViewerPanel
-            selectedGoalPlan={selectedGoalPlan}
-            onSelectGoalPlan={setSelectedGoalPlan}
-            executionMonitors={executionMonitors}
-          />
-        </TabsContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-secondary">Progress</span>
+                      <span className="text-primary font-medium">{agent.progress}%</span>
+                    </div>
 
-        {/* Execution Monitor Tab */}
-        <TabsContent value="execution">
-          <ExecutionProgressMonitor
-            monitors={executionMonitors}
-            onTriggerReplan={handleTriggerReplan}
-            selectedGoalPlan={selectedGoalPlan}
-            onSelectGoalPlan={setSelectedGoalPlan}
-            expandedView={true}
-          />
-        </TabsContent>
+                    <div className="progress-neon">
+                      <div className="progress-fill" style={{ width: `${agent.progress}%` }}></div>
+                    </div>
 
-        {/* Agent Intentions Tab */}
-        <TabsContent value="intentions">
-          <AgentIntentionsGrid
-            agentsInUse={coordinationState.agentsInUse}
-            isRealTime={isRealTimeMode}
-          />
-        </TabsContent>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-secondary">ETA</span>
+                      <span className="text-neon-blue">{agent.eta}</span>
+                    </div>
 
-        {/* Activity Log Tab */}
-        <TabsContent value="activity">
-          <MeshActivityLog
-            activities={meshActivities}
-            isRealTime={isRealTimeMode}
-            expandedView={true}
-          />
-        </TabsContent>
-      </Tabs>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-secondary">Connections</span>
+                      <div className="flex items-center space-x-1">
+                        <LinkIcon className="h-3 w-3 text-neon-purple" />
+                        <span className="text-neon-purple">{agent.connections.length}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Workflow Console */}
+        <div className="glass-strong p-6 rounded-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-primary">Workflow Console</h2>
+            <button className="p-2 glass rounded-lg text-secondary hover:text-neon-blue transition-colors">
+              <CommandLineIcon className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="glass p-4 rounded-xl">
+              <div className="flex items-center space-x-2 mb-2">
+                <CheckCircleIcon className="h-4 w-4 text-neon-green" />
+                <span className="text-sm text-secondary">2 min ago</span>
+              </div>
+              <p className="text-sm text-primary">ContentAgent completed blog post generation</p>
+            </div>
+
+            <div className="glass p-4 rounded-xl">
+              <div className="flex items-center space-x-2 mb-2">
+                <ArrowPathIcon className="h-4 w-4 text-neon-blue animate-spin" />
+                <span className="text-sm text-secondary">Now</span>
+              </div>
+              <p className="text-sm text-primary">EmailAgent deploying personalized sequences</p>
+            </div>
+
+            <div className="glass p-4 rounded-xl">
+              <div className="flex items-center space-x-2 mb-2">
+                <ClockIcon className="h-4 w-4 text-neon-orange" />
+                <span className="text-sm text-secondary">Waiting</span>
+              </div>
+              <p className="text-sm text-primary">SEOAgent queued for content optimization</p>
+            </div>
+
+            <div className="glass p-4 rounded-xl">
+              <div className="flex items-center space-x-2 mb-2">
+                <ExclamationTriangleIcon className="h-4 w-4 text-neon-pink" />
+                <span className="text-sm text-secondary">5 min ago</span>
+              </div>
+              <p className="text-sm text-primary">
+                AdAgent: Budget threshold reached, switching to optimization mode
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 p-4 bg-black/20 rounded-xl">
+            <div className="flex items-center space-x-2 mb-2">
+              <CommandLineIcon className="h-4 w-4 text-neon-green" />
+              <span className="text-sm text-neon-green font-mono">neon-coordination@v2.1</span>
+            </div>
+            <div className="text-sm text-secondary font-mono">
+              <p>Ready for commands...</p>
+              <p className="text-neon-blue">Type 'help' for available commands</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
-
-// Helper function for generating activity messages
-function generateActivityMessage(type: MeshActivity['type']): string {
-  const messages = {
-    GOAL_SUBMITTED: 'New goal submitted to planning queue',
-    PLAN_PROPOSED: 'Agent proposed execution plan for review',
-    CONSENSUS_REACHED: 'Plan approved by agent consensus',
-    EXECUTION_STARTED: 'Plan execution phase initiated',
-    REPLANNING_TRIGGERED: 'Replanning triggered due to execution failure',
-  };
-
-  return messages[type] || 'Unknown activity type';
 }

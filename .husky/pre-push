@@ -1,3 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
-node scripts/git-validate.js
+
+echo "🛡️ NeonHub Pre-Push Guard - Zero Bug Policy"
+echo "============================================="
+
+# Run enhanced pre-push validation with coverage enforcement
+node scripts/pre-push-guard.js

@@ -16,7 +16,10 @@
     "start": "concurrently \"npm run start --workspace=apps/api\" \"npm run start --workspace=apps/dashboard\"",
     "test": "npm run test --workspaces --if-present",
     "test:unit": "npm run test --workspaces --if-present",
-    "test:coverage": "npm run test:coverage --workspaces --if-present || echo '⚠️ Coverage not available for all workspaces'",
+    "test:coverage": "jest --coverage --collectCoverageFrom='**/*.{ts,tsx}' --coverageReporters=text --coverageReporters=text-summary --coverageReporters=html --coverageReporters=json",
+    "test:coverage:ci": "jest --coverage --collectCoverageFrom='**/*.{ts,tsx}' --coverageReporters=text-summary --coverageReporters=json --passWithNoTests",
+    "test:coverage:detailed": "jest --coverage --collectCoverageFrom='**/*.{ts,tsx}' --coverageReporters=text --coverageReporters=html --verbose",
+    "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint:fix --workspaces --if-present",
@@ -39,6 +42,10 @@
     "quality:check": "node scripts/code-quality-agent.js --check-only",
     "quality:fix": "node scripts/code-quality-agent.js --fix-only",
     "quality:report": "cat quality-report.json | jq .",
+    "pre-push:guard": "node scripts/pre-push-guard.js",
+    "pre-push:quick": "npm run type-check && npm run lint && npm run test --passWithNoTests",
+    "coverage:check": "jest --coverage --passWithNoTests --silent && node scripts/coverage-validator.js",
+    "analyze": "npm run build && npx @next/bundle-analyzer || echo 'Bundle analyzer not available'",
     "prepare": "husky"
   },
   "keywords": [

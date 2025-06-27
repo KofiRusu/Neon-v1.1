@@ -1,7 +1,5 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
-import { agentRouter } from './agent';
 import { agentMemoryRouter } from './agent-memory';
-import { campaignRouter } from './campaign';
 import { contentRouter } from './content';
 import { emailRouter } from './email';
 import { metricsRouter } from './metrics';
@@ -10,7 +8,6 @@ import { socialRouter } from './social';
 import { supportRouter } from './support';
 import { userRouter } from './user';
 import { brandVoiceRouter } from './brand-voice';
-import { trendsRouter } from './trends';
 import { outreachRouter } from './outreach';
 import { strategyRouter } from './strategy';
 import { abTestingRouter } from './ab-testing';
@@ -22,16 +19,27 @@ import { copilotRouter } from './copilot';
 import { boardroomRouter } from './boardroom';
 import { z } from 'zod';
 
+// Import enhanced routers from /routers directory
+import { agentRouter } from '../../routers/agent';
+import { campaignRouter } from '../../routers/campaign';
+import { customerRouter } from '../../routers/customer';
+import { trendRouter } from '../../routers/trend';
+
 /**
  * This is the primary router for your server.
  *
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  // Core enhanced routers (comprehensive implementations)
   agent: agentRouter,
+  campaign: campaignRouter,
+  customer: customerRouter,
+  trend: trendRouter,
+
+  // Supporting routers
   agentMemory: agentMemoryRouter,
   brandVoice: brandVoiceRouter,
-  campaign: campaignRouter,
   content: contentRouter,
   email: emailRouter,
   metrics: metricsRouter,
@@ -39,7 +47,6 @@ export const appRouter = createTRPCRouter({
   social: socialRouter,
   support: supportRouter,
   user: userRouter,
-  trends: trendsRouter,
   outreach: outreachRouter,
   strategy: strategyRouter,
   abTesting: abTestingRouter,

@@ -1,1 +1,8 @@
-npm run lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 NeonHub Pre-commit Validation"
+echo "================================="
+
+# Run pre-commit checks
+node scripts/pre-commit-checks.js
