@@ -18,6 +18,9 @@
     "typescript": "^5.8.3"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./lead-scraper": "./src/lead-scraper.ts",
+    "./pdf-generator": "./src/pdf-generator.ts",
+    "./social-api-client": "./src/social-api-client.ts"
   }
 }

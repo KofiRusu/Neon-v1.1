@@ -157,3 +157,8 @@ export {
   type LogLevel,
   type LogEntry,
 } from './logger';
+
+// Export specialized utility modules
+export { LeadScraper, type LeadData } from './lead-scraper';
+export { PDFGenerator, type ProposalData, type ProductCatalogItem } from './pdf-generator';
+export { SocialApiClient, type TrendData, type RegionScoreData } from './social-api-client';

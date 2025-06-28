@@ -6,7 +6,6 @@ import {
   ChartBarIcon,
   CpuChipIcon,
   RocketLaunchIcon,
-  TrendingUpIcon,
   EyeIcon,
   CalendarIcon,
   FunnelIcon,
@@ -71,7 +70,7 @@ export default function AnalyticsPage(): JSX.Element {
       value: '28.4%',
       change: '+4.2%',
       changeType: 'positive',
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       color: 'neon-green'
     },
     {
@@ -172,7 +171,7 @@ export default function AnalyticsPage(): JSX.Element {
             <h3 className="text-xl font-bold text-white mb-6">Revenue Analytics</h3>
             <div className="h-80 flex items-center justify-center text-gray-400">
               <div className="text-center">
-                <TrendingUpIcon className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+                <ArrowTrendingUpIcon className="h-16 w-16 mx-auto mb-4 text-gray-600" />
                 <p>Revenue analytics will be displayed here</p>
               </div>
             </div>

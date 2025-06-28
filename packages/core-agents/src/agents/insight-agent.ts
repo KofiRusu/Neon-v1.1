@@ -351,7 +351,7 @@ export class InsightAgent extends AbstractAgent {
     }));
   }
 
-  private async generateBenchmarks(industry: string, metrics: any[]): Promise<any> {
+  private async generateBenchmarks(industry: string, _metrics: any[]): Promise<any> {
     return {
       industry,
       benchmarks: {
@@ -362,11 +362,11 @@ export class InsightAgent extends AbstractAgent {
     };
   }
 
-  private calculatePerformanceScore(metrics: any[]): number {
+  private calculatePerformanceScore(_metrics: any[]): number {
     return Math.random() * 100;
   }
 
-  private identifyOverallTrend(metrics: any[]): string {
+  private identifyOverallTrend(_metrics: any[]): string {
     return 'positive';
   }
 
@@ -381,7 +381,7 @@ export class InsightAgent extends AbstractAgent {
     ];
   }
 
-  private async extractRecommendations(insights: string): Promise<string[]> {
+  private async extractRecommendations(_insights: string): Promise<string[]> {
     return [
       'Increase budget allocation to top-performing campaigns',
       'Optimize targeting for better conversion rates',
@@ -389,18 +389,18 @@ export class InsightAgent extends AbstractAgent {
     ];
   }
 
-  private calculateInsightConfidence(insights: any[]): number {
+  private calculateInsightConfidence(_insights: any[]): number {
     return 0.88;
   }
 
-  private async assessStrategicRisks(context: any, insights: any[]): Promise<any> {
+  private async assessStrategicRisks(_context: any, _insights: any[]): Promise<any> {
     return {
       level: 'medium',
       factors: ['Market volatility', 'Competition increase']
     };
   }
 
-  private async createOpportunityMatrix(insights: any[]): Promise<any> {
+  private async createOpportunityMatrix(_insights: any[]): Promise<any> {
     return {
       highImpactLowEffort: ['Campaign optimization'],
       highImpactHighEffort: ['Market expansion'],
@@ -421,39 +421,39 @@ export class InsightAgent extends AbstractAgent {
   }
 
   // Add all missing method stubs
-  private async assessMarketingRisks(context: InsightAnalysisContext): Promise<AgentResult> {
+  private async assessMarketingRisks(_context: InsightAnalysisContext): Promise<AgentResult> {
     return { success: true, data: { risks: [] }, performance: 0.8 };
   }
 
-  private async forecastROI(context: PredictiveAnalysisContext): Promise<AgentResult> {
+  private async forecastROI(_context: PredictiveAnalysisContext): Promise<AgentResult> {
     return { success: true, data: { roi: 1.25 }, performance: 0.8 };
   }
 
-  private async optimizeAttributionModel(context: InsightAnalysisContext): Promise<AgentResult> {
+  private async optimizeAttributionModel(_context: InsightAnalysisContext): Promise<AgentResult> {
     return { success: true, data: { model: 'last-click' }, performance: 0.8 };
   }
 
-  private async analyzeCustomerJourney(context: InsightAnalysisContext): Promise<AgentResult> {
+  private async analyzeCustomerJourney(_context: InsightAnalysisContext): Promise<AgentResult> {
     return { success: true, data: { journey: [] }, performance: 0.8 };
   }
 
-  private async analyzeTrendPatterns(data: any[]): Promise<any> {
+  private async analyzeTrendPatterns(_data: any[]): Promise<any> {
     return { trends: [] };
   }
 
-  private async calculateSeasonalAdjustments(data: any[]): Promise<any> {
+  private async calculateSeasonalAdjustments(_data: any[]): Promise<any> {
     return { adjustments: {} };
   }
 
-  private async generatePredictions(context: any, trends: any, seasonal: any): Promise<any[]> {
+  private async generatePredictions(_context: any, _trends: any, _seasonal: any): Promise<any[]> {
     return [];
   }
 
-  private async generateScenarios(predictions: any[], factors: any): Promise<any[]> {
+  private async generateScenarios(_predictions: any[], _factors: any): Promise<any[]> {
     return [];
   }
 
-  private calculatePredictionConfidence(predictions: any[], historical: any[]): number {
+  private calculatePredictionConfidence(_predictions: any[], _historical: any[]): number {
     return 0.85;
   }
 
@@ -461,7 +461,7 @@ export class InsightAgent extends AbstractAgent {
     return {};
   }
 
-  private getModelAssumptions(context: any): string[] {
+  private getModelAssumptions(_context: any): string[] {
     return [];
   }
 
@@ -469,87 +469,87 @@ export class InsightAgent extends AbstractAgent {
     return [];
   }
 
-  private async identifyPerformanceGaps(performance: any, goals: any): Promise<any> {
+  private async identifyPerformanceGaps(_performance: any, _goals: any): Promise<any> {
     return {};
   }
 
-  private async analyzeOpportunities(context: any): Promise<any> {
+  private async analyzeOpportunities(_context: any): Promise<any> {
     return {};
   }
 
-  private async generateBudgetRecommendations(context: any): Promise<any[]> {
+  private async generateBudgetRecommendations(_context: any): Promise<any[]> {
     return [];
   }
 
-  private async generateCreativeRecommendations(context: any): Promise<any[]> {
+  private async generateCreativeRecommendations(_context: any): Promise<any[]> {
     return [];
   }
 
-  private async generateAudienceRecommendations(context: any): Promise<any[]> {
+  private async generateAudienceRecommendations(_context: any): Promise<any[]> {
     return [];
   }
 
-  private async generateChannelRecommendations(context: any): Promise<any[]> {
+  private async generateChannelRecommendations(_context: any): Promise<any[]> {
     return [];
   }
 
-  private async generateTimingRecommendations(context: any): Promise<any[]> {
+  private async generateTimingRecommendations(_context: any): Promise<any[]> {
     return [];
   }
 
-  private async generateContentRecommendations(context: any): Promise<any[]> {
+  private async generateContentRecommendations(_context: any): Promise<any[]> {
     return [];
   }
 
-  private prioritizeRecommendations(recommendations: any[], priority: string): any[] {
+  private prioritizeRecommendations(recommendations: any[], _priority: string): any[] {
     return recommendations;
   }
 
-  private async createRecommendationImplementationPlan(recommendations: any[]): Promise<any> {
+  private async createRecommendationImplementationPlan(_recommendations: any[]): Promise<any> {
     return {};
   }
 
-  private calculateRecommendationROI(recommendations: any[]): number {
+  private calculateRecommendationROI(_recommendations: any[]): number {
     return 1.5;
   }
 
-  private createImplementationTimeline(recommendations: any[]): any {
+  private createImplementationTimeline(_recommendations: any[]): any {
     return {};
   }
 
-  private calculateRequiredResources(recommendations: any[]): any {
+  private calculateRequiredResources(_recommendations: any[]): any {
     return {};
   }
 
-  private async analyzeCompetitor(competitor: string, industry: string): Promise<any> {
+  private async analyzeCompetitor(_competitor: string, _industry: string): Promise<any> {
     return {};
   }
 
-  private async analyzeCompetitivePositioning(analysis: any[]): Promise<any> {
+  private async analyzeCompetitivePositioning(_analysis: any[]): Promise<any> {
     return {};
   }
 
-  private async identifyCompetitiveMarketTrends(industry: string): Promise<any> {
+  private async identifyCompetitiveMarketTrends(_industry: string): Promise<any> {
     return {};
   }
 
-  private async createCompetitiveMatrix(analysis: any[]): Promise<any> {
+  private async createCompetitiveMatrix(_analysis: any[]): Promise<any> {
     return {};
   }
 
-  private async generateSWOTAnalysis(analysis: any[], positioning: any): Promise<any> {
+  private async generateSWOTAnalysis(_analysis: any[], _positioning: any): Promise<any> {
     return {};
   }
 
-  private async generateCompetitiveRecommendations(analysis: any[], positioning: any): Promise<any[]> {
+  private async generateCompetitiveRecommendations(_analysis: any[], _positioning: any): Promise<any[]> {
     return [];
   }
 
-  private async parseAIInsights(content: string): Promise<any> {
+  private async parseAIInsights(_content: string): Promise<any> {
     return {};
   }
 
-  private fallbackPerformanceAnalysis(context: InsightAnalysisContext, metrics: any[], campaigns: any[]): AgentResult {
+  private fallbackPerformanceAnalysis(_context: InsightAnalysisContext, metrics: any[], campaigns: any[]): AgentResult {
     return {
       success: true,
       data: {
@@ -561,7 +561,7 @@ export class InsightAgent extends AbstractAgent {
     };
   }
 
-  private fallbackInsights(context: InsightAnalysisContext): AgentResult {
+  private fallbackInsights(_context: InsightAnalysisContext): AgentResult {
     return {
       success: true,
       data: {

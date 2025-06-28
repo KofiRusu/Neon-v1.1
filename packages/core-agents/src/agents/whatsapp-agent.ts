@@ -270,7 +270,7 @@ export class WhatsAppAgent extends AbstractAgent {
     const {
       message,
       intent,
-      customerHistory = []
+      customerHistory: _customerHistory = []
     } = context;
 
     // Generate contextual response
@@ -322,7 +322,7 @@ export class WhatsAppAgent extends AbstractAgent {
               to: recipient,
               content,
               templateId,
-              variables: { ...variables, customerName: this.getCustomerName(recipient) }
+              variables: { ...variables, customerName: this.getCustomerName(recipient as string) }
             });
             return { recipient, status: 'success', messageId: result.message.id };
           } catch (error) {
@@ -386,7 +386,7 @@ export class WhatsAppAgent extends AbstractAgent {
       ticketId,
       ticket: _ticket,
       priority = 'medium',
-      category = 'general'
+      category: _category = 'general'
     } = context;
 
     switch (action) {
@@ -489,7 +489,7 @@ export class WhatsAppAgent extends AbstractAgent {
       .find(ticket => ticket.customerId === customerId && ticket.status !== 'closed');
   }
 
-  private generateResponse(intent: any, ticket?: SupportTicket): string {
+  private generateResponse(intent: any, _ticket?: SupportTicket): string {
     const responses = {
       order_inquiry: 'I can help you with your order. Could you please provide your order number?',
       support: 'I\'m here to help! Could you please describe the issue you\'re experiencing?',
